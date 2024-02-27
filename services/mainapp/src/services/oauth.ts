@@ -31,6 +31,17 @@ export const signInUserPassword = async (email: string, pass: string) => {
     });
 };
 
+export const signUpWithUserPassword = async (fullName : string , email: string, pass: string) => {
+  return auth()
+    .createUserWithEmailAndPassword(email, pass)
+    .then((result) => {
+      console.log('signup successful', result);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+};
+
 export const signOut = async () => {
     console.log('signout')
   return auth()
