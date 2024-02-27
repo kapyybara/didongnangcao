@@ -14,6 +14,7 @@ import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import Login from './src/pages/Login';
 import SignUpScreen from './src/pages/SignUp';
 import AuthHoc from './src/hocs/Auth';
+import ForgetPassword from './src/pages/ForgetPassword';
 
 function HomeScreen({navigation}: any) {
   return (
@@ -76,6 +77,7 @@ export default function App() {
           <Stack.Screen name="SignUp" component={SignUpScreen} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
           <Stack.Screen name="Details" component={DetailsScreen} />
         </Stack.Navigator>
       </AuthHoc>
