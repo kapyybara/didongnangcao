@@ -13,6 +13,9 @@ const Login = ({navigation}: any) => {
       navigation.push('Home')
     })
   };
+  const goToForgetPass = () => {
+    navigation.navigate('ForgetPassword');
+  };
 
   const goToSignUp = () => {
     navigation.navigate('SignUp');
@@ -80,7 +83,7 @@ const Login = ({navigation}: any) => {
             Sign Up
           </Text>
         </Text>
-        <Text variant="bodyMedium" style={styles.link}>
+        <Text onPress={goToForgetPass} variant="bodyMedium" style={styles.link}>
           Forget password
         </Text>
       </View>
