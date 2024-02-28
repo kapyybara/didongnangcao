@@ -11,13 +11,13 @@ import CustomNavigationBar from './src/components/CustomNavigationBar';
 import { signInUserPassword } from './src/services/oauth';
 import { useEffect, useState } from 'react';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import Login from './src/pages/Login/Login';
-import SignUpScreen from './src/pages/SignUp/SignUp';
+import Login from './src/pages/Login';
+import SignUpScreen from './src/pages/SignUp';
 import AuthHoc from './src/hocs/Auth';
 import { DirectusClient } from '@directus/sdk';
 import { GlobalContext } from './src/contexts/context';
 import { createDirectusInstance } from './src/services/directus';
-import ForgetPassword from './src/pages/ForgetPassword/ForgetPassword';
+import ForgetPassword from './src/pages/ForgetPassword';
 
 function HomeScreen({ navigation }: any) {
   return (
