@@ -1,12 +1,14 @@
 import auth from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { getProfile, removeProfile } from '../storages/profile';
+// import { getProfile, removeProfile } from '../storages/profile';
 
 export const register = async (email: string, pass: string) => {
   return auth()
     .createUserWithEmailAndPassword(email, pass)
     .then((data) => {
       console.log('User account created & signed in!');
-      return  data
+      return data
     })
     .catch(error => {
       if (error.code === 'auth/email-already-in-use') {
@@ -55,16 +57,16 @@ export const sendResetPasswordRequest = async (email: string) => {
     })
     .catch((error: any) => {
       console.log(error);
-      return "Error appear when send request" 
+      return "Error appear when send request"
     });
 
 };
 
 export const signOut = async () => {
-  console.log('signout')
-  return auth()
-    .signOut()
-    .then(() => console.log('User signed out!'));
+  let data = await getProfile()
+  await removeProfile(data);
+  console.log('User signed out!');
+  return await auth().signOut()
 };
 export async function signInWithGoogle() {
   // Check if your device supports Google Play

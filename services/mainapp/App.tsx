@@ -14,21 +14,21 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import Login from './src/pages/Login';
 import SignUpScreen from './src/pages/SignUp';
 import AuthHoc from './src/hocs/Auth';
-import { DirectusClient } from '@directus/sdk';
 import { GlobalContext } from './src/contexts/context';
 import { initDirectusInstance } from './src/services/directus';
 import ForgetPassword from './src/pages/ForgetPassword';
+import Home from './src/pages/Home';
 
-function HomeScreen({ navigation }: any) {
-  return (
-    <View style={style.container}>
-      <Text>Home Screen</Text>
-      <Button mode="contained" onPress={() => navigation.navigate('Details')}>
-        Go to details
-      </Button>
-    </View>
-  );
-}
+// function HomeScreen({ navigation }: any) {
+//   return (
+//     <View style={style.container}>
+//       <Text>Home Screen</Text>
+//       <Button mode="contained" onPress={() => navigation.navigate('Details')}>
+//         Go to details
+//       </Button>
+//     </View>
+//   );
+// }
 
 function DetailsScreen() {
   return (
@@ -81,7 +81,7 @@ export default function App() {
             }}>
             <Stack.Screen name="SignUp" component={SignUpScreen} />
             <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
             <Stack.Screen name="Details" component={DetailsScreen} />
           </Stack.Navigator>

@@ -1,16 +1,21 @@
 import * as React from 'react';
-import {View, StyleSheet} from 'react-native';
-import {TextInput, Button, Avatar, Text} from 'react-native-paper';
+import { View, StyleSheet } from 'react-native';
+import { TextInput, Button, Avatar, Text } from 'react-native-paper';
 import { signInUserPassword, signInWithGoogle } from '../../services/oauth';
+import { realm } from '../../services/realm';
+import { getProfile, saveProfile } from '../../storages/profile';
+import { useEffect } from 'react';
 
-const Login = ({navigation}: any) => {
-  const [username, setUsername] = React.useState('');
+const Login = ({ navigation }: any) => {
+  const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [showPassword, setShowPassword] = React.useState(false);
 
   const handleLogin = () => {
-    signInUserPassword(username, password).then(() => {
-      navigation.push('Home')
+    signInUserPassword(email, password).then(() => {
+      saveProfile(email,password).then(()=>{
+        navigation.push('Home')
+      })
     })
   };
   const goToForgetPass = () => {
@@ -24,6 +29,16 @@ const Login = ({navigation}: any) => {
   const handleSignInWithGooglePress = () => {
     signInWithGoogle();
   };
+
+
+  useEffect(() => {
+     getProfile().then((result)=>{
+      if (result.length > 0 ){
+        navigation.push('Home')
+      }
+     })
+  }, []);
+
 
   return (
     <View style={styles.container}>
@@ -54,8 +69,8 @@ const Login = ({navigation}: any) => {
         mode="outlined"
         label="Email"
         placeholder="Enter your Email"
-        value={username}
-        onChangeText={setUsername}
+        value={email}
+        onChangeText={setEmail}
         style={styles.input}
       />
       <TextInput
