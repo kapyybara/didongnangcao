@@ -2,6 +2,7 @@ import {useNavigation} from '@react-navigation/native';
 import {useEffect} from 'react';
 
 const AuthHoc = ({children, user}: any) => {
+
   const navigation = useNavigation();
 
   useEffect(() => {

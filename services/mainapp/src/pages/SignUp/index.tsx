@@ -1,6 +1,6 @@
 import React from "react";
 import { Avatar, Button, Text, TextInput } from "react-native-paper"
-import { signInUserPassword, signUpWithUserPassword } from "../services/oauth";
+import { signInUserPassword, signUpWithUserPassword } from "../../services/oauth";
 import { StyleSheet, View } from "react-native";
 
 const SignUpScreen = ({navigation}: any) => {
@@ -9,10 +9,11 @@ const SignUpScreen = ({navigation}: any) => {
     const [password, setPassword] = React.useState('');
     const [showPassword, setShowPassword] = React.useState(false);
   
-    const handleLogin = () => {
+    const handleSignUp = () => {
       signUpWithUserPassword(fullName,email, password).then(() => {
         navigation.push('Login')
       })
+      
     };
   
     const goToSignIn = () => {
@@ -55,7 +56,7 @@ const SignUpScreen = ({navigation}: any) => {
             />
           }
         />
-        <Button mode="contained" onPress={handleLogin} style={styles.button}>
+        <Button mode="contained" onPress={handleSignUp} style={styles.button}>
           Create new account
         </Button>
         <View style={styles.gotoSignIn}>
