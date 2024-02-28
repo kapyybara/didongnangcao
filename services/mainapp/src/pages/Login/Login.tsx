@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {TextInput, Button, Avatar, Text} from 'react-native-paper';
-import {signInUserPassword, signInWithGoogle} from '../services/oauth';
+import { signInUserPassword, signInWithGoogle } from '../../services/oauth';
 
 const Login = ({navigation}: any) => {
   const [username, setUsername] = React.useState('');
@@ -37,7 +37,7 @@ const Login = ({navigation}: any) => {
           <Avatar.Image
             style={styles.loginWithLeft}
             size={48}
-            source={require('../assets/google.png')}
+            source={require('../../assets/google.png')}
           />
         )}
         textColor="#000">

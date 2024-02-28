@@ -1,6 +1,6 @@
 import React from "react";
 import { Avatar, Button, Text, TextInput } from "react-native-paper"
-import { signInUserPassword, signUpWithUserPassword } from "../services/oauth";
+import { signInUserPassword, signUpWithUserPassword } from "../../services/oauth";
 import { StyleSheet, View } from "react-native";
 
 const SignUpScreen = ({navigation}: any) => {

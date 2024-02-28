@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {TextInput, Button, Avatar, Text} from 'react-native-paper';
-import {sendResetPasswordRequest, signInUserPassword, signInWithGoogle} from '../services/oauth';
+import { sendResetPasswordRequest } from '../../services/oauth';
 
 const ForgetPassword = ({navigation}: any) => {
   const [email, setEmail] = React.useState('');
