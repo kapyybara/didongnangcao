@@ -4,13 +4,22 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "directus start ",
+    "start": "directus bootstrap && node apply.js  && directus start ",
+    "start:prod": "set NODE_ENV=production&& directus bootstrap && node apply.js  && directus start ",
+    "save": "rm -rf snapshot && directus schema snapshot --yes ./snapshot.yaml && npm run split",
+    "apply": "rm -rf merged-snapshot.yaml && npm run merge && directus schema apply --yes ./merged-snapshot.yaml",
+    "dry": "rm -rf merged-snapshot.yaml && npm run merge && directus schema apply --dry-run ./merged-snapshot.yaml",
+    "migrate": "directus database migrate:latest",
+    "split": "node split-snapshot.js",
+    "merge": "node merge-snapshot.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "directus": "^10.9.2",
-    "pg": "^8.11.3"
+    "directus": "^10.9.3",
+    "pg": "^8.11.3",
+    "sharp": "^0.33.2"
   }
 }

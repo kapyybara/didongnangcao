@@ -1,20 +1,21 @@
 import 'react-native-gesture-handler';
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import auth from '@react-native-firebase/auth';
 
 const Stack = createStackNavigator();
 
-import {View, StyleSheet} from 'react-native';
-import {Text, Button} from 'react-native-paper';
+import { View, StyleSheet } from 'react-native';
+import { Text, Button } from 'react-native-paper';
 import CustomNavigationBar from './src/components/CustomNavigationBar';
-import {signInUserPassword} from './src/services/oauth';
-import {useEffect, useState} from 'react';
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import { signInUserPassword } from './src/services/oauth';
+import { useEffect, useState } from 'react';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import Login from './src/pages/Login';
 import SignUpScreen from './src/pages/SignUp';
 import AuthHoc from './src/hocs/Auth';
 import HomeScreen from './src/pages/Home';
+import { initDirectusInstance } from './src/services/directus';
 
 function DetailsScreen() {
   return (
@@ -53,6 +54,7 @@ export default function App() {
       webClientId:
         '1001594119325-811nagealsrkjosnatvp04task26o0mm.apps.googleusercontent.com',
     });
+    initDirectusInstance("http://10.0.2.2:8055", "R6QEzLhfD-2uPm8I7P6ip4PBuxyv63fA")
   }, []);
   if (initializing) {
     return <Text>'loading'</Text>;

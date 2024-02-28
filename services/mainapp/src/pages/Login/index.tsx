@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {TextInput, Button, Avatar, Text} from 'react-native-paper';
-import {signInUserPassword, signInWithGoogle} from '../services/oauth';
+import { signInUserPassword, signInWithGoogle } from '../../services/oauth';
 
 const Login = ({navigation}: any) => {
   const [username, setUsername] = React.useState('');
@@ -12,6 +12,9 @@ const Login = ({navigation}: any) => {
     signInUserPassword(username, password).then(() => {
       navigation.push('Home')
     })
+  };
+  const goToForgetPass = () => {
+    navigation.navigate('ForgetPassword');
   };
 
   const goToSignUp = () => {
@@ -34,7 +37,7 @@ const Login = ({navigation}: any) => {
           <Avatar.Image
             style={styles.loginWithLeft}
             size={48}
-            source={require('../assets/google.png')}
+            source={require('../../assets/google.png')}
           />
         )}
         textColor="#000">
@@ -80,7 +83,7 @@ const Login = ({navigation}: any) => {
             Sign Up
           </Text>
         </Text>
-        <Text variant="bodyMedium" style={styles.link}>
+        <Text onPress={goToForgetPass} variant="bodyMedium" style={styles.link}>
           Forget password
         </Text>
       </View>

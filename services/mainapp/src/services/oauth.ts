@@ -4,8 +4,9 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 export const register = async (email: string, pass: string) => {
   return auth()
     .createUserWithEmailAndPassword(email, pass)
-    .then(() => {
+    .then((data) => {
       console.log('User account created & signed in!');
+      return  data
     })
     .catch(error => {
       if (error.code === 'auth/email-already-in-use') {
@@ -31,7 +32,7 @@ export const signInUserPassword = async (email: string, pass: string) => {
     });
 };
 
-export const signUpWithUserPassword = async (fullName : string , email: string, pass: string) => {
+export const signUpWithUserPassword = async (fullName: string, email: string, pass: string) => {
   return auth()
     .createUserWithEmailAndPassword(email, pass)
     .then((result) => {
@@ -42,8 +43,25 @@ export const signUpWithUserPassword = async (fullName : string , email: string, 
     });
 };
 
+export const sendResetPasswordRequest = async (email: string) => {
+  return auth()
+    .sendPasswordResetEmail(email)
+    .then((result) => {
+      console.log('reset successful');
+      // if (result == null) {
+      //   return "Account is not exist . Please try again"
+      // }
+      return ""
+    })
+    .catch((error: any) => {
+      console.log(error);
+      return "Error appear when send request" 
+    });
+
+};
+
 export const signOut = async () => {
-    console.log('signout')
+  console.log('signout')
   return auth()
     .signOut()
     .then(() => console.log('User signed out!'));
