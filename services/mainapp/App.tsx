@@ -14,17 +14,7 @@ import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import Login from './src/pages/Login';
 import SignUpScreen from './src/pages/SignUp';
 import AuthHoc from './src/hocs/Auth';
-
-function HomeScreen({navigation}: any) {
-  return (
-    <View style={style.container}>
-      <Text>Home Screen</Text>
-      <Button mode="contained" onPress={() => navigation.navigate('Details')}>
-        Go to details
-      </Button>
-    </View>
-  );
-}
+import HomeScreen from './src/pages/Home';
 
 function DetailsScreen() {
   return (
@@ -64,12 +54,15 @@ export default function App() {
         '1001594119325-811nagealsrkjosnatvp04task26o0mm.apps.googleusercontent.com',
     });
   }, []);
+  if (initializing) {
+    return <Text>'loading'</Text>;
+  }
 
   return (
     <NavigationContainer>
-      <AuthHoc>
+      <AuthHoc user={user}>
         <Stack.Navigator
-          initialRouteName={!user ? 'Login' : 'Home'}
+        initialRouteName='Home'
           screenOptions={{
             header: props => <CustomNavigationBar {...props} />,
           }}>
