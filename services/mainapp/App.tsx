@@ -16,7 +16,7 @@ import SignUpScreen from './src/pages/SignUp';
 import AuthHoc from './src/hocs/Auth';
 import { DirectusClient } from '@directus/sdk';
 import { GlobalContext } from './src/contexts/context';
-import { createDirectusInstance } from './src/services/directus';
+import { initDirectusInstance } from './src/services/directus';
 import ForgetPassword from './src/pages/ForgetPassword';
 
 function HomeScreen({ navigation }: any) {
@@ -67,7 +67,7 @@ export default function App() {
       webClientId:
         '1001594119325-811nagealsrkjosnatvp04task26o0mm.apps.googleusercontent.com',
     });
-    const directus = createDirectusInstance("http://localhost:8055", "W3ffgmXtH6kMjZ8JkhsBbOm4IdLJVqqI")
+    initDirectusInstance("http://localhost:8055", "W3ffgmXtH6kMjZ8JkhsBbOm4IdLJVqqI")
   }, []);
 
   return (
