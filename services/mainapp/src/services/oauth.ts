@@ -4,8 +4,9 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 export const register = async (email: string, pass: string) => {
   return auth()
     .createUserWithEmailAndPassword(email, pass)
-    .then(() => {
+    .then((data) => {
       console.log('User account created & signed in!');
+      return  data
     })
     .catch(error => {
       if (error.code === 'auth/email-already-in-use') {
