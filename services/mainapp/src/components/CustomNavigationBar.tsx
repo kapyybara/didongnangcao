@@ -14,7 +14,7 @@ export default function CustomNavigationBar({
   const closeMenu = () => setVisible(false);
 
   const title = getHeaderTitle(options, route.name);
-  if (route.name == 'Login' || route.name === 'Home') return <></>;
+  if (route.name == 'Login' || route.name == 'SignUp' || route.name == 'ForgetPassword' ) return <></>;
 
   return (
     <Appbar.Header>
