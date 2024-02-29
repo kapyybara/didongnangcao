@@ -1,8 +1,8 @@
-- collection: tranfer_hostory
+- collection: transfer_history
   field: id
   type: uuid
   meta:
-    collection: tranfer_hostory
+    collection: transfer_history
     conditions: null
     display: null
     display_options: null
@@ -23,7 +23,7 @@
     width: full
   schema:
     name: id
-    table: tranfer_hostory
+    table: transfer_history
     data_type: uuid
     default_value: null
     max_length: null
@@ -37,11 +37,11 @@
     has_auto_increment: false
     foreign_key_table: null
     foreign_key_column: null
-- collection: tranfer_hostory
+- collection: transfer_history
   field: date_created
   type: timestamp
   meta:
-    collection: tranfer_hostory
+    collection: transfer_history
     conditions: null
     display: datetime
     display_options:
@@ -63,7 +63,7 @@
     width: half
   schema:
     name: date_created
-    table: tranfer_hostory
+    table: transfer_history
     data_type: timestamp with time zone
     default_value: null
     max_length: null
@@ -77,11 +77,11 @@
     has_auto_increment: false
     foreign_key_table: null
     foreign_key_column: null
-- collection: tranfer_hostory
+- collection: transfer_history
   field: date_updated
   type: timestamp
   meta:
-    collection: tranfer_hostory
+    collection: transfer_history
     conditions: null
     display: datetime
     display_options:
@@ -103,7 +103,7 @@
     width: half
   schema:
     name: date_updated
-    table: tranfer_hostory
+    table: transfer_history
     data_type: timestamp with time zone
     default_value: null
     max_length: null
@@ -117,89 +117,11 @@
     has_auto_increment: false
     foreign_key_table: null
     foreign_key_column: null
-- collection: tranfer_hostory
-  field: from
-  type: dateTime
-  meta:
-    collection: tranfer_hostory
-    conditions: null
-    display: null
-    display_options: null
-    field: from
-    group: null
-    hidden: false
-    interface: datetime
-    note: null
-    options:
-      includeSeconds: true
-    readonly: false
-    required: false
-    sort: 4
-    special: null
-    translations: null
-    validation: null
-    validation_message: null
-    width: full
-  schema:
-    name: from
-    table: tranfer_hostory
-    data_type: timestamp without time zone
-    default_value: null
-    max_length: null
-    numeric_precision: null
-    numeric_scale: null
-    is_nullable: true
-    is_unique: false
-    is_primary_key: false
-    is_generated: false
-    generation_expression: null
-    has_auto_increment: false
-    foreign_key_table: null
-    foreign_key_column: null
-- collection: tranfer_hostory
-  field: to
-  type: dateTime
-  meta:
-    collection: tranfer_hostory
-    conditions: null
-    display: null
-    display_options: null
-    field: to
-    group: null
-    hidden: false
-    interface: datetime
-    note: null
-    options:
-      includeSeconds: true
-    readonly: false
-    required: false
-    sort: 5
-    special: null
-    translations: null
-    validation: null
-    validation_message: null
-    width: full
-  schema:
-    name: to
-    table: tranfer_hostory
-    data_type: timestamp without time zone
-    default_value: null
-    max_length: null
-    numeric_precision: null
-    numeric_scale: null
-    is_nullable: true
-    is_unique: false
-    is_primary_key: false
-    is_generated: false
-    generation_expression: null
-    has_auto_increment: false
-    foreign_key_table: null
-    foreign_key_column: null
-- collection: tranfer_hostory
+- collection: transfer_history
   field: amount
   type: float
   meta:
-    collection: tranfer_hostory
+    collection: transfer_history
     conditions: null
     display: null
     display_options: null
@@ -219,7 +141,7 @@
     width: full
   schema:
     name: amount
-    table: tranfer_hostory
+    table: transfer_history
     data_type: real
     default_value: null
     max_length: null
@@ -233,33 +155,34 @@
     has_auto_increment: false
     foreign_key_table: null
     foreign_key_column: null
-- collection: tranfer_hostory
-  field: tranfer_date
-  type: dateTime
+- collection: transfer_history
+  field: from_acc
+  type: uuid
   meta:
-    collection: tranfer_hostory
+    collection: transfer_history
     conditions: null
     display: null
     display_options: null
-    field: tranfer_date
+    field: from_acc
     group: null
     hidden: false
-    interface: datetime
+    interface: select-dropdown-m2o
     note: null
     options:
-      includeSeconds: true
+      template: "{{name}}"
     readonly: false
     required: false
     sort: 7
-    special: null
+    special:
+      - m2o
     translations: null
     validation: null
     validation_message: null
     width: full
   schema:
-    name: tranfer_date
-    table: tranfer_hostory
-    data_type: timestamp without time zone
+    name: from_acc
+    table: transfer_history
+    data_type: uuid
     default_value: null
     max_length: null
     numeric_precision: null
@@ -270,17 +193,17 @@
     is_generated: false
     generation_expression: null
     has_auto_increment: false
-    foreign_key_table: null
-    foreign_key_column: null
-- collection: tranfer_hostory
-  field: comment
+    foreign_key_table: account
+    foreign_key_column: id
+- collection: transfer_history
+  field: description
   type: string
   meta:
-    collection: tranfer_hostory
+    collection: transfer_history
     conditions: null
     display: null
     display_options: null
-    field: comment
+    field: description
     group: null
     hidden: false
     interface: input
@@ -288,15 +211,15 @@
     options: null
     readonly: false
     required: false
-    sort: 8
+    sort: 9
     special: null
     translations: null
     validation: null
     validation_message: null
     width: full
   schema:
-    name: comment
-    table: tranfer_hostory
+    name: description
+    table: transfer_history
     data_type: character varying
     default_value: null
     max_length: 255
@@ -310,11 +233,11 @@
     has_auto_increment: false
     foreign_key_table: null
     foreign_key_column: null
-- collection: tranfer_hostory
+- collection: transfer_history
   field: user_id
   type: uuid
   meta:
-    collection: tranfer_hostory
+    collection: transfer_history
     conditions: null
     display: null
     display_options: null
@@ -323,10 +246,11 @@
     hidden: false
     interface: select-dropdown-m2o
     note: null
-    options: null
+    options:
+      template: "{{full_name}}"
     readonly: false
     required: false
-    sort: 9
+    sort: 10
     special:
       - m2o
     translations: null
@@ -335,7 +259,7 @@
     width: full
   schema:
     name: user_id
-    table: tranfer_hostory
+    table: transfer_history
     data_type: uuid
     default_value: null
     max_length: null
@@ -348,4 +272,44 @@
     generation_expression: null
     has_auto_increment: false
     foreign_key_table: app_user
+    foreign_key_column: id
+- collection: transfer_history
+  field: to_acc
+  type: uuid
+  meta:
+    collection: transfer_history
+    conditions: null
+    display: null
+    display_options: null
+    field: to_acc
+    group: null
+    hidden: false
+    interface: select-dropdown-m2o
+    note: null
+    options:
+      template: "{{name}}"
+    readonly: false
+    required: false
+    sort: 11
+    special:
+      - m2o
+    translations: null
+    validation: null
+    validation_message: null
+    width: full
+  schema:
+    name: to_acc
+    table: transfer_history
+    data_type: uuid
+    default_value: null
+    max_length: null
+    numeric_precision: null
+    numeric_scale: null
+    is_nullable: true
+    is_unique: false
+    is_primary_key: false
+    is_generated: false
+    generation_expression: null
+    has_auto_increment: false
+    foreign_key_table: account
     foreign_key_column: id
