@@ -19,12 +19,33 @@
     constraint_name: account_user_id_foreign
     on_update: NO ACTION
     on_delete: SET NULL
-- collection: tranfer_hostory
+- collection: transfer_history
+  field: from_acc
+  related_collection: account
+  meta:
+    junction_field: null
+    many_collection: transfer_history
+    many_field: from_acc
+    one_allowed_collections: null
+    one_collection: account
+    one_collection_field: null
+    one_deselect_action: nullify
+    one_field: null
+    sort_field: null
+  schema:
+    table: transfer_history
+    column: from_acc
+    foreign_key_table: account
+    foreign_key_column: id
+    constraint_name: transfer_history_from_acc_foreign
+    on_update: NO ACTION
+    on_delete: SET NULL
+- collection: transfer_history
   field: user_id
   related_collection: app_user
   meta:
     junction_field: null
-    many_collection: tranfer_hostory
+    many_collection: transfer_history
     many_field: user_id
     one_allowed_collections: null
     one_collection: app_user
@@ -33,11 +54,32 @@
     one_field: null
     sort_field: null
   schema:
-    table: tranfer_hostory
+    table: transfer_history
     column: user_id
     foreign_key_table: app_user
     foreign_key_column: id
-    constraint_name: tranfer_hostory_user_id_foreign
+    constraint_name: transfer_history_user_id_foreign
+    on_update: NO ACTION
+    on_delete: SET NULL
+- collection: transfer_history
+  field: to_acc
+  related_collection: account
+  meta:
+    junction_field: null
+    many_collection: transfer_history
+    many_field: to_acc
+    one_allowed_collections: null
+    one_collection: account
+    one_collection_field: null
+    one_deselect_action: nullify
+    one_field: null
+    sort_field: null
+  schema:
+    table: transfer_history
+    column: to_acc
+    foreign_key_table: account
+    foreign_key_column: id
+    constraint_name: transfer_history_to_acc_foreign
     on_update: NO ACTION
     on_delete: SET NULL
 - collection: trasaction
