@@ -17,6 +17,7 @@ import AuthHoc from './src/hocs/Auth';
 import HomeScreen from './src/pages/Home';
 import {initDirectusInstance} from './src/services/directus';
 import MainApp from './src/pages';
+import { GlobalContext } from './src/contexts/context';
 
 function DetailsScreen() {
   return (
@@ -74,10 +75,10 @@ export default function App() {
   
 
   return (
+    <GlobalContext.Provider value={{user}} >
     <PaperProvider theme={theme}>
       <NavigationContainer>
         <AuthHoc user={user}>
-
           <Stack.Navigator
             initialRouteName="Home"
             screenOptions={{
@@ -91,5 +92,7 @@ export default function App() {
         </AuthHoc>
       </NavigationContainer>
     </PaperProvider>
+    </GlobalContext.Provider>
+
   );
 }
