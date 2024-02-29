@@ -1,7 +1,7 @@
-import { DirectusClient, auth, createDirectus, staticToken } from '@directus/sdk';
+import { DirectusClient, rest, createDirectus, staticToken } from '@directus/sdk';
 
-export let directusInstance:DirectusClient<any>
+export let directusInstance:unknown
 
 export function initDirectusInstance(url: string, token: string) {
-    directusInstance = createDirectus(url).with(staticToken(token));
+    directusInstance = createDirectus(url).with(staticToken(token)).with(rest());
 }

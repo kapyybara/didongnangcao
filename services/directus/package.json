@@ -19,6 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "directus": "^10.9.3",
-    "pg": "^8.11.3"
+    "pg": "^8.11.3",
+    "sharp": "^0.33.2"
   }
 }

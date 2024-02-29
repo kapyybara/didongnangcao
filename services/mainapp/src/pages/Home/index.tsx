@@ -1,117 +1,144 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
-import auth from '@react-native-firebase/auth';
+import React, {useState, useEffect} from 'react';
+import {View} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 
-import {  signOut } from '../../services/oauth';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import {
+  Button,
+  Menu,
+  Divider,
+  Text,
+  Icon,
+  Card,
+} from 'react-native-paper';
 
+export default function Home() {
+  const [visible, setVisible] = useState(false);
 
-export default function Home({ navigation }: any) {
-  // Set an initializing state whilst Firebase connects
-  const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState<any>();
+  const openMenu = () => setVisible(true);
 
-  // Handle user state changes
-  function onAuthStateChanged(user: any) {
-    setUser(user);
-    if (initializing) setInitializing(false);
-  }
-
-  useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
-  }, []);
-
-  useEffect(() => {
-    GoogleSignin.configure({
-      webClientId:
-        '1001594119325-811nagealsrkjosnatvp04task26o0mm.apps.googleusercontent.com',
-    });
-  }, []);
-
-
-  if (initializing) return null;
-
+  const closeMenu = () => setVisible(false);
   return (
-      <View style={styles.container}>
-        <Text>Welcome,
-          <Text>{user?.email ?? ""}
-          </Text></Text>
-        <Button title="Signout" onPress={() => {
-          signOut()
-          navigation.push("Login")
-          }} />
+    <View className="w-full container p-3 flex gap-6">
+      <View className="w-full">
+        <Text variant="headlineMedium" className=" text-gray-900">
+          Welcome,
+        </Text>
+        <Text variant="bodyLarge" className=" text-gray-900">
+          Pham Tien
+        </Text>
       </View>
+      <LinearGradient
+        colors={['#8E5FD9','#DDCDF6', '#BB9AF1']}
+        start={{x: 0, y: 0}} end={{x: 1, y: 5}}
+        className="rounded-md w-full  py-4 flex flex-col items-center pb-12 shadow-sm shadow-slate-900">
+        <View className="flex w-full rounded-md flex-row items-center justify-center mb-2">
+          <Text className=" text-white text-lg">Total</Text>
+          <View className=" w-4">
+            <Menu
+              visible={visible}
+              onDismiss={closeMenu}
+              anchor={
+                <Button onPress={openMenu}>
+                  <Icon source="menu-down" color={'black'} size={20} />
+                </Button>
+              }>
+              <Menu.Item onPress={() => {}} title="Item 1" />
+              <Menu.Item onPress={() => {}} title="Item 2" />
+              <Divider />
+              <Menu.Item onPress={() => {}} title="Item 3" />
+            </Menu>
+          </View>
+        </View>
+        <Text variant="headlineMedium" className="text-white">
+          567.800.000 VND
+        </Text>
+      </LinearGradient>
+
+      <View className="w-full flex flex-col items-start">
+        <View className="w-full flex flex-row items-center justify-between mb-4">
+          <Text variant="titleMedium" className=" text-black ">
+            Easy Operations
+          </Text>
+          <Icon source="dots-vertical" color={'black'} size={20} />
+        </View>
+        <View className="w-full flex flex-row justify-around">
+          <View className="w-fit flex flex-col items-center gap-1">
+            <Card>
+              <Card.Content>
+                <Icon source="account" size={24} />
+              </Card.Content>
+            </Card>
+            <Text variant="bodyMedium">Account</Text>
+          </View>
+          <View className="w-fit flex flex-col items-center gap-1">
+            <Card>
+              <Card.Content>
+                <Icon source="arrow-up" size={24} />
+              </Card.Content>
+            </Card>
+            <Text variant="bodyMedium">Pay</Text>
+          </View>
+          <View className="w-fit flex flex-col items-center gap-1">
+            <Card>
+              <Card.Content>
+                <Icon source="arrow-down" size={24} />
+              </Card.Content>
+            </Card>
+            <Text variant="bodyMedium">Account</Text>
+          </View>
+          <View className="w-fit flex flex-col items-center gap-1">
+            <Card>
+              <Card.Content>
+                <Icon source="file-document-outline" size={24} />
+              </Card.Content>
+            </Card>
+            <Text variant="bodyMedium">Account</Text>
+          </View>
+        </View>
+      </View>
+
+      <View className="w-full flex flex-col items-start">
+        <View className="w-full flex flex-row items-center justify-between mb-4">
+          <Text variant="titleMedium" className=" text-black ">
+            Previous Transactions
+          </Text>
+          <Icon source="chevron-right" color={'black'} size={20} />
+        </View>
+        <View className="w-full flex flex-col gap-4">
+          <Card className='w-full'>
+            <Card.Title
+              title="Rental Income"
+              subtitle="14 July 2021"
+              left={props => (
+                <View className=" bg-zinc-200 flex items-center justify-center p-1 rounded-md">
+                  <Icon size={32} source="home-outline" />
+                </View>
+              )}
+              right={props => (
+                <Text variant="bodyLarge" className="mr-4 text-green-700">
+                  +6.500.000VND
+                </Text>
+              )}
+            />
+          </Card>
+          <Card className='w-full'>
+            <Card.Title
+              title="Grocery Shopping"
+              subtitle="22 July 2021"
+              left={props => (
+                <View className=" bg-zinc-200 flex items-center justify-center p-1 rounded-md">
+                  <Icon size={32} source="home-outline" />
+                </View>
+              )}
+              right={props => (
+                <Text variant="bodyLarge" className="mr-4 text-green-700">
+                  +6.500.000VND
+                </Text>
+              )}
+            />
+          </Card>
+        </View>
+      </View>
+    </View>
   );
 }
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    gap: 20,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#000',
-  },
-  input: {
-    width: '100%',
-  },
-  button: {
-    width: '100%',
-  },
-  loginWithTitle: {
-    fontSize: 16,
-    color: '#000',
-    fontWeight: 'bold',
-  },
-  loginWithLeft: {
-    backgroundColor: 'rgba(0,0,0,0)',
-  },
-  loginWithGoogle: {
-    backgroundColor: '#E3F4E1',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    gap: 12,
-    width: '100%',
-  },
-  loginWithGoogleWrap: {
-    width: '100%',
-  },
-  loginWithGoogleText: {
-    lineHeight: 72,
-    textAlignVertical: 'center',
-  },
-  or: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-  },
-  orText: {
-    color: '#000',
-  },
-  gotoSignup: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    alignItems: 'flex-start',
-  },
-  orline: {
-    height: 1,
-    backgroundColor: '',
-    width: '45%',
-  },
-  link: {
-    color: '#1573FE',
-  },
-});
