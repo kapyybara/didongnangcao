@@ -18,6 +18,8 @@ import HomeScreen from './src/pages/Home';
 import {initDirectusInstance} from './src/services/directus';
 import MainApp from './src/pages';
 import { GlobalContext } from './src/contexts/context';
+import { TransactionCreate } from './src/pages/Transaction/Create';
+import { Transaction } from './src/pages/Transaction';
 
 function DetailsScreen() {
   return (
@@ -82,12 +84,12 @@ export default function App() {
           <Stack.Navigator
             initialRouteName="Home"
             screenOptions={{
-              header: props => <></>,
-              // header: props => <CustomNavigationBar {...props} />,
+              header: props => <CustomNavigationBar {...props} />,
             }}>
             <Stack.Screen name="SignUp" component={SignUpScreen} />
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Home" component={MainApp} />
+            <Stack.Screen name="Create Transaction" component={TransactionCreate} />
           </Stack.Navigator>
         </AuthHoc>
       </NavigationContainer>
