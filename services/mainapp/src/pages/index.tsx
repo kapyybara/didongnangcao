@@ -2,8 +2,10 @@ import * as React from 'react';
 import {BottomNavigation, Text} from 'react-native-paper';
 import Home from './Home';
 import Profile from './Profile';
+import { Transaction } from './Transaction';
+import { TransactionCreate } from './Transaction/Create';
 
-const MainApp = () => {
+const MainApp = ({navigation}: any) => {
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     {
@@ -13,7 +15,7 @@ const MainApp = () => {
       unfocusedIcon: 'home-outline',
     },
     {key: 'statistical', title: 'Statistical', focusedIcon: 'poll'},
-    {key: 'another', title: 'Another', focusedIcon: 'history'},
+    {key: 'transaction', title: 'Transaction', focusedIcon: 'history'},
     {
       key: 'profile',
       title: 'Profile',
@@ -25,7 +27,7 @@ const MainApp = () => {
   const renderScene = BottomNavigation.SceneMap({
     home: Home,
     statistical: Profile,
-    another: Profile,
+    transaction: Transaction,
     profile: Profile,
   });
 

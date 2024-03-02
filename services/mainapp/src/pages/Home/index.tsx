@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -10,9 +10,12 @@ import {
   Icon,
   Card,
 } from 'react-native-paper';
+import { GlobalContext } from '../../contexts/context';
 
 export default function Home() {
   const [visible, setVisible] = useState(false);
+
+  const {user} = useContext(GlobalContext)
 
   const openMenu = () => setVisible(true);
 
@@ -24,7 +27,7 @@ export default function Home() {
           Welcome,
         </Text>
         <Text variant="bodyLarge" className=" text-gray-900">
-          Pham Tien
+          {user?.email }
         </Text>
       </View>
       <LinearGradient
