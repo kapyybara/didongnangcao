@@ -270,6 +270,7 @@ export const TransactionCreate = (props: any) => {
             </Button>
             <Portal>
               <Dialog visible={visible} onDismiss={hideDialog}>
+                <Dialog.Title>Alert</Dialog.Title>
                 <Dialog.Content>
                   <Text variant="bodyMedium">
                     Are you sure you want to delete this transaction ?
