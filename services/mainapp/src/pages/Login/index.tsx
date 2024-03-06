@@ -1,22 +1,22 @@
 import * as React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { TextInput, Button, Avatar, Text } from 'react-native-paper';
-import { signInUserPassword, signInWithGoogle } from '../../services/oauth';
-import { realm } from '../../services/realm';
-import { getProfile, saveProfile } from '../../storages/profile';
-import { useEffect } from 'react';
+import {View, StyleSheet} from 'react-native';
+import {TextInput, Button, Avatar, Text} from 'react-native-paper';
+import {signInUserPassword, signInWithGoogle} from '../../services/oauth';
+import {realm} from '../../services/realm';
+import {getProfile, saveProfile} from '../../storages/profile';
+import {useEffect} from 'react';
 
-const Login = ({ navigation }: any) => {
+const Login = ({navigation}: any) => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [showPassword, setShowPassword] = React.useState(false);
 
   const handleLogin = () => {
     signInUserPassword(email, password).then(() => {
-      saveProfile(email,password).then(()=>{
-        navigation.push('Home')
-      })
-    })
+      saveProfile(email, password).then(() => {
+        navigation.push('Home');
+      });
+    });
   };
   const goToForgetPass = () => {
     navigation.navigate('ForgetPassword');
@@ -30,21 +30,19 @@ const Login = ({ navigation }: any) => {
     signInWithGoogle();
   };
 
-
   useEffect(() => {
-     getProfile().then((result)=>{
-      if (result.length > 0 ){
-        navigation.push('Home')
+    getProfile().then(result => {
+      if (result.length > 0) {
+        navigation.push('Home');
       }
-     })
+    });
   }, []);
-
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign In</Text>
       <Button
-        mode="contained"
+        mode='contained'
         contentStyle={styles.loginWithGoogle}
         style={styles.loginWithGoogleWrap}
         onPress={handleSignInWithGooglePress}
@@ -55,8 +53,8 @@ const Login = ({ navigation }: any) => {
             source={require('../../assets/google.png')}
           />
         )}
-        textColor="#000">
-        <Text variant="titleSmall" style={styles.loginWithGoogleText}>
+        textColor='#000'>
+        <Text variant='titleSmall' style={styles.loginWithGoogleText}>
           Login with Google
         </Text>
       </Button>
@@ -66,17 +64,17 @@ const Login = ({ navigation }: any) => {
         <View style={styles.orline} />
       </View>
       <TextInput
-        mode="outlined"
-        label="Email"
-        placeholder="Enter your Email"
+        mode='outlined'
+        label='Email'
+        placeholder='Enter your Email'
         value={email}
         onChangeText={setEmail}
         style={styles.input}
       />
       <TextInput
-        mode="outlined"
-        label="Password"
-        placeholder="Enter your Pass"
+        mode='outlined'
+        label='Password'
+        placeholder='Enter your Pass'
         value={password}
         onChangeText={setPassword}
         style={styles.input}
@@ -88,17 +86,17 @@ const Login = ({ navigation }: any) => {
           />
         }
       />
-      <Button mode="contained" onPress={handleLogin} style={styles.button}>
+      <Button mode='contained' onPress={handleLogin} style={styles.button}>
         Đăng nhập
       </Button>
       <View style={styles.gotoSignup}>
-        <Text variant="bodyMedium">
+        <Text variant='bodyMedium'>
           Don’t have account?{' '}
           <Text onPress={goToSignUp} style={styles.link}>
             Sign Up
           </Text>
         </Text>
-        <Text onPress={goToForgetPass} variant="bodyMedium" style={styles.link}>
+        <Text onPress={goToForgetPass} variant='bodyMedium' style={styles.link}>
           Forget password
         </Text>
       </View>
