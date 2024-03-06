@@ -17,9 +17,11 @@ import AuthHoc from './src/hocs/Auth';
 import HomeScreen from './src/pages/Home';
 import {initDirectusInstance} from './src/services/directus';
 import MainApp from './src/pages';
-import { GlobalContext } from './src/contexts/context';
-import { TransactionCreate } from './src/pages/Transaction/Create';
-import { Transaction } from './src/pages/Transaction';
+import {GlobalContext} from './src/contexts/context';
+import {TransactionCreate} from './src/pages/Transaction/Create';
+import {Transaction} from './src/pages/Transaction';
+import EditProfile from './src/pages/Profile/Edit';
+import PrivacyPolicy from './src/pages/Profile/Policy';
 
 function DetailsScreen() {
   return (
@@ -74,27 +76,30 @@ export default function App() {
       secondary: 'yellow',
     },
   };
-  
 
   return (
-    <GlobalContext.Provider value={{user}} >
-    <PaperProvider theme={theme}>
-      <NavigationContainer>
-        <AuthHoc user={user}>
-          <Stack.Navigator
-            initialRouteName="Home"
-            screenOptions={{
-              header: props => <CustomNavigationBar {...props} />,
-            }}>
-            <Stack.Screen name="SignUp" component={SignUpScreen} />
-            <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="Home" component={MainApp} />
-            <Stack.Screen name="Create Transaction" component={TransactionCreate} />
-          </Stack.Navigator>
-        </AuthHoc>
-      </NavigationContainer>
-    </PaperProvider>
+    <GlobalContext.Provider value={{user}}>
+      <PaperProvider theme={theme}>
+        <NavigationContainer>
+          <AuthHoc user={user}>
+            <Stack.Navigator
+              initialRouteName="Home"
+              screenOptions={{
+                header: props => <CustomNavigationBar {...props} />,
+              }}>
+              <Stack.Screen name="SignUp" component={SignUpScreen} />
+              <Stack.Screen name="Login" component={Login} />
+              <Stack.Screen name="Home" component={MainApp} />
+              <Stack.Screen name="Edit Profile" component={EditProfile} />
+              <Stack.Screen name="Privacy Policy" component={PrivacyPolicy} />
+              <Stack.Screen
+                name="Create Transaction"
+                component={TransactionCreate}
+              />
+            </Stack.Navigator>
+          </AuthHoc>
+        </NavigationContainer>
+      </PaperProvider>
     </GlobalContext.Provider>
-
   );
 }
