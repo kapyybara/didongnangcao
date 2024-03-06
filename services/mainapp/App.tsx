@@ -13,8 +13,9 @@ import SignUpScreen from './src/pages/SignUp';
 import AuthHoc from './src/hocs/Auth';
 import {initDirectusInstance} from './src/services/directus';
 import MainApp from './src/pages';
-import { GlobalContext } from './src/contexts/context';
-import { TransactionCreate } from './src/pages/Transaction/Create';
+import {GlobalContext} from './src/contexts/context';
+import {TransactionCreate} from './src/pages/Transaction/Create';
+import {SnackBarHoc} from './src/hocs/SnackBar';
 
 const Stack = createStackNavigator();
 
@@ -51,27 +52,34 @@ export default function App() {
       ...DefaultTheme.colors,
     },
   };
-  
 
   return (
-    <GlobalContext.Provider value={{user}} >
-    <PaperProvider theme={theme}>
-      <NavigationContainer>
-        <AuthHoc user={user}>
-          <Stack.Navigator
-            initialRouteName="Home"
-            screenOptions={{
-              header: props => <CustomNavigationBar {...props} />,
-            }}>
-            <Stack.Screen name="SignUp" component={SignUpScreen} />
-            <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="Home" component={MainApp} />
-            <Stack.Screen name="Create Transaction" component={TransactionCreate} />
-          </Stack.Navigator>
-        </AuthHoc>
-      </NavigationContainer>
-    </PaperProvider>
+    <GlobalContext.Provider value={{user}}>
+      <PaperProvider theme={theme}>
+        <SnackBarHoc>
+          <NavigationContainer>
+            <AuthHoc user={user}>
+              <Stack.Navigator
+                initialRouteName="Home"
+                screenOptions={{
+                  header: props => <CustomNavigationBar {...props} />,
+                }}>
+                <Stack.Screen name="SignUp" component={SignUpScreen} />
+                <Stack.Screen name="Login" component={Login} />
+                <Stack.Screen name="Home" component={MainApp} />
+                <Stack.Screen
+                  name="Create Transaction"
+                  component={TransactionCreate}
+                />
+                <Stack.Screen
+                  name="Update Transaction"
+                  component={TransactionCreate}
+                />
+              </Stack.Navigator>
+            </AuthHoc>
+          </NavigationContainer>
+        </SnackBarHoc>
+      </PaperProvider>
     </GlobalContext.Provider>
-
   );
 }
