@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {View} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 
 import {
   Button,
