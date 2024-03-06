@@ -14,12 +14,12 @@ export default function CustomNavigationBar({
   const closeMenu = () => setVisible(false);
 
   const title = getHeaderTitle(options, route.name);
-  if (route.name == 'Login' || route.name == 'SignUp' || route.name == 'ForgetPassword' ) return <></>;
+  if (route.name == 'Login' || route.name == 'SignUp' || route.name == 'ForgetPassword' || route.name == 'Home' ) return <></>;
 
   return (
-    <Appbar.Header>
+    <Appbar.Header  mode='center-aligned' className='flex'>
       {back ? <Appbar.BackAction onPress={navigation.goBack} /> : null}
-      <Appbar.Content title={title} />
+      <Appbar.Content title={title} className='text-center'/>
       {!back ? (
         <Menu
           visible={visible}
