@@ -15,39 +15,117 @@ import {
   IconButton,
   MD3Colors,
   Text,
-} from 'react-native-paper'
-import { GlobalContext } from '../../../contexts/context'
-import DropDown from 'react-native-paper-dropdown'
+  Portal,
+  Dialog,
+} from 'react-native-paper';
+import {GlobalContext} from '../../../contexts/context';
+import DropDown from 'react-native-paper-dropdown';
+import {CategoryList, TransactionType, UnitList} from '../../../services/const';
+import {DatePickerInput} from 'react-native-paper-dates';
+import {directusInstance} from '../../../services/directus';
 import {
-  CategoryList,
-  TransactionType,
-  UnitList,
-} from '../../../services/const'
-import { DatePickerInput } from 'react-native-paper-dates'
-import { directusInstance } from '../../../services/directus'
-import { readItems } from '@directus/sdk'
+  createItems,
+  deleteItem,
+  readItem,
+  readItems,
+  updateItem,
+} from '@directus/sdk';
+import {SnackBarContext} from '../../../hocs/SnackBar';
+import {useNavigation} from '@react-navigation/native';
 
-export const TransactionCreate = ({ navigation }: any) => {
-  const [category, setCategory] = useState('')
-  const [account, setAccount] = useState([])
-  const [money, setMoney] = useState(100000)
-  const [type, setType] = useState('expenses')
-  const [description, setDescription] = useState('')
-  const [inputDate, setInputDate] = React.useState(undefined)
-  const [showDropDown, setShowDropDown] = useState(false)
-  const [showAccountDropDown, setAccountShowDropDown] = useState(false)
-  const [unit, setUnit] = useState<'VND' | '$'>('VND')
+export const TransactionCreate = (props: any) => {
+  const [category, setCategory] = useState('');
+  const [account, setAccount] = useState([]);
+  const [money, setMoney] = useState(100000);
+  const [type, setType] = useState('expenses');
+  const [description, setDescription] = useState('');
+  const [inputDate, setInputDate] = React.useState(undefined);
+  const [showDropDown, setShowDropDown] = useState(false);
+  const [showAccountDropDown, setAccountShowDropDown] = useState(false);
+  const [unit, setUnit] = useState<'VND' | '$'>('VND');
+  const [visible, setVisible] = React.useState(false);
+
+  const showDialog = () => setVisible(true);
+
+  const hideDialog = () => setVisible(false);
 
   const [accounts, setAccounts] = useState([])
+
+  const {user} = useContext(GlobalContext);
+  const {setData} = useContext(SnackBarContext);
 
   const formReady = useMemo(
     () => money && category && inputDate,
     [money, category, inputDate],
-  )
+  );
+  const transactionId = useMemo(() => props.route?.params?.id, []);
 
-  const addTransaction = () => {
-    console.log('data')
-  }
+  useEffect(() => {
+    if (transactionId) {
+      (async () => {
+        const transactionData = await directusInstance.request(
+          readItem('trasaction', transactionId),
+        );
+        console.log(transactionData);
+        setType(transactionData.type);
+        setCategory(transactionData.category);
+        const dateData = new Date(transactionData.trading_date);
+        setInputDate(dateData);
+        setDescription(transactionData.description);
+        setAccount(transactionData.account_id);
+        setMoney(transactionData.total);
+      })();
+    }
+  }, [transactionId]);
+
+  const navigation = useNavigation();
+
+  const addTransaction = async () => {
+    const res =
+      (await directusInstance.request(
+        createItems('trasaction', {
+          type: type,
+          total: money,
+          trading_date: inputDate,
+          description: description,
+          category: category,
+          account_id: account,
+        }),
+      )) || [];
+    if (res) {
+      setData({text: 'Create transaction successful!'});
+      navigation.goBack();
+    }
+  };
+
+  const updateTransaction = async () => {
+    const res =
+      (await directusInstance.request(
+        updateItem('trasaction', transactionId, {
+          type: type,
+          total: money,
+          trading_date: inputDate,
+          description: description,
+          category: category,
+          account_id: account,
+        }),
+      )) || [];
+    if (res) {
+      setData({text: 'Create transaction successful!'});
+      navigation.goBack();
+    }
+  };
+
+  const deleteTransaction = async () => {
+    const res =
+      (await directusInstance.request(
+        deleteItem('trasaction', transactionId),
+      )) || [];
+    if (res) {
+      setData({text: 'Create transaction successful!'});
+      navigation.goBack();
+    }
+  };
 
   useEffect(() => {
     switch (unit) {
@@ -61,18 +139,30 @@ export const TransactionCreate = ({ navigation }: any) => {
   }, [unit])
 
   useEffect(() => {
-    ;async () => {
-      const data = await directusInstance.request(
-        readItems('account', {
-          filter: {
-            user_id: {},
-          },
-        }),
-      )
-
-      console.log('>>>>> data: ', data)
+    if (user) {
+      (async () => {
+        const res =
+          (await directusInstance.request(
+            readItems('account', {
+              filter: {
+                user_id: {
+                  email: {
+                    _eq: user.email,
+                  },
+                },
+              },
+            }),
+          )) || [];
+        setAccounts(
+          res.map(i => ({
+            label: i.name,
+            value: i.id,
+          })),
+        );
+      })();
     }
-  }, [])
+  }, [user]);
+
 
   const unitRange = useMemo(() => (unit == '$' ? 10 : 100000), [unit])
 
@@ -163,10 +253,55 @@ export const TransactionCreate = ({ navigation }: any) => {
           numberOfLines={5}
         />
       </View>
-      <View className='pt-4'>
-        <Button mode='contained' onPress={addTransaction} disabled={!formReady}>
-          Save
-        </Button>
+      <View className="pt-4">
+        {transactionId ? (
+          <>
+            <Button
+              mode="contained-tonal"
+              onPress={updateTransaction}
+              // disabled={!formReady}
+              className="mb-4">
+              Update
+            </Button>
+            <Button
+              mode="contained"
+              buttonColor={MD3Colors.error50}
+              onPress={showDialog}>
+              Delete
+            </Button>
+            <Portal>
+              <Dialog visible={visible} onDismiss={hideDialog}>
+                <Dialog.Content>
+                  <Text variant="bodyMedium">
+                    Are you sure you want to delete this transaction ?
+                  </Text>
+                </Dialog.Content>
+                <Dialog.Actions>
+                  <Button
+                    buttonColor={MD3Colors.error50}
+                    textColor="#fff"
+                    className="px-4"
+                    onPress={deleteTransaction}>
+                    Yes
+                  </Button>
+                  <Button
+                    mode="contained"
+                    className="px-4"
+                    onPress={hideDialog}>
+                    No
+                  </Button>
+                </Dialog.Actions>
+              </Dialog>
+            </Portal>
+          </>
+        ) : (
+          <Button
+            mode="contained"
+            onPress={addTransaction}
+            disabled={!formReady}>
+            Save
+          </Button>
+        )}
       </View>
     </View>
   )
