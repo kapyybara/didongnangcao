@@ -163,9 +163,6 @@ export const TransactionCreate = (props: any) => {
     }
   }, [user]);
 
-      console.log('>>>>> data: ', data)
-    }
-  }, [])
 
   const unitRange = useMemo(() => (unit == '$' ? 10 : 100000), [unit])
 
