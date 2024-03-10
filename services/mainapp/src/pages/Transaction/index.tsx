@@ -20,12 +20,7 @@ export const Transaction = ({}: any) => {
     });
   };
 
-  return (
-    <View className="w-full container p-3 flex gap-6">
-      <View className="w-full">
-        <Text variant="headlineMedium" className=" text-gray-900">
-          Transaction
-        </Text>
+  const total = 13500000 // fake data
 
         <Button onPress={createTransation}>Creaet </Button>
       <Button onPress={() => updateTransation('06c21af8-70f9-4c47-b6aa-9216a3dd7c3e')}>Update</Button>

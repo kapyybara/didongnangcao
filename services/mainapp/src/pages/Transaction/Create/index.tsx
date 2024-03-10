@@ -4,9 +4,9 @@ import React, {
   useContext,
   useMemo,
   useCallback,
-} from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+} from 'react'
+import { SafeAreaView, StyleSheet, View } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 
 import {
   TextInput,
@@ -49,7 +49,7 @@ export const TransactionCreate = (props: any) => {
 
   const hideDialog = () => setVisible(false);
 
-  const [accounts, setAccounts] = useState([]);
+  const [accounts, setAccounts] = useState([])
 
   const {user} = useContext(GlobalContext);
   const {setData} = useContext(SnackBarContext);
@@ -130,13 +130,13 @@ export const TransactionCreate = (props: any) => {
   useEffect(() => {
     switch (unit) {
       case '$':
-        setMoney(10);
-        break;
+        setMoney(10)
+        break
       case 'VND':
-        setMoney(100000);
-        break;
+        setMoney(100000)
+        break
     }
-  }, [unit]);
+  }, [unit])
 
   useEffect(() => {
     if (user) {
@@ -163,44 +163,48 @@ export const TransactionCreate = (props: any) => {
     }
   }, [user]);
 
-  const unitRange = useMemo(() => (unit == '$' ? 10 : 100000), [unit]);
+      console.log('>>>>> data: ', data)
+    }
+  }, [])
+
+  const unitRange = useMemo(() => (unit == '$' ? 10 : 100000), [unit])
 
   const increaseMoney = () => {
-    setMoney(money + unitRange);
-  };
+    setMoney(money + unitRange)
+  }
 
   const decreaseMoney = () => {
-    if (money - unitRange < 0) setMoney(0);
-    else setMoney(money - unitRange);
-  };
+    if (money - unitRange < 0) setMoney(0)
+    else setMoney(money - unitRange)
+  }
 
   return (
-    <View className="flex flex-1 flex-col justify-start p-3 gap-2">
-      <View className="pt-2 flex flex-row justify-around items-center py-4">
+    <View className='flex flex-1 flex-col justify-start p-3 gap-2'>
+      <View className='pt-2 flex flex-row justify-around items-center py-4'>
         <IconButton
-          mode="contained-tonal"
-          icon="minus"
+          mode='contained-tonal'
+          icon='minus'
           iconColor={MD3Colors.tertiary50}
           size={20}
           onPress={decreaseMoney}
         />
         <TextInput
-          label="Money"
+          label='Money'
           mode={'outlined'}
           onChangeText={e => setMoney(+e)}
           value={`${money}`}
-          keyboardType="numeric"
-          className="w-[50%]"
+          keyboardType='numeric'
+          className='w-[50%]'
         />
         <IconButton
-          mode="contained-tonal"
-          icon="plus"
+          mode='contained-tonal'
+          icon='plus'
           iconColor={MD3Colors.tertiary50}
           size={20}
           onPress={increaseMoney}
         />
-        <View className="w-fit mr-2">
-          <Text variant="bodyLarge">VND</Text>
+        <View className='w-fit mr-2'>
+          <Text variant='bodyLarge'>VND</Text>
         </View>
       </View>
       <SegmentedButtons
@@ -208,7 +212,7 @@ export const TransactionCreate = (props: any) => {
         onValueChange={setType}
         buttons={TransactionType}
       />
-      <View className="">
+      <View className=''>
         <DropDown
           label={'Category'}
           mode={'outlined'}
@@ -220,7 +224,7 @@ export const TransactionCreate = (props: any) => {
           value={category}
         />
       </View>
-      <View className="">
+      <View className=''>
         <DropDown
           label={'Account'}
           mode={'outlined'}
@@ -232,17 +236,17 @@ export const TransactionCreate = (props: any) => {
           value={account}
         />
       </View>
-      <View className="pt-8">
+      <View className='pt-8'>
         <DatePickerInput
-          locale="en"
-          label="Birthdate"
+          locale='en'
+          label='Birthdate'
           mode={'outlined'}
           value={inputDate}
           onChange={(d: any) => setInputDate(d)}
-          inputMode="start"
+          inputMode='start'
         />
       </View>
-      <View className="pt-8">
+      <View className='pt-8'>
         <TextInput
           label={'Description'}
           value={description}
@@ -303,5 +307,5 @@ export const TransactionCreate = (props: any) => {
         )}
       </View>
     </View>
-  );
-};
+  )
+}
