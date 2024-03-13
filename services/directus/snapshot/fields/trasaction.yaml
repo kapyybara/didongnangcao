@@ -118,44 +118,6 @@
     foreign_key_table: null
     foreign_key_column: null
 - collection: trasaction
-  field: name
-  type: string
-  meta:
-    collection: trasaction
-    conditions: null
-    display: null
-    display_options: null
-    field: name
-    group: null
-    hidden: false
-    interface: input
-    note: null
-    options: null
-    readonly: false
-    required: true
-    sort: 4
-    special: null
-    translations: null
-    validation: null
-    validation_message: null
-    width: full
-  schema:
-    name: name
-    table: trasaction
-    data_type: character varying
-    default_value: null
-    max_length: 255
-    numeric_precision: null
-    numeric_scale: null
-    is_nullable: true
-    is_unique: false
-    is_primary_key: false
-    is_generated: false
-    generation_expression: null
-    has_auto_increment: false
-    foreign_key_table: null
-    foreign_key_column: null
-- collection: trasaction
   field: total
   type: float
   meta:
@@ -184,44 +146,6 @@
     default_value: null
     max_length: null
     numeric_precision: 24
-    numeric_scale: null
-    is_nullable: true
-    is_unique: false
-    is_primary_key: false
-    is_generated: false
-    generation_expression: null
-    has_auto_increment: false
-    foreign_key_table: null
-    foreign_key_column: null
-- collection: trasaction
-  field: currency
-  type: string
-  meta:
-    collection: trasaction
-    conditions: null
-    display: null
-    display_options: null
-    field: currency
-    group: null
-    hidden: false
-    interface: input
-    note: null
-    options: null
-    readonly: false
-    required: true
-    sort: 6
-    special: null
-    translations: null
-    validation: null
-    validation_message: null
-    width: full
-  schema:
-    name: currency
-    table: trasaction
-    data_type: character varying
-    default_value: null
-    max_length: 255
-    numeric_precision: null
     numeric_scale: null
     is_nullable: true
     is_unique: false
@@ -424,3 +348,79 @@
     has_auto_increment: false
     foreign_key_table: account
     foreign_key_column: id
+- collection: trasaction
+  field: name
+  type: string
+  meta:
+    collection: trasaction
+    conditions: null
+    display: null
+    display_options: null
+    field: name
+    group: null
+    hidden: false
+    interface: input
+    note: null
+    options: null
+    readonly: false
+    required: true
+    sort: 4
+    special: null
+    translations: null
+    validation: null
+    validation_message: null
+    width: full
+  schema:
+    name: name
+    table: trasaction
+    data_type: character varying
+    default_value: null
+    max_length: 255
+    numeric_precision: null
+    numeric_scale: null
+    is_nullable: true
+    is_unique: false
+    is_primary_key: false
+    is_generated: false
+    generation_expression: null
+    has_auto_increment: false
+    foreign_key_table: null
+    foreign_key_column: null
+- collection: trasaction
+  field: currency
+  type: string
+  meta:
+    collection: trasaction
+    conditions: null
+    display: null
+    display_options: null
+    field: currency
+    group: null
+    hidden: false
+    interface: input
+    note: null
+    options: null
+    readonly: false
+    required: true
+    sort: 6
+    special: null
+    translations: null
+    validation: null
+    validation_message: null
+    width: full
+  schema:
+    name: currency
+    table: trasaction
+    data_type: character varying
+    default_value: null
+    max_length: 255
+    numeric_precision: null
+    numeric_scale: null
+    is_nullable: true
+    is_unique: false
+    is_primary_key: false
+    is_generated: false
+    generation_expression: null
+    has_auto_increment: false
+    foreign_key_table: null
+    foreign_key_column: null
