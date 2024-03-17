@@ -1,5 +1,5 @@
 version: 1
-directus: 10.9.3
+directus: 10.10.4
 vendor: postgres
 collections:
   - collection: account
@@ -795,6 +795,26 @@ fields:
       is_nullable: true
       is_unique: false
       is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: directus_extensions
+    field: name
+    type: string
+    meta: null
+    schema:
+      name: name
+      table: directus_extensions
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: false
+      is_unique: true
+      is_primary_key: true
       is_generated: false
       generation_expression: null
       has_auto_increment: false
@@ -2244,29 +2264,34 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: trasaction
-    field: currency
+    field: type
     type: string
     meta:
       collection: trasaction
       conditions: null
       display: null
       display_options: null
-      field: currency
+      field: type
       group: null
       hidden: false
-      interface: input
+      interface: select-dropdown
       note: null
-      options: null
+      options:
+        choices:
+          - text: Vào
+            value: income
+          - text: Ra
+            value: expenses
       readonly: false
-      required: true
-      sort: 6
+      required: false
+      sort: 12
       special: null
       translations: null
       validation: null
       validation_message: null
       width: full
     schema:
-      name: currency
+      name: type
       table: trasaction
       data_type: character varying
       default_value: null

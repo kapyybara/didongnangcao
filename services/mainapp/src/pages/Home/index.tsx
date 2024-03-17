@@ -4,10 +4,14 @@ import LinearGradient from 'react-native-linear-gradient'
 
 import { Button, Menu, Divider, Text, Icon, Card } from 'react-native-paper'
 import { GlobalContext } from '../../contexts/context'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useIsFocused } from '@react-navigation/native'
+import { directusInstance } from '../../services/directus'
+import { readItems } from '@directus/sdk'
+import dayjs from 'dayjs'
 
 export default function Home() {
   const [visible, setVisible] = useState(false)
+  const [transactions, setTransactions] = useState([])
 
   const { user } = useContext(GlobalContext)
 
@@ -15,6 +19,33 @@ export default function Home() {
 
   const closeMenu = () => setVisible(false)
   const navigation = useNavigation()
+  const isFocused = useIsFocused()
+
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const res = await directusInstance.request(
+          readItems('trasaction', {
+            sort: ['-trading_date'],
+            limit: 3,
+            filter: {
+              account_id: {
+                user_id: {
+                  email: {
+                    _eq: user.email,
+                  },
+                },
+              },
+            },
+          }),
+        )
+        console.log(res)
+        setTransactions(res)
+      } catch (error) {
+        console.log(error)
+      }
+    })()
+  }, [user, isFocused])
 
   return (
     <View className='w-full container p-3 flex gap-6'>
@@ -107,38 +138,24 @@ export default function Home() {
           <Icon source='chevron-right' color={'black'} size={20} />
         </View>
         <View className='w-full flex flex-col gap-4'>
-          <Card className='w-full'>
-            <Card.Title
-              title='Rental Income'
-              subtitle='14 July 2021'
-              left={props => (
-                <View className=' bg-zinc-200 flex items-center justify-center p-1 rounded-md'>
-                  <Icon size={32} source='home-outline' />
-                </View>
-              )}
-              right={props => (
-                <Text variant='bodyLarge' className='mr-4 text-green-700'>
-                  +6.500.000VND
-                </Text>
-              )}
-            />
-          </Card>
-          <Card className='w-full'>
-            <Card.Title
-              title='Grocery Shopping'
-              subtitle='22 July 2021'
-              left={props => (
-                <View className=' bg-zinc-200 flex items-center justify-center p-1 rounded-md'>
-                  <Icon size={32} source='home-outline' />
-                </View>
-              )}
-              right={props => (
-                <Text variant='bodyLarge' className='mr-4 text-green-700'>
-                  +6.500.000VND
-                </Text>
-              )}
-            />
-          </Card>
+          {transactions.map(tran => (
+            <Card className='w-full' key={tran.id}>
+              <Card.Title
+                title={tran.name}
+                subtitle={dayjs(tran.trading_date).format('d MMM YYYY')}
+                left={props => (
+                  <View className=' bg-zinc-200 flex items-center justify-center p-1 rounded-md'>
+                    <Icon size={32} source='cash-multiple' />
+                  </View>
+                )}
+                right={props => (
+                  <Text variant='bodyLarge' className='mr-4 text-green-700'>
+                    {tran.total?.toLocaleString()} VND
+                  </Text>
+                )}
+              />
+            </Card>
+          ))}
         </View>
       </View>
     </View>
