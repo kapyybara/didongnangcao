@@ -2,3 +2,7 @@
 # yarn lockfile v1
 
 
+"react-native-date-picker@^4.4.2":
+  "integrity" "sha512-wYKN8nYWhETVHJV/+Im30JOdzkFRwYRrDlEOyyYesOjt+1JTFJh9M7K5CqePLOIB4Nxlf2f2lRSI0VoUyFIovA=="
+  "resolved" "https://registry.npmjs.org/react-native-date-picker/-/react-native-date-picker-4.4.2.tgz"
+  "version" "4.4.2"
