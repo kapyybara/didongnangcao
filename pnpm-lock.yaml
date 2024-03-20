@@ -6,11 +6,17 @@ settings:
 
 importers:
 
+  .:
+    dependencies:
+      react-native-date-picker:
+        specifier: ^4.4.2
+        version: 4.4.2(react-native@0.73.4)(react@18.2.0)
+
   services/directus:
     dependencies:
       directus:
         specifier: ^10.9.3
-        version: 10.10.4(@unhead/vue@1.8.16)(pinia@2.1.7)(vue@3.4.21)
+        version: 10.10.4(@unhead/vue@1.8.16)(pinia@2.1.7)(react@18.2.0)(vue@3.4.21)
       pg:
         specifier: ^8.11.3
         version: 8.11.3
@@ -44,6 +50,9 @@ importers:
       '@types/react-native':
         specifier: ^0.73.0
         version: 0.73.0(@babel/core@7.24.0)(@babel/preset-env@7.24.0)(react@18.2.0)
+      dayjs:
+        specifier: ^1.11.10
+        version: 1.11.10
       metro-react-native-babel-preset:
         specifier: ^0.77.0
         version: 0.77.0(@babel/core@7.24.0)
@@ -97,7 +106,7 @@ importers:
         specifier: ^7.20.0
         version: 7.24.0(@babel/core@7.24.0)
       '@babel/runtime':
-        specifier: ^7.24.0
+        specifier: ^7.20.0
         version: 7.24.0
       '@react-native/babel-preset':
         specifier: 0.73.21
@@ -2707,7 +2716,7 @@ packages:
       react: 18.2.0
     dev: false
 
-  /@directus/api@18.2.1(@unhead/vue@1.8.16)(pinia@2.1.7)(vue@3.4.21):
+  /@directus/api@18.2.1(@unhead/vue@1.8.16)(pinia@2.1.7)(react@18.2.0)(vue@3.4.21):
     resolution: {integrity: sha512-tcEyA1yqbckaFNtpX16IP08aKDoi33sHfZz+8VetqrdVWSz8dqtb3uvuevu6S46IGxqJr1KaqbwT2dEMeRejrA==}
     engines: {node: '>=18.17.0'}
     dependencies:
@@ -2755,7 +2764,7 @@ packages:
       date-fns: 3.4.0
       deep-diff: 1.0.2
       destroy: 1.2.0
-      directus: 10.10.4(@unhead/vue@1.8.16)(pinia@2.1.7)(vue@3.4.21)
+      directus: 10.10.4(@unhead/vue@1.8.16)(pinia@2.1.7)(react@18.2.0)(vue@3.4.21)
       dotenv: 16.4.5
       encodeurl: 1.0.2
       eventemitter2: 6.4.9
@@ -2823,7 +2832,7 @@ packages:
     optionalDependencies:
       '@keyv/redis': 2.8.4
       mysql: 2.18.1
-      nodemailer-mailgun-transport: 2.1.5
+      nodemailer-mailgun-transport: 2.1.5(react@18.2.0)
       nodemailer-sendgrid: 1.0.3
       oracledb: 6.3.0
       pg: 8.11.3
@@ -7807,7 +7816,7 @@ packages:
     dev: false
     optional: true
 
-  /consolidate@0.15.1:
+  /consolidate@0.15.1(react@18.2.0):
     resolution: {integrity: sha512-DW46nrsMJgy9kqAbPt5rKaCr7uFtpo4mSUvLHIUbJEjm0vo+aY5QLwBUq3FK4tRnJr/X0Psc0C4jf/h+HtXSMw==}
     engines: {node: '>= 0.10.0'}
     deprecated: Please upgrade to consolidate v1.0.0+ as it has been modernized with several long-awaited fixes implemented. Maintenance is supported by Forward Email at https://forwardemail.net ; follow/watch https://github.com/ladjs/consolidate for updates and release changelog
@@ -7975,6 +7984,7 @@ packages:
         optional: true
     dependencies:
       bluebird: 3.7.2
+      react: 18.2.0
     dev: false
     optional: true
 
@@ -8403,12 +8413,12 @@ packages:
       path-type: 4.0.0
     dev: true
 
-  /directus@10.10.4(@unhead/vue@1.8.16)(pinia@2.1.7)(vue@3.4.21):
+  /directus@10.10.4(@unhead/vue@1.8.16)(pinia@2.1.7)(react@18.2.0)(vue@3.4.21):
     resolution: {integrity: sha512-DZJniq9lzWM+f3iZWwD24yQ7/oZg9R+U1zH6lMlFIJEiiii8AJNUjHQnyjDbxehki1XZjZ8OzyKAqfyEMSMTEA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
     dependencies:
-      '@directus/api': 18.2.1(@unhead/vue@1.8.16)(pinia@2.1.7)(vue@3.4.21)
+      '@directus/api': 18.2.1(@unhead/vue@1.8.16)(pinia@2.1.7)(react@18.2.0)(vue@3.4.21)
       '@directus/update-check': 11.0.8
     transitivePeerDependencies:
       - '@types/node'
@@ -12367,11 +12377,11 @@ packages:
     resolution: {integrity: sha512-71UV2HRUP+djvHpdyatiuv+Y1o8hI4ZI7bMfuuoACMLR1JJCErM4WXAclNeHd6BgHXkqeqnnAk3wpDkSQWmFXw==}
     dev: false
 
-  /nodemailer-mailgun-transport@2.1.5:
+  /nodemailer-mailgun-transport@2.1.5(react@18.2.0):
     resolution: {integrity: sha512-hF7POkaxFgMvYEd5aHLaQJI2511ld+aQlQi7JH6bGjhjlZ33cIbTB9PimlIrLu5XC3z76Kde6e65OIwL9lOdTA==}
     requiresBuild: true
     dependencies:
-      consolidate: 0.15.1
+      consolidate: 0.15.1(react@18.2.0)
       form-data: 4.0.0
       mailgun.js: 8.2.2
     transitivePeerDependencies:
@@ -13894,6 +13904,16 @@ packages:
   /react-is@18.2.0:
     resolution: {integrity: sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==}
 
+  /react-native-date-picker@4.4.2(react-native@0.73.4)(react@18.2.0):
+    resolution: {integrity: sha512-wYKN8nYWhETVHJV/+Im30JOdzkFRwYRrDlEOyyYesOjt+1JTFJh9M7K5CqePLOIB4Nxlf2f2lRSI0VoUyFIovA==}
+    peerDependencies:
+      react: '>= 17.0.1'
+      react-native: '>= 0.64.3'
+    dependencies:
+      react: 18.2.0
+      react-native: 0.73.4(@babel/core@7.24.0)(@babel/preset-env@7.24.0)(react@18.2.0)
+    dev: false
+
   /react-native-gesture-handler@2.15.0(react-native@0.73.4)(react@18.2.0):
     resolution: {integrity: sha512-cmMGW8k86o/xgVTBZZOPohvR5re4Vh65PUxH4HbBBJAYTog4aN4wTVTUlnoky01HuSN8/X4h3tI/K3XLPoDnsg==}
     peerDependencies:
@@ -14922,9 +14942,6 @@ packages:
   /sqlite3@5.1.7:
     resolution: {integrity: sha512-GGIyOiFaG+TUra3JIfkI/zGP8yZYLPQ0pl1bH+ODjiX57sPhrLU5sQJn1y9bDKZUFYkX1crlrPfSYt0BKKdkog==}
     requiresBuild: true
-    peerDependenciesMeta:
-      node-gyp:
-        optional: true
     dependencies:
       bindings: 1.5.0
       node-addon-api: 7.1.0

@@ -20,6 +20,7 @@ import { ThemeProp } from 'react-native-paper/lib/typescript/types'
 import AccountPage from './src/pages/Account'
 import { HeaderContextProvider } from './src/contexts/header'
 import AccountNew from './src/pages/Account/New'
+import React from 'react'
 
 const Stack = createStackNavigator()
 
