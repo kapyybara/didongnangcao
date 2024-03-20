@@ -13,59 +13,72 @@ const Profile = () => {
     navigation.navigate('Privacy Policy');
   };
 
+  const gotoRegularPayments = () => {
+    navigation.navigate('Regular Payments');
+  };
+  const gotoTransferHistory = () => {
+    navigation.navigate('Transfer History');
+  };
+
   return (
     <View className="flex-1 bg-white">
-      <View className="flex-1 items-center justify-center">
+      <View className="items-center justify-center flex-1">
         <Image
           source={require('../../assets/avatar.png')}
           className="w-24 h-24 rounded-full"
         />
-        <Text className="text-xl font-bold mt-4">DANG HUU GIAU</Text>
+        <Text className="mt-4 text-xl font-bold">DANG HUU GIAU</Text>
         <Text className="text-gray-500">20110636@student.hcmute.edu.vn</Text>
 
         <Card className="w-11/12 px-4 my-3">
           <Card.Content>
-            <View className="flex mt-4 gap-4 items-start justify-start">
+            <View className="flex items-start justify-start gap-4 mt-4">
               <View className="flex-row items-center gap-2">
                 <Icon size={24} source="account-edit" />
                 <Text
-                  className="text-black-500 text-base"
+                  className="text-base text-black-500"
                   onPress={gotoEditProfile}>
                   Edit profile
                 </Text>
               </View>
               <View className="flex-row items-center gap-2">
                 <Icon size={24} source="account" />
-                <Text className="text-black-500 text-base">Accounts</Text>
+                <Text
+                  className="text-base text-black-500"
+                  onPress={gotoTransferHistory}>
+                  Accounts
+                </Text>
               </View>
               <View className="flex-row items-center gap-2">
                 <Icon size={24} source="content-paste" />
-                <Text className="text-black-500 text-base">
+                <Text
+                  className="text-base text-black-500"
+                  onPress={gotoRegularPayments}>
                   Regular Payments
                 </Text>
               </View>
               <View className="flex-row items-center gap-2">
                 <Icon size={24} source="account-settings" />
-                <Text className="text-black-500 text-base">Settings</Text>
+                <Text className="text-base text-black-500">Settings</Text>
               </View>
             </View>
           </Card.Content>
         </Card>
         <Card className="w-11/12 px-4 my-5">
           <Card.Content>
-            <View className="flex mt-4 gap-4 items-start justify-start">
+            <View className="flex items-start justify-start gap-4 mt-4">
               <View className="flex-row items-center gap-2">
                 <Icon size={24} source="help" />
-                <Text className="text-black-500 text-base">Help & Support</Text>
+                <Text className="text-base text-black-500">Help & Support</Text>
               </View>
               <View className="flex-row items-center gap-2">
                 <Icon size={24} source="contacts" />
-                <Text className="text-black-500 text-base">Contact us</Text>
+                <Text className="text-base text-black-500">Contact us</Text>
               </View>
               <View className="flex-row items-center gap-2">
                 <Icon size={24} source="account-settings" />
                 <Text
-                  className="text-black-500 text-base"
+                  className="text-base text-black-500"
                   onPress={gotoPrivacyPolicy}>
                   Privacy policy
                 </Text>
