@@ -22,6 +22,11 @@ import {TransactionCreate} from './src/pages/Transaction/Create';
 import {Transaction} from './src/pages/Transaction';
 import EditProfile from './src/pages/Profile/Edit';
 import PrivacyPolicy from './src/pages/Profile/Policy';
+import RegularPayments from './src/pages/Payment';
+import AddPayment from './src/pages/Payment/add';
+import EditPayment from './src/pages/Payment/edit';
+import TransferHistory from './src/pages/Transfer';
+import CreateTransfer from './src/pages/Transfer/create';
 
 function DetailsScreen() {
   return (
@@ -92,6 +97,17 @@ export default function App() {
               <Stack.Screen name="Home" component={MainApp} />
               <Stack.Screen name="Edit Profile" component={EditProfile} />
               <Stack.Screen name="Privacy Policy" component={PrivacyPolicy} />
+              <Stack.Screen
+                name="Regular Payments"
+                component={RegularPayments}
+              />
+              <Stack.Screen name="Add Payment" component={AddPayment} />
+              <Stack.Screen name="Edit Payment" component={EditPayment} />
+              <Stack.Screen
+                name="Transfer History"
+                component={TransferHistory}
+              />
+              <Stack.Screen name="Create Transfer" component={CreateTransfer} />
               <Stack.Screen
                 name="Create Transaction"
                 component={TransactionCreate}
