@@ -28,3 +28,8 @@ export const TransactionType = [
         value : "income"
     }
 ]
+
+export const UnitList = [
+    { label: "VNĐ", value: "VND" },
+    { label: "$", value: "$" },
+]

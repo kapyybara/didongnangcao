@@ -7,6 +7,7 @@ export const createAccount = async (
   password: string,
   username: string,
 ) => {
+  
   await register(email, password);
   await directusInstance.request(
     createItem('app_user', {
