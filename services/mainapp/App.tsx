@@ -34,6 +34,7 @@ const Stack = createStackNavigator()
 export default function App() {
   const [initializing, setInitializing] = useState(true)
   const [user, setUser] = useState<DirectusUser>()
+  const [account,setAccount] = useState("Total")
 
   function onAuthStateChanged(user: any) {
     (async ()=> {
@@ -70,7 +71,7 @@ export default function App() {
   }
 
   return (
-    <GlobalContext.Provider value={{ user }}>
+    <GlobalContext.Provider value={{ user ,account,setAccount }}>
       <HeaderContextProvider>
         <PaperProvider theme={theme}>
           <SnackBarHoc>
