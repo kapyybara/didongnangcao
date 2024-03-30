@@ -14,7 +14,7 @@ import AuthHoc from './src/hocs/Auth'
 import { initDirectusInstance } from './src/services/directus'
 import MainApp from './src/pages'
 import { GlobalContext } from './src/contexts/context'
-import { TransactionCreate } from './src/pages/Transaction/Create'
+import { TransactionCreateOrUpdate } from './src/pages/Transaction/createOrUpdate'
 import { SnackBarHoc } from './src/hocs/SnackBar'
 import { ThemeProp } from 'react-native-paper/lib/typescript/types'
 import AccountPage from './src/pages/Account'
@@ -86,15 +86,11 @@ export default function App() {
                   <Stack.Screen name='Login' component={Login} />
                   <Stack.Screen name='Home' component={MainApp} />
                   <Stack.Screen
-                    name='Create Transaction'
-                    component={TransactionCreate}
-                  />
-                  <Stack.Screen
-                    name='Update Transaction'
-                    component={TransactionCreate}
+                    name='Transaction Info'
+                    component={TransactionCreateOrUpdate}
                   />
                   <Stack.Screen name='Account' component={AccountPage} />
-                  <Stack.Screen name='Account New' component={AccountNew} />
+                  <Stack.Screen name='Account Info' component={AccountNew} />
                   <Stack.Screen name='Regular Payments' component={RegularPayments} />
                   <Stack.Screen name='Edit Profile' component={EditProfile} />
                   <Stack.Screen name='Privacy Policy' component={PrivacyPolicy} />

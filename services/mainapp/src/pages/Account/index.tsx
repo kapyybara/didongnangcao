@@ -23,7 +23,7 @@ export default function AccountPage(props: any) {
       setSubfix({
         icon: 'plus',
         onPress: () => {
-          navigation.navigate('Account New')
+          navigation.navigate('Account Info')
           setSubfix(null)
         }
       })
@@ -79,7 +79,7 @@ export default function AccountPage(props: any) {
       <View className='w-full flex flex-col gap-4'>
         {accounts.map((acc: any, index: number) => (
           <Card id={index.toString()} onPress={() => {
-            navigation.navigate('Account New', { ...acc, label: "Update" })
+            navigation.navigate('Account Info', { ...acc, label: "Update" })
             setSubfix(null)
           }
           } >

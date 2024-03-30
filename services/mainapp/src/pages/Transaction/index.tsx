@@ -46,7 +46,7 @@ export const Transaction = () => {
   const [expTransactions, setExpTransactions] = useState([])
 
   const createTransation = () => {
-    navigation.navigate('Create Transaction' as never)
+    navigation.navigate('Transaction Info' as never)
   }
 
   const total = 13500000 // fake data
