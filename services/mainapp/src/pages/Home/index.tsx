@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { TouchableOpacity, View } from 'react-native'
+import React, { useState, useEffect, useContext, useMemo } from 'react'
+import { Touchable, TouchableOpacity, View } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 
 import { Button, Menu, Divider, Text, Icon, Card } from 'react-native-paper'
@@ -8,10 +8,16 @@ import { useNavigation, useIsFocused } from '@react-navigation/native'
 import { directusInstance } from '../../services/directus'
 import { readItems } from '@directus/sdk'
 import dayjs from 'dayjs'
+import TransactionCard from '../../components/transaction/TransactionCard'
+import { ScrollView } from 'react-native-gesture-handler'
+import { getAccountByName } from '../../controllers/account.controller'
 
 export default function Home() {
   const [visible, setVisible] = useState(false)
   const [transactions, setTransactions] = useState([])
+  const [currentAccount, setCurrentAccount] = useState("Total")
+  const [accounts, setAccounts] = useState([])
+  const [total, setTotal] = useState(0)
 
   const { user } = useContext(GlobalContext)
 
@@ -22,7 +28,7 @@ export default function Home() {
   const isFocused = useIsFocused()
 
   useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       try {
         const res = await directusInstance.request(
           readItems('trasaction', {
@@ -39,13 +45,39 @@ export default function Home() {
             },
           }),
         )
-        console.log(res)
         setTransactions(res)
       } catch (error) {
         console.log(error)
       }
     })()
   }, [user, isFocused])
+
+  useEffect(() => {
+    if (currentAccount == "Total") setTotal(accounts.reduce((accumulator: any, account: any) => accumulator + account.total, 0))
+    getAccountByName(currentAccount).then((result) => {
+      setTotal(result[0].total)
+    })
+  }
+    , [currentAccount, accounts])
+
+  useEffect(() => {
+    ; (async () => {
+      const res = await directusInstance.request(
+        readItems('account', {
+          filter: {
+            user_id: {
+              email: {
+                _eq: user.email,
+              },
+            },
+          },
+        }),
+      )
+      setAccounts(res)
+    })()
+  }, [])
+
+
 
   return (
     <View className='w-full container p-3 flex gap-6'>
@@ -62,26 +94,26 @@ export default function Home() {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 5 }}
         className='rounded-md w-full  py-4 flex flex-col items-center pb-12 shadow-sm shadow-slate-900'>
-        <View className='flex w-full rounded-md flex-row items-center justify-center mb-2'>
-          <Text className=' text-white text-lg'>Total</Text>
+        <TouchableOpacity onPress={openMenu} className='flex w-full rounded-md flex-row items-center justify-center mb-2'>
+          <Text className=' text-white text-lg'>{currentAccount}</Text>
           <View className=' w-4'>
             <Menu
               visible={visible}
               onDismiss={closeMenu}
               anchor={
-                <Button onPress={openMenu}>
+                <Button >
                   <Icon source='menu-down' color={'black'} size={20} />
                 </Button>
               }>
-              <Menu.Item onPress={() => {}} title='Item 1' />
-              <Menu.Item onPress={() => {}} title='Item 2' />
-              <Divider />
-              <Menu.Item onPress={() => {}} title='Item 3' />
+              <Menu.Item onPress={() => setCurrentAccount("Total")} title="Total" />
+              {accounts.map((acc: any) => {
+                return <Menu.Item onPress={() => setCurrentAccount(acc.name)} title={acc.name} />
+              })}
             </Menu>
           </View>
-        </View>
+        </TouchableOpacity>
         <Text variant='headlineMedium' className='text-white'>
-          567.800.000 VND
+          {total?.toLocaleString()} VND
         </Text>
       </LinearGradient>
 
@@ -104,20 +136,26 @@ export default function Home() {
             </View>
           </TouchableOpacity>
           <View className='w-fit flex flex-col items-center gap-1'>
-            <Card>
-              <Card.Content>
-                <Icon source='arrow-up' size={24} />
-              </Card.Content>
-            </Card>
-            <Text variant='bodyMedium'>Pay</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Create Transaction', { type: "expenses" })}>
+              <Card>
+                <Card.Content>
+                  <Icon source='arrow-up' size={24} />
+                </Card.Content>
+              </Card>
+              <Text variant='bodyMedium'  >Expenses</Text>
+            </TouchableOpacity>
           </View>
           <View className='w-fit flex flex-col items-center gap-1'>
-            <Card>
-              <Card.Content>
-                <Icon source='arrow-down' size={24} />
-              </Card.Content>
-            </Card>
-            <Text variant='bodyMedium'>Account</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Create Transaction', { type: "income" })}>
+
+              <Card>
+                <Card.Content>
+                  <Icon source='arrow-down' size={24} />
+                </Card.Content>
+              </Card>
+              <Text variant='bodyMedium' >Income</Text>
+            </TouchableOpacity>
+
           </View>
           <View className='w-fit flex flex-col items-center gap-1'>
             <Card>
@@ -135,27 +173,10 @@ export default function Home() {
           <Text variant='titleMedium' className=' text-black '>
             Previous Transactions
           </Text>
-          <Icon source='chevron-right' color={'black'} size={20} />
+          {/* <Icon source='chevron-right' color={'black'} size={20} /> */}
         </View>
-        <View className='w-full flex flex-col gap-4'>
-          {transactions.map(tran => (
-            <Card className='w-full' key={tran.id}>
-              <Card.Title
-                title={tran.name}
-                subtitle={dayjs(tran.trading_date).format('d MMM YYYY')}
-                left={props => (
-                  <View className=' bg-zinc-200 flex items-center justify-center p-1 rounded-md'>
-                    <Icon size={32} source='cash-multiple' />
-                  </View>
-                )}
-                right={props => (
-                  <Text variant='bodyLarge' className='mr-4 text-green-700'>
-                    {tran.total?.toLocaleString()} VND
-                  </Text>
-                )}
-              />
-            </Card>
-          ))}
+        <View className='w-full flex flex-coljustify-around'>
+          {transactions.map((tran: any) => <TransactionCard id={tran.id} name={tran.name} total={tran.total} trading_date={tran.trading_date} />)}
         </View>
       </View>
     </View>

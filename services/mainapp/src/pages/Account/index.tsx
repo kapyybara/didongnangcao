@@ -78,7 +78,7 @@ export default function AccountPage(props: any) {
       </View>
       <View className='w-full flex flex-col gap-4'>
         {accounts.map((acc: any, index: number) => (
-          <Card id={acc.id} onPress={() => {
+          <Card id={index.toString()} onPress={() => {
             navigation.navigate('Account New', { ...acc, label: "Update" })
             setSubfix(null)
           }
