@@ -15,8 +15,8 @@ import { getAccountByName } from '../../controllers/account.controller'
 export default function Home() {
   const [visible, setVisible] = useState(false)
   const [transactions, setTransactions] = useState([])
-  const [currentAccount, setCurrentAccount] = useState("Total")
   const [accounts, setAccounts] = useState([])
+  const {account,setAccount} = useContext(GlobalContext)
   const [total, setTotal] = useState(0)
 
   const { user } = useContext(GlobalContext)
@@ -33,7 +33,7 @@ export default function Home() {
         const res = await directusInstance.request(
           readItems('trasaction', {
             sort: ['-trading_date'],
-            limit: 3,
+            limit: 4,
             filter: {
               account_id: {
                 user_id: {
@@ -53,12 +53,12 @@ export default function Home() {
   }, [user, isFocused])
 
   useEffect(() => {
-    if (currentAccount == "Total") setTotal(accounts.reduce((accumulator: any, account: any) => accumulator + account.total, 0))
-    getAccountByName(currentAccount).then((result) => {
+    if (account == "Total") setTotal(accounts.reduce((accumulator: any, account: any) => accumulator + account.total, 0))
+    getAccountByName(account).then((result) => {
       setTotal(result[0].total)
     })
   }
-    , [currentAccount, accounts])
+    , [account, accounts])
 
   useEffect(() => {
     ; (async () => {
@@ -80,7 +80,7 @@ export default function Home() {
 
 
   return (
-    <View className='w-full container p-3 flex gap-6'>
+    <ScrollView className='w-full h-full p-3 flex gap-y-3' >
       <View className='w-full'>
         <Text variant='headlineMedium' className=' text-gray-900'>
           Welcome,
@@ -95,7 +95,7 @@ export default function Home() {
         end={{ x: 1, y: 5 }}
         className='rounded-md w-full  py-4 flex flex-col items-center pb-12 shadow-sm shadow-slate-900'>
         <TouchableOpacity onPress={openMenu} className='flex w-full rounded-md flex-row items-center justify-center mb-2'>
-          <Text className=' text-white text-lg'>{currentAccount}</Text>
+          <Text className=' text-white text-lg'>{account}</Text>
           <View className=' w-4'>
             <Menu
               visible={visible}
@@ -105,9 +105,9 @@ export default function Home() {
                   <Icon source='menu-down' color={'black'} size={20} />
                 </Button>
               }>
-              <Menu.Item onPress={() => setCurrentAccount("Total")} title="Total" />
+              <Menu.Item onPress={() => setAccount("Total")} title="Total" />
               {accounts.map((acc: any) => {
-                return <Menu.Item onPress={() => setCurrentAccount(acc.name)} title={acc.name} />
+                return <Menu.Item onPress={() => setAccount(acc.name)} title={acc.name} />
               })}
             </Menu>
           </View>
@@ -158,27 +158,29 @@ export default function Home() {
 
           </View>
           <View className='w-fit flex flex-col items-center gap-1'>
+          <TouchableOpacity onPress={() => navigation.navigate('Regular Payments')}>
             <Card>
               <Card.Content>
                 <Icon source='file-document-outline' size={24} />
               </Card.Content>
             </Card>
-            <Text variant='bodyMedium'>Account</Text>
+            <Text variant='bodyMedium'>Payment</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
 
-      <View className='w-full flex flex-col items-start'>
+      <View className='w-full flex flex-col'>
         <View className='w-full flex flex-row items-center justify-between mb-4'>
           <Text variant='titleMedium' className=' text-black '>
             Previous Transactions
           </Text>
           {/* <Icon source='chevron-right' color={'black'} size={20} /> */}
         </View>
-        <View className='w-full flex flex-coljustify-around'>
-          {transactions.map((tran: any) => <TransactionCard id={tran.id} name={tran.name} total={tran.total} trading_date={tran.trading_date} />)}
+        <View className='w-full flex flex-col '>
+          {transactions.map((tran: any) => <TransactionCard id={tran.id} category={tran.category} type={tran.type} name={tran.name} total={tran.total} trading_date={tran.trading_date} />)}
         </View>
       </View>
-    </View>
+    </ScrollView>
   )
 }

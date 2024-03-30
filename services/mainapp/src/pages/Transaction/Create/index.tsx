@@ -38,6 +38,7 @@ export const TransactionCreate = (props: any) => {
   const [account, setAccount] = useState([]);
   const [money, setMoney] = useState(100000);
   const [type, setType] = useState('expenses');
+  const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [inputDate, setInputDate] = React.useState(undefined);
   const [showDropDown, setShowDropDown] = useState(false);
@@ -85,6 +86,7 @@ export const TransactionCreate = (props: any) => {
       (await directusInstance.request(
         createItems('trasaction', {
           type: type,
+          name : name , 
           total: money,
           trading_date: inputDate,
           description: description,
@@ -208,6 +210,14 @@ export const TransactionCreate = (props: any) => {
         onValueChange={setType}
         buttons={TransactionType}
       />
+      <View className="pt-8">
+        <TextInput
+          label={'Name'}
+          value={name}
+          onChangeText={e => setName(e)}
+          mode={'outlined'}
+        />
+      </View>
       <View className="">
         <DropDown
           label={'Category'}
@@ -235,7 +245,7 @@ export const TransactionCreate = (props: any) => {
       <View className="pt-8">
         <DatePickerInput
           locale="en"
-          label="Birthdate"
+          label="Trading date"
           mode={'outlined'}
           value={inputDate}
           onChange={(d: any) => setInputDate(d)}
