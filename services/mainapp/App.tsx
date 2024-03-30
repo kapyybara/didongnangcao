@@ -19,13 +19,15 @@ import { SnackBarHoc } from './src/hocs/SnackBar'
 import { ThemeProp } from 'react-native-paper/lib/typescript/types'
 import AccountPage from './src/pages/Account'
 import { HeaderContextProvider } from './src/contexts/header'
-import AccountNew from './src/pages/Account/New'
+import AccountNew from './src/pages/Account/createOrUpdate'
 import { DirectusUser } from './src/typings/models'
 import { getUserByEmail } from './src/controllers/user.controller'
 import RegularPayments from './src/pages/Payment'
 import EditProfile from './src/pages/Profile/Edit'
 import PrivacyPolicy from './src/pages/Profile/Policy'
 import Support from './src/pages/Support'
+import TransferHistory from './src/pages/Transfer'
+import CreateTransfer from './src/pages/Transfer/create'
 
 const Stack = createStackNavigator()
 
@@ -96,6 +98,8 @@ export default function App() {
                   <Stack.Screen name='Edit Profile' component={EditProfile} />
                   <Stack.Screen name='Privacy Policy' component={PrivacyPolicy} />
                   <Stack.Screen name='Support' component={Support} />
+                  <Stack.Screen name='Transfer History' component={TransferHistory} />
+                  <Stack.Screen name='Transfer New' component={CreateTransfer} />
                 </Stack.Navigator>
               </AuthHoc>
             </NavigationContainer>

@@ -1,16 +1,17 @@
 import { useContext, useEffect, useState } from 'react'
 import { Switch, View } from 'react-native'
 import { Button, Text, TextInput } from 'react-native-paper'
-import { directusInstance } from '../../../services/directus'
+import { directusInstance } from '../../services/directus'
 import { createItems, updateItem } from '@directus/sdk'
-import { GlobalContext } from '../../../contexts/context'
-import { SnackBarContext } from '../../../hocs/SnackBar'
+import { GlobalContext } from '../../contexts/context'
+import { SnackBarContext } from '../../hocs/SnackBar'
 import { useNavigation } from '@react-navigation/native'
 
 export default function AccountNew({ route }) {
   const [money, setMoney] = useState(0)
   const [name, setName] = useState('')
   const [include_in_balance, setIncludeInBalnace] = useState(false)
+  const [buttonLabel , setButtonLabel] = useState("Add")
 
   const { user } = useContext(GlobalContext)
   const { setData } = useContext(SnackBarContext)
@@ -19,7 +20,7 @@ export default function AccountNew({ route }) {
 
   const buttonEnable = money && name !== ''
 
-  const createAccount = async () => {
+  const createOrUpdateAccount = async () => {
     if (route.params) {
       const res = await directusInstance.request(
         updateItem('account', route.params.id, {
@@ -59,6 +60,7 @@ export default function AccountNew({ route }) {
       setMoney(data.total)
       setName(data.name)
       setIncludeInBalnace(data.include_in_balance == 'true')
+      setButtonLabel("Update")
     }
   }, [route])
 
@@ -89,12 +91,11 @@ export default function AccountNew({ route }) {
         />
       </View>
       <Button
-        icon={'plus'}
         mode='contained-tonal'
         className='w-full'
-        onPress={createAccount}
+        onPress={createOrUpdateAccount}
         disabled={!buttonEnable}>
-        Add
+        {buttonLabel}
       </Button>
     </View>
   )
