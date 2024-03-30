@@ -27,7 +27,6 @@ const Stack = createStackNavigator()
 export default function App() {
   const [initializing, setInitializing] = useState(true)
   const [user, setUser] = useState()
-  console.log("hi")
 
   function onAuthStateChanged(user: any) {
     setUser(user)
@@ -46,12 +45,13 @@ export default function App() {
     })
     initDirectusInstance(
       'http://10.0.2.2:8055',
-      process.env.DIRECTUS_TOKEN || "",
+      process.env.DIRECTUS_TOKEN || "5P8aI2ZZN4xnF2i5weQeIk28tR33_DQD",
     )
   }, [])
   if (initializing) {
     return <Text>'loading'</Text>
   }
+
   const theme: ThemeProp = {
     ...DefaultTheme,
     colors: {

@@ -1,9 +1,15 @@
 import {Text, Button, Card, Icon} from 'react-native-paper';
 import {Image, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import { ScrollView } from 'react-native-gesture-handler';
+import { signOut } from '../../services/oauth';
+import { useContext } from 'react';
+import { GlobalContext } from '../../contexts/context';
 
 const Profile = () => {
   const navigation = useNavigation();
+  const { user } = useContext(GlobalContext)
+
 
   const gotoEditProfile = () => {
     navigation.navigate('Edit Profile');
@@ -19,15 +25,16 @@ const Profile = () => {
   const gotoTransferHistory = () => {
     navigation.navigate('Transfer History');
   };
+  
 
   return (
-    <View className="flex-1 bg-white">
+    <ScrollView className="flex-1 bg-white py-6">
       <View className="items-center justify-center flex-1">
         <Image
           source={require('../../assets/avatar.png')}
           className="w-24 h-24 rounded-full"
         />
-        <Text className="mt-4 text-xl font-bold">DANG HUU GIAU</Text>
+        <Text className="mt-4 text-xl font-bold">{}</Text>
         <Text className="text-gray-500">20110636@student.hcmute.edu.vn</Text>
 
         <Card className="w-11/12 px-4 my-3">
@@ -86,8 +93,13 @@ const Profile = () => {
             </View>
           </Card.Content>
         </Card>
+        <Card className="w-11/12 px-4 my-5">
+          <Card.Content>
+                <Button onPress={signOut}> Logout </Button>
+          </Card.Content>
+        </Card>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
