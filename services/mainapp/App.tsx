@@ -27,6 +27,7 @@ const Stack = createStackNavigator()
 export default function App() {
   const [initializing, setInitializing] = useState(true)
   const [user, setUser] = useState()
+  console.log("hi")
 
   function onAuthStateChanged(user: any) {
     setUser(user)
@@ -45,7 +46,7 @@ export default function App() {
     })
     initDirectusInstance(
       'http://10.0.2.2:8055',
-      'PHJSvS47GDamZO_HSTx2FBm-K15pELyn',
+      process.env.DIRECTUS_TOKEN || "",
     )
   }, [])
   if (initializing) {
