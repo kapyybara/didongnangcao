@@ -108,24 +108,7 @@ export const Transaction = () => {
             <Text>See All</Text>
           </View>
           <View className='w-full flex flex-col gap-4'>
-          {expTransactions.map(tran => (
-            <Card className='w-full' key={tran.id}>
-              <Card.Title
-                title={tran.name}
-                subtitle={dayjs(tran.trading_date).format('d MMM YYYY')}
-                left={props => (
-                  <View className=' bg-zinc-200 flex items-center justify-center p-1 rounded-md'>
-                    <Icon size={32} source='cash-multiple' />
-                  </View>
-                )}
-                right={props => (
-                  <Text variant='bodyLarge' className='mr-4 text-green-700'>
-                    {tran.total?.toLocaleString()} VND
-                  </Text>
-                )}
-              />
-            </Card>
-          ))}
+          {expTransactions.map((tran:any) => <TransactionCard id={tran.id} name={tran.name} total={tran.total} trading_date={tran.trading_date} />)}
           </View>
         </View>
         <View className='p-3 space-y-1 flex-1'>

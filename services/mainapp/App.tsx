@@ -19,17 +19,28 @@ import { SnackBarHoc } from './src/hocs/SnackBar'
 import { ThemeProp } from 'react-native-paper/lib/typescript/types'
 import AccountPage from './src/pages/Account'
 import { HeaderContextProvider } from './src/contexts/header'
-import AccountNew from './src/pages/Account/New'
+import AccountNew from './src/pages/Account/createOrUpdate'
+import { DirectusUser } from './src/typings/models'
+import { getUserByEmail } from './src/controllers/user.controller'
+import RegularPayments from './src/pages/Payment'
+import EditProfile from './src/pages/Profile/Edit'
+import PrivacyPolicy from './src/pages/Profile/Policy'
+import Support from './src/pages/Support'
+import TransferHistory from './src/pages/Transfer'
+import CreateTransfer from './src/pages/Transfer/create'
 
 const Stack = createStackNavigator()
 
 export default function App() {
   const [initializing, setInitializing] = useState(true)
-  const [user, setUser] = useState()
+  const [user, setUser] = useState<DirectusUser>()
 
   function onAuthStateChanged(user: any) {
-    setUser(user)
+    (async ()=> {
+      const directusUser = await getUserByEmail(user.email)
+      setUser(new DirectusUser(user?.email , directusUser?.fullName))
     if (initializing) setInitializing(false)
+    })()
   }
 
   useEffect(() => {
@@ -44,12 +55,13 @@ export default function App() {
     })
     initDirectusInstance(
       'http://10.0.2.2:8055',
-      'PHJSvS47GDamZO_HSTx2FBm-K15pELyn',
+      process.env.DIRECTUS_TOKEN || "5P8aI2ZZN4xnF2i5weQeIk28tR33_DQD",
     )
   }, [])
   if (initializing) {
     return <Text>'loading'</Text>
   }
+
   const theme: ThemeProp = {
     ...DefaultTheme,
     colors: {
@@ -82,6 +94,12 @@ export default function App() {
                   />
                   <Stack.Screen name='Account' component={AccountPage} />
                   <Stack.Screen name='Account New' component={AccountNew} />
+                  <Stack.Screen name='Regular Payments' component={RegularPayments} />
+                  <Stack.Screen name='Edit Profile' component={EditProfile} />
+                  <Stack.Screen name='Privacy Policy' component={PrivacyPolicy} />
+                  <Stack.Screen name='Support' component={Support} />
+                  <Stack.Screen name='Transfer History' component={TransferHistory} />
+                  <Stack.Screen name='Transfer New' component={CreateTransfer} />
                 </Stack.Navigator>
               </AuthHoc>
             </NavigationContainer>

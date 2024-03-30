@@ -10,7 +10,8 @@ import { GlobalContext } from '../../contexts/context'
 export default function AccountPage(props: any) {
   const { subfix, setSubfix } = useContext(HeaderContext)
   const [accounts, setAccounts] = useState([])
-  const sum = useMemo(() => 12.6, [])
+  const sum = useMemo(() => (accounts.reduce((accumulator, account:any ) => accumulator + account.total, 0))/1000000
+  , [accounts])
 
   const { user } = useContext(GlobalContext)
 
@@ -24,13 +25,13 @@ export default function AccountPage(props: any) {
         onPress: () => {
           navigation.navigate('Account New')
           setSubfix(null)
-        },
+        }
       })
     }
   }, [props, isFocused])
 
   useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       const res = await directusInstance.request(
         readItems('account', {
           filter: {
@@ -77,7 +78,11 @@ export default function AccountPage(props: any) {
       </View>
       <View className='w-full flex flex-col gap-4'>
         {accounts.map((acc: any, index: number) => (
-          <Card onPress={() => navigation.navigate('Account New', acc)}>
+          <Card id={index.toString()} onPress={() => {
+            navigation.navigate('Account New', { ...acc, label: "Update" })
+            setSubfix(null)
+          }
+          } >
             <View className='w-full flex flex-row justify-between p-3 items-center'>
               <View className='flex flex-row  gap-3 items-center'>
                 <Avatar.Text

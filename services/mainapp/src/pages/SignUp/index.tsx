@@ -2,7 +2,7 @@ import React from 'react';
 import {Avatar, Button, Text, TextInput} from 'react-native-paper';
 import {signInUserPassword, signUpWithUserPassword} from '../../services/oauth';
 import {StyleSheet, View} from 'react-native';
-import {createAccount} from '../../controllers/auth.controller';
+import {createAppUser} from '../../controllers/auth.controller';
 
 const SignUpScreen = ({navigation}: any) => {
   const [email, setEmail] = React.useState('');
@@ -11,7 +11,7 @@ const SignUpScreen = ({navigation}: any) => {
   const [showPassword, setShowPassword] = React.useState(false);
 
   const handleSignUp = () => {
-    createAccount(email, password, fullName).then(() => {
+    createAppUser(email, password, fullName).then(() => {
       navigation.push('Login');
     });
   };
