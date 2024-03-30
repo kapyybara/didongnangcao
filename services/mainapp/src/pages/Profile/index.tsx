@@ -26,6 +26,12 @@ const Profile = () => {
     navigation.navigate('Transfer History');
   };
   
+  const goToAccounts = ()=>{
+    navigation.navigate('Account');
+  }
+  const goToSupport = ()=>{
+    navigation.navigate('Support');
+  }
 
   return (
     <ScrollView className="flex-1 bg-white py-6">
@@ -34,8 +40,8 @@ const Profile = () => {
           source={require('../../assets/avatar.png')}
           className="w-24 h-24 rounded-full"
         />
-        <Text className="mt-4 text-xl font-bold">{}</Text>
-        <Text className="text-gray-500">20110636@student.hcmute.edu.vn</Text>
+        <Text className="mt-4 text-xl font-bold">{user?.fullName}</Text>
+        <Text className="text-gray-500">{user?.email}</Text>
 
         <Card className="w-11/12 px-4 my-3">
           <Card.Content>
@@ -52,7 +58,7 @@ const Profile = () => {
                 <Icon size={24} source="account" />
                 <Text
                   className="text-base text-black-500"
-                  onPress={gotoTransferHistory}>
+                  onPress={goToAccounts}>
                   Accounts
                 </Text>
               </View>
@@ -76,7 +82,7 @@ const Profile = () => {
             <View className="flex items-start justify-start gap-4 mt-4">
               <View className="flex-row items-center gap-2">
                 <Icon size={24} source="help" />
-                <Text className="text-base text-black-500">Help & Support</Text>
+                <Text className="text-base text-black-500" onPress={goToSupport}>Help & Support</Text>
               </View>
               <View className="flex-row items-center gap-2">
                 <Icon size={24} source="contacts" />

@@ -3,7 +3,7 @@ import { directusInstance } from '../services/directus';
 import { register } from '../services/oauth';
 import { getUserByEmail } from './user.controller';
 
-export const createAccount = async (
+export const createAppUser= async (
   email: string,
   password: string,
   username: string,
