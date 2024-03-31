@@ -14,10 +14,13 @@ import PaymentCard from '../../components/PaymentCard';
 import { readItems } from '@directus/sdk';
 import { directusInstance } from '../../services/directus';
 import { GlobalContext } from '../../contexts/context';
+import Loading from '../../components/Loading';
+import { getAccountByName, getAccountsByEmail } from '../../controllers/account.controller';
 
 const RegularPayments = ({ props }: any) => {
   const { subfix, setSubfix } = useContext(HeaderContext)
   const navigation = useNavigation();
+  const [loading,setLoading] = useState(false)
   const {account,user} = useContext(GlobalContext)
   const gotoAddPayment = () => {
     navigation.navigate('Add Payment');
@@ -26,36 +29,6 @@ const RegularPayments = ({ props }: any) => {
   const [payments,setPayments] = useState([])
   const isFocused = useIsFocused()
 
-
-  useEffect(() => {
-    ; (async () => {
-      try {
-        const res = await directusInstance.request(
-          readItems('payment', {
-            filter: {
-              account_id: account == "Total" ? {
-                user_id: {
-                  email: {
-                    _eq: user.email,
-                  },
-                },
-              } : {
-                user_id: {
-                  email: {
-                    _eq: user.email,
-                  },
-                },
-                name: account
-              },
-            },
-          }),
-        )
-        setPayments(res)
-      } catch (error) {
-        // console.log(error)
-      }
-    })()
-  }, [ isFocused,account])
  
   useEffect(() => {
     if (isFocused) {
@@ -64,21 +37,52 @@ const RegularPayments = ({ props }: any) => {
         onPress: gotoAddPayment
       })
     }
-  }, [props, isFocused])
+  }, [props])
 
   useEffect(()=>{
-    // TODO: get payment theo account
-  },[])
+    ; (async ()=>{
+      try {
+        const accounts = await getAccountsByEmail(user.email)
+        var filters = []
+        var res ;
+        if (account == "Total" ){
+           res = await directusInstance.request(
+            readItems('payment', {
+              filter: {
+                  account_id: {
+                    _in : accounts.map((acc:any) => acc.id)
+                  }
+              },
+            }),
+          )
+        }
+        else {
+          res = await directusInstance.request(
+            readItems('payment', {
+              filter: {
+                  account_id: {
+                    name : account
+                  }
+              },
+            }),
+          )
+        }
+        
+        setPayments(res)
+      } catch (error) {
+        // console.log(error)
+      }
+    })()
 
-  return (
-    <ScrollView className='flex w-full p-3 '>
+  },[account,isFocused])
+
+  return  <ScrollView className='flex w-full p-3 '>
         <View className="flex flex-col w-full ">
         { payments.length >0 ? payments.map((payment: any) => <PaymentCard id={payment.id}  type={payment.type} name={payment.name} total={payment.total} add_automation={payment.add_automation} cycle_day={payment.cycle_day}/>)
           : <Text className='w-full h-16 justify-around text-center self-center'>You don't have any regular payment yet!</Text>  
         }
         </View>
     </ScrollView>
-  );
 };
 
 export default RegularPayments;

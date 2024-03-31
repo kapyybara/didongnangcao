@@ -21,6 +21,18 @@ export async function getAccountByName(name : string){
      )) || []
 }
 
+export async function getAccountsByEmail(email : string){
+    return (await directusInstance.request(
+       readItems('account', {
+         filter: {
+           user_id : {
+            email : email
+           }
+         },
+       }),
+     )) || []
+}
+
 export async function getAccount(id : string){
     return await directusInstance.request(
        readItem('account',id)

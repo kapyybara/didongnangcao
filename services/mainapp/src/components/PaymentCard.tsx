@@ -12,12 +12,12 @@ export type PaymentCardType = {
   total: number,
   cycle_day: number,
   type: string,
-  add_automation : boolean
+  add_automation : string
 }
 
 export default function PaymentCard(data: PaymentCardType) {
   const navigation = useNavigation()
-  const [active , setActive] = useState(data.add_automation)
+  const [active , setActive] = useState(data.add_automation == "true")
 
   const handleSwitchAddAutomation = ()=>{
     setActive(!active)
@@ -31,7 +31,7 @@ export default function PaymentCard(data: PaymentCardType) {
               right={props => (
                 <View className="flex flex-row">
                   <Text variant="bodyLarge" className="mr-4 text-green-700">
-                   {data.type == "Expenses"? "-":""}{data.total.toLocaleString()}VNĐ
+                   {data.type == "Expenses"? "-":""}{data?.total?.toLocaleString()}VNĐ
                   </Text>
                   <Switch value={active} onValueChange={handleSwitchAddAutomation}></Switch>
                 </View>

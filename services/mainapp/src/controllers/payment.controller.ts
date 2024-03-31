@@ -11,7 +11,7 @@ import { directusInstance } from "../services/directus";
 //     )
 //   }
 
-export async function createPayment(type: string, name: string, total: number, cycle_day: number, from: Date, to: Date, category: string, description: string) {
+export async function createPayment(type: string, name: string, total: number, cycle_day: number, from: Date, to: Date, category: string, description: string, addAutomation : boolean, account: string) {
     return await directusInstance.request(
         createItems('payment', {
             type: type,
@@ -21,7 +21,9 @@ export async function createPayment(type: string, name: string, total: number, c
             description: description,
             category: category,
             from: from,
-            to: to
+            to: to,
+            add_automation : addAutomation,
+            account_id: account
         }),
     )
 }

@@ -16,7 +16,7 @@ import { readItems } from '@directus/sdk';
 import { GlobalContext } from '../../contexts/context';
 import { createPayment } from '../../controllers/payment.controller';
 import { SnackBarContext } from '../../hocs/SnackBar';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 
 const AddPayment = () => {
   const [type, setType] = useState('expenses');
@@ -36,10 +36,11 @@ const AddPayment = () => {
   const [category,setCategory] = useState("")
   const {user} =useContext(GlobalContext)
   const navigation = useNavigation()
+  const isFocused = useIsFocused()
 
   const handleCreatePayment = ()=>{
     (async ()=>{
-      const res = await createPayment(type,name,Number(total),reminder,fromDate,toDate, category,description)
+      const res = await createPayment(type,name,Number(total),reminder,fromDate,toDate, category,description,addAutomation, account)
       if (res){
         setData({text: 'Create regular payment successful!'});
         navigation.goBack();
@@ -71,7 +72,7 @@ const AddPayment = () => {
         );
       })();
     }
-  }, [user]);
+  }, [account , isFocused]);
 
   return (
     <ScrollView className="w-full h-full p-3">
