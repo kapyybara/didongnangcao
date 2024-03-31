@@ -1,4 +1,4 @@
-import { readItems } from "@directus/sdk";
+import { readItem, readItems } from "@directus/sdk";
 import { directusInstance } from "../services/directus";
 
 export async function getAllAccounts(uid : string){
@@ -20,4 +20,11 @@ export async function getAccountByName(name : string){
        }),
      )) || []
 }
+
+export async function getAccount(id : string){
+    return await directusInstance.request(
+       readItem('account',id)
+     )
+}
+
 

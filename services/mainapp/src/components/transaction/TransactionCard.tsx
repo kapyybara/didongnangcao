@@ -2,6 +2,7 @@ import dayjs from 'dayjs'
 import { View } from 'react-native'
 import { Card, Icon, Text } from 'react-native-paper'
 import { CategoryIcon } from '../../contants'
+import { useNavigation } from '@react-navigation/native'
 
 export type TransactionCardType = {
   id: string,
@@ -9,12 +10,15 @@ export type TransactionCardType = {
   category: string, 
   total: string,
   trading_date: string,
-  type: string
+  type: string,
+  account_id : string 
 }
 
 export default function TransactionCard(data: TransactionCardType) {
+  const navigation = useNavigation()
+
   return (
-    <Card className='w-full mb-4' key={data.id}>
+    <Card className='w-full mb-4' key={data.id} onPress={()=>navigation.navigate("Transaction Info",data )}>
       <Card.Title
         title={data.name}
         subtitle={dayjs(data.trading_date).format('d MMM YYYY')}

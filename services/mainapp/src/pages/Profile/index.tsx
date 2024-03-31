@@ -25,6 +25,12 @@ const Profile = () => {
   const gotoTransferHistory = () => {
     navigation.navigate('Transfer History');
   };
+  const handleLogout = ()=>{
+    (async ()=>{
+      await signOut() 
+      navigation.navigate("Login")
+    })()
+  }
   
   const goToAccounts = ()=>{
     navigation.navigate('Account');
@@ -40,7 +46,7 @@ const Profile = () => {
           source={require('../../assets/avatar.png')}
           className="w-24 h-24 rounded-full"
         />
-        <Text className="mt-4 text-xl font-bold">{user?.fullName}</Text>
+        <Text className="mt-4 text-xl font-bold">{user?.full_name}</Text>
         <Text className="text-gray-500">{user?.email}</Text>
 
         <Card className="w-11/12 px-4 my-3">
@@ -101,7 +107,7 @@ const Profile = () => {
         </Card>
         <Card className="w-11/12 px-4 my-5">
           <Card.Content>
-                <Button onPress={signOut}> Logout </Button>
+                <Button onPress={()=> handleLogout()}> Logout </Button>
           </Card.Content>
         </Card>
       </View>

@@ -16,7 +16,7 @@ export default function Home() {
   const [visible, setVisible] = useState(false)
   const [transactions, setTransactions] = useState([])
   const [accounts, setAccounts] = useState([])
-  const {account,setAccount} = useContext(GlobalContext)
+  const { account, setAccount } = useContext(GlobalContext)
   const [total, setTotal] = useState(0)
 
   const { user } = useContext(GlobalContext)
@@ -35,22 +35,29 @@ export default function Home() {
             sort: ['-trading_date'],
             limit: 4,
             filter: {
-              account_id: {
+              account_id: account == "Total" ? {
                 user_id: {
                   email: {
                     _eq: user.email,
                   },
                 },
+              } : {
+                user_id: {
+                  email: {
+                    _eq: user.email,
+                  },
+                },
+                name: account
               },
             },
           }),
         )
         setTransactions(res)
       } catch (error) {
-        console.log(error)
+        // console.log(error)
       }
     })()
-  }, [user, isFocused])
+  }, [user, isFocused,account])
 
   useEffect(() => {
     if (account == "Total") setTotal(accounts.reduce((accumulator: any, account: any) => accumulator + account.total, 0))
@@ -136,7 +143,7 @@ export default function Home() {
             </View>
           </TouchableOpacity>
           <View className='w-fit flex flex-col items-center gap-1'>
-            <TouchableOpacity onPress={() => navigation.navigate('Create Transaction', { type: "expenses" })}>
+            <TouchableOpacity onPress={() => navigation.navigate('Transaction Info', { type: "expenses" })}>
               <Card>
                 <Card.Content>
                   <Icon source='arrow-up' size={24} />
@@ -146,7 +153,7 @@ export default function Home() {
             </TouchableOpacity>
           </View>
           <View className='w-fit flex flex-col items-center gap-1'>
-            <TouchableOpacity onPress={() => navigation.navigate('Create Transaction', { type: "income" })}>
+            <TouchableOpacity onPress={() => navigation.navigate('Transaction Info', { type: "income" })}>
 
               <Card>
                 <Card.Content>
@@ -158,13 +165,13 @@ export default function Home() {
 
           </View>
           <View className='w-fit flex flex-col items-center gap-1'>
-          <TouchableOpacity onPress={() => navigation.navigate('Regular Payments')}>
-            <Card>
-              <Card.Content>
-                <Icon source='file-document-outline' size={24} />
-              </Card.Content>
-            </Card>
-            <Text variant='bodyMedium'>Payment</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Regular Payments')}>
+              <Card>
+                <Card.Content>
+                  <Icon source='file-document-outline' size={24} />
+                </Card.Content>
+              </Card>
+              <Text variant='bodyMedium'>Payment</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -178,7 +185,9 @@ export default function Home() {
           {/* <Icon source='chevron-right' color={'black'} size={20} /> */}
         </View>
         <View className='w-full flex flex-col '>
-          {transactions.map((tran: any) => <TransactionCard id={tran.id} category={tran.category} type={tran.type} name={tran.name} total={tran.total} trading_date={tran.trading_date} />)}
+          { transactions.length >0 ? transactions.map((tran: any) => <TransactionCard id={tran.id} category={tran.category} type={tran.type} name={tran.name} total={tran.total} trading_date={tran.trading_date} account_id={tran.account_id} />)
+          : <Text className='w-full h-16 justify-around text-center self-center'>You don't have any transaction yet!</Text>  
+        }
         </View>
       </View>
     </ScrollView>
