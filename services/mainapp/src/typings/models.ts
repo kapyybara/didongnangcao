@@ -1,15 +1,17 @@
 export class DirectusUser{
-    fullName : string  
+    full_name : string  
     email : string 
     avatar: string | undefined 
-    phoneNumber : string | undefined 
+    phone_number : string | undefined 
     gender : string | undefined 
-    constructor(email: string , fullName: string, avatar?: string , phoneNumber? : string , gender? : string){
-        this.fullName = fullName
+    id : string
+    constructor(id: string , email: string , full_name: string, avatar?: string , phone_number? : string , gender? : string){
+        this.full_name = full_name
         this.email = email
         this.avatar = avatar
-        this.phoneNumber = phoneNumber
+        this.phone_number = phone_number
         this.gender = gender
+        this.id = id 
     }
 }
 

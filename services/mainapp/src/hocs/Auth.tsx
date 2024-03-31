@@ -6,7 +6,7 @@ const AuthHoc = ({children, user}: any) => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (!user) {
+    if (!user || user.email == undefined) {
       navigation.navigate('Login');
     }
   }, [user]);

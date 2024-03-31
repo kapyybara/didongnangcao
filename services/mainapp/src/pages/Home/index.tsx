@@ -54,7 +54,7 @@ export default function Home() {
         )
         setTransactions(res)
       } catch (error) {
-        console.log(error)
+        // console.log(error)
       }
     })()
   }, [user, isFocused,account])
@@ -185,7 +185,9 @@ export default function Home() {
           {/* <Icon source='chevron-right' color={'black'} size={20} /> */}
         </View>
         <View className='w-full flex flex-col '>
-          {transactions.map((tran: any) => <TransactionCard id={tran.id} category={tran.category} type={tran.type} name={tran.name} total={tran.total} trading_date={tran.trading_date} account_id={tran.account_id} />)}
+          { transactions.length >0 ? transactions.map((tran: any) => <TransactionCard id={tran.id} category={tran.category} type={tran.type} name={tran.name} total={tran.total} trading_date={tran.trading_date} account_id={tran.account_id} />)
+          : <Text className='w-full h-16 justify-around text-center self-center'>You don't have any transaction yet!</Text>  
+        }
         </View>
       </View>
     </ScrollView>

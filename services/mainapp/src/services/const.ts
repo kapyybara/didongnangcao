@@ -33,3 +33,9 @@ export const UnitList = [
     { label: "VNĐ", value: "VND" },
     { label: "$", value: "$" },
 ]
+
+export const GenderList = [
+    { label: "Male", value: "Male" },
+    { label: "Female", value: "Female" },
+    { label: "Other", value: "Other" },
+]

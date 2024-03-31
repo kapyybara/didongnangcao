@@ -28,19 +28,23 @@ import PrivacyPolicy from './src/pages/Profile/Policy'
 import Support from './src/pages/Support'
 import TransferHistory from './src/pages/Transfer'
 import CreateTransfer from './src/pages/Transfer/create'
+import Loading from './src/components/Loading'
 
 const Stack = createStackNavigator()
 
 export default function App() {
   const [initializing, setInitializing] = useState(true)
-  const [user, setUser] = useState<DirectusUser>()
-  const [account,setAccount] = useState("Total")
+  const [user, setUser] = useState<any>()
+
+  const [account, setAccount] = useState("Total")
 
   function onAuthStateChanged(user: any) {
-    (async ()=> {
-      const directusUser = await getUserByEmail(user.email)
-      setUser(new DirectusUser(user?.email , directusUser?.fullName))
-    if (initializing) setInitializing(false)
+    (async () => {
+      if (user?.email) {
+        const directusUser = (await getUserByEmail(user?.email))[0]
+        setUser(new DirectusUser(directusUser.id, directusUser.email, directusUser.full_name, directusUser.avatar, directusUser.phone_number, directusUser.gender))
+      }
+      if (initializing) setInitializing(false)
     })()
   }
 
@@ -48,6 +52,10 @@ export default function App() {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged)
     return subscriber // unsubscribe on unmount
   }, [])
+
+  useEffect(() => {
+console.log(user)
+  }, [user])
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -60,7 +68,7 @@ export default function App() {
     )
   }, [])
   if (initializing) {
-    return <Text>'loading'</Text>
+    return <Loading />
   }
 
   const theme: ThemeProp = {
@@ -71,7 +79,7 @@ export default function App() {
   }
 
   return (
-    <GlobalContext.Provider value={{ user ,account,setAccount }}>
+    <GlobalContext.Provider value={{ user, setUser, account, setAccount }}>
       <HeaderContextProvider>
         <PaperProvider theme={theme}>
           <SnackBarHoc>
