@@ -14,25 +14,37 @@ import DropDown from 'react-native-paper-dropdown';
 import { directusInstance } from '../../services/directus';
 import { readItems } from '@directus/sdk';
 import { GlobalContext } from '../../contexts/context';
+import { createPayment } from '../../controllers/payment.controller';
+import { SnackBarContext } from '../../hocs/SnackBar';
+import { useNavigation } from '@react-navigation/native';
 
 const AddPayment = () => {
   const [type, setType] = useState('expenses');
   const [total, setTotal] = useState('');
   const [name, setName] = useState('');
   const [reminder, setReminder] = useState(0);
-  const [fromDate, setFromDate] = useState('');
-  const [toDate, setToDate] = useState('');
-  const [inputDate, setInputDate] = useState(undefined);
+  const [fromDate, setFromDate] = useState(new Date());
+  const [toDate, setToDate] = useState(new Date());
+  const {setData} = useContext(SnackBarContext);
   const [account, setAccount] = useState('');
   const [accounts, setAccounts] = useState([])
+  const [addAutomation,setAddAutomation] =useState(false)
   const [showReminderFrequencyDropDown, setShowReminderFrequencyDropDown] = useState(false);
   const [showAccountDropDown, setShowAccountDropDown] = useState(false);
   const [showCategoryDropDown, setShowCategoryDropDown] = useState(false);
   const [description, setDescription] = useState('');
+  const [category,setCategory] = useState("")
   const {user} =useContext(GlobalContext)
+  const navigation = useNavigation()
 
   const handleCreatePayment = ()=>{
-    
+    (async ()=>{
+      const res = await createPayment(type,name,Number(total),reminder,fromDate,toDate, category,description)
+      if (res){
+        setData({text: 'Create regular payment successful!'});
+        navigation.goBack();
+      }
+    })()
   }
 
 
@@ -103,16 +115,16 @@ const AddPayment = () => {
           locale="en"
           label="From"
           mode={'outlined'}
-          value={inputDate}
-          onChange={(d: any) => setInputDate(d)}
+          value={fromDate}
+          onChange={(d: any) => setFromDate(d)}
           inputMode="start"
         />
         <DatePickerInput
           locale="en"
           label="To"
           mode={'outlined'}
-          value={inputDate}
-          onChange={(d: any) => setInputDate(d)}
+          value={toDate}
+          onChange={(d: any) => setToDate(d)}
           inputMode="start"
         />
         <View>
@@ -131,12 +143,12 @@ const AddPayment = () => {
           <DropDown
             label={'Category'}
             mode={'outlined'}
-            setValue={setAccount}
+            setValue={setCategory}
             list={CategoryList}
             visible={showCategoryDropDown}
             showDropDown={() => setShowCategoryDropDown(true)}
             onDismiss={() => setShowCategoryDropDown(false)}
-            value={account}
+            value={category}
           />
         </View>
         <TextInput
@@ -149,7 +161,7 @@ const AddPayment = () => {
         />
         <View className="flex flex-row items-center justify-between">
           <Text variant="bodyMedium"> Add Automation</Text>
-          <Switch></Switch>
+          <Switch value={addAutomation} onValueChange={setAddAutomation}></Switch>
         </View>
         <Button
           icon="plus"

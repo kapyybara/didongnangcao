@@ -11,16 +11,51 @@ import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useContext, useEffect, useState } from 'react';
 import { HeaderContext } from '../../contexts/header';
 import PaymentCard from '../../components/PaymentCard';
+import { readItems } from '@directus/sdk';
+import { directusInstance } from '../../services/directus';
+import { GlobalContext } from '../../contexts/context';
 
 const RegularPayments = ({ props }: any) => {
   const { subfix, setSubfix } = useContext(HeaderContext)
   const navigation = useNavigation();
+  const {account,user} = useContext(GlobalContext)
   const gotoAddPayment = () => {
     navigation.navigate('Add Payment');
     setSubfix(null)
   };
   const [payments,setPayments] = useState([])
   const isFocused = useIsFocused()
+
+
+  useEffect(() => {
+    ; (async () => {
+      try {
+        const res = await directusInstance.request(
+          readItems('payment', {
+            filter: {
+              account_id: account == "Total" ? {
+                user_id: {
+                  email: {
+                    _eq: user.email,
+                  },
+                },
+              } : {
+                user_id: {
+                  email: {
+                    _eq: user.email,
+                  },
+                },
+                name: account
+              },
+            },
+          }),
+        )
+        setPayments(res)
+      } catch (error) {
+        // console.log(error)
+      }
+    })()
+  }, [ isFocused,account])
  
   useEffect(() => {
     if (isFocused) {
@@ -36,14 +71,12 @@ const RegularPayments = ({ props }: any) => {
   },[])
 
   return (
-    <ScrollView>
-      <View className="flex w-full p-1">
-        <View className="flex flex-col w-full gap-4">
+    <ScrollView className='flex w-full p-3 '>
+        <View className="flex flex-col w-full ">
         { payments.length >0 ? payments.map((payment: any) => <PaymentCard id={payment.id}  type={payment.type} name={payment.name} total={payment.total} add_automation={payment.add_automation} cycle_day={payment.cycle_day}/>)
           : <Text className='w-full h-16 justify-around text-center self-center'>You don't have any regular payment yet!</Text>  
         }
         </View>
-      </View>
     </ScrollView>
   );
 };

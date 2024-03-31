@@ -31,7 +31,7 @@ export default function PaymentCard(data: PaymentCardType) {
               right={props => (
                 <View className="flex flex-row">
                   <Text variant="bodyLarge" className="mr-4 text-green-700">
-                   {data.type == "Expenses"? "-":""}{data.total}
+                   {data.type == "Expenses"? "-":""}{data.total.toLocaleString()}VNĐ
                   </Text>
                   <Switch value={active} onValueChange={handleSwitchAddAutomation}></Switch>
                 </View>
