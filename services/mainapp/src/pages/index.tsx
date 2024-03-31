@@ -3,7 +3,8 @@ import { BottomNavigation } from 'react-native-paper'
 import Home from './Home'
 import Profile from './Profile'
 import { Transaction } from './Transaction'
-import { TransactionCreate } from './Transaction/Create'
+import { TransactionCreateOrUpdate } from './Transaction/createOrUpdate'
+import { Statistic } from './Statistics'
 
 const MainApp = ({ navigation }: any) => {
   const [index, setIndex] = React.useState(0)
@@ -26,10 +27,10 @@ const MainApp = ({ navigation }: any) => {
 
   const renderScene = BottomNavigation.SceneMap({
     home: Home,
-    statistical: Profile,
+    statistical: Statistic,
     transaction: Transaction,
     profile: Profile,
-    transactionCreate: TransactionCreate,
+    transactionCreate: TransactionCreateOrUpdate,
   })
 
   return (

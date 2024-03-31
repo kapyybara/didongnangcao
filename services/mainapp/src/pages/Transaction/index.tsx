@@ -11,7 +11,7 @@ import {
 } from 'react-native-paper'
 import Header from '../../components/Header'
 import { GlobalContext } from '../../contexts/context'
-import TransactionCard from '../../components/transaction/TransactionCard'
+import TransactionCard from '../../components/TransactionCard'
 import { directusInstance } from '../../services/directus'
 import { readItems } from '@directus/sdk'
 
@@ -46,7 +46,7 @@ export const Transaction = () => {
   const [expTransactions, setExpTransactions] = useState([])
 
   const createTransation = () => {
-    navigation.navigate('Create Transaction' as never)
+    navigation.navigate('Transaction Info' as never)
   }
 
   const total = 13500000 // fake data
@@ -79,9 +79,6 @@ export const Transaction = () => {
     })()
   }, [user, isFocused])
 
-  function dayjs(trading_date: any) {
-    throw new Error('Function not implemented.')
-  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -108,24 +105,7 @@ export const Transaction = () => {
             <Text>See All</Text>
           </View>
           <View className='w-full flex flex-col gap-4'>
-          {expTransactions.map(tran => (
-            <Card className='w-full' key={tran.id}>
-              <Card.Title
-                title={tran.name}
-                subtitle={dayjs(tran.trading_date).format('d MMM YYYY')}
-                left={props => (
-                  <View className=' bg-zinc-200 flex items-center justify-center p-1 rounded-md'>
-                    <Icon size={32} source='cash-multiple' />
-                  </View>
-                )}
-                right={props => (
-                  <Text variant='bodyLarge' className='mr-4 text-green-700'>
-                    {tran.total?.toLocaleString()} VND
-                  </Text>
-                )}
-              />
-            </Card>
-          ))}
+          {expTransactions.map((tran:any) => <TransactionCard id={tran.id} name={tran.name} total={tran.total} trading_date={tran.trading_date} category={tran.category} type={tran.type} account_id={tran.account_id} />)}
           </View>
         </View>
         <View className='p-3 space-y-1 flex-1'>

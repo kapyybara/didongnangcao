@@ -3,10 +3,8 @@ import React, {
   useEffect,
   useContext,
   useMemo,
-  useCallback,
 } from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { View} from 'react-native';
 
 import {
   TextInput,
@@ -18,11 +16,11 @@ import {
   Portal,
   Dialog,
 } from 'react-native-paper';
-import {GlobalContext} from '../../../contexts/context';
+import {GlobalContext} from '../../contexts/context';
 import DropDown from 'react-native-paper-dropdown';
-import {CategoryList, TransactionType, UnitList} from '../../../services/const';
+import {CategoryList, TransactionType, UnitList} from '../../services/const';
 import {DatePickerInput} from 'react-native-paper-dates';
-import {directusInstance} from '../../../services/directus';
+import {directusInstance} from '../../services/directus';
 import {
   createItems,
   deleteItem,
@@ -30,14 +28,16 @@ import {
   readItems,
   updateItem,
 } from '@directus/sdk';
-import {SnackBarContext} from '../../../hocs/SnackBar';
+import {SnackBarContext} from '../../hocs/SnackBar';
 import {useNavigation} from '@react-navigation/native';
+import { getAccount } from '../../controllers/account.controller';
 
-export const TransactionCreate = (props: any) => {
+export const TransactionCreateOrUpdate = (props: any) => {
   const [category, setCategory] = useState('');
   const [account, setAccount] = useState([]);
   const [money, setMoney] = useState(100000);
   const [type, setType] = useState('expenses');
+  const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [inputDate, setInputDate] = React.useState(undefined);
   const [showDropDown, setShowDropDown] = useState(false);
@@ -58,25 +58,19 @@ export const TransactionCreate = (props: any) => {
     () => money && category && inputDate,
     [money, category, inputDate],
   );
-  const transactionId = useMemo(() => props.route?.params?.id, []);
+  // const transactionId = useMemo(() => props.route?.params?.id, []);
 
   useEffect(() => {
-    if (transactionId) {
-      (async () => {
-        const transactionData = await directusInstance.request(
-          readItem('trasaction', transactionId),
-        );
-        console.log(transactionData);
-        setType(transactionData.type);
-        setCategory(transactionData.category);
-        const dateData = new Date(transactionData.trading_date);
-        setInputDate(dateData);
-        setDescription(transactionData.description);
-        setAccount(transactionData.account_id);
-        setMoney(transactionData.total);
-      })();
+    if (props.route?.params?.id){
+      setType(props.route?.params.type);
+      setName(props.route?.params.name)
+      setCategory(props.route?.params.category);
+      setInputDate(new Date(props.route?.params?.trading_date));
+      setDescription(props.route?.params.description);
+      setMoney(props.route?.params.total);
+      setAccount(props.route?.params.account_id);
     }
-  }, [transactionId]);
+  }, [props.route.params]);
 
   const navigation = useNavigation();
 
@@ -85,6 +79,7 @@ export const TransactionCreate = (props: any) => {
       (await directusInstance.request(
         createItems('trasaction', {
           type: type,
+          name : name , 
           total: money,
           trading_date: inputDate,
           description: description,
@@ -101,7 +96,7 @@ export const TransactionCreate = (props: any) => {
   const updateTransaction = async () => {
     const res =
       (await directusInstance.request(
-        updateItem('trasaction', transactionId, {
+        updateItem('trasaction', props.route?.params?.id, {
           type: type,
           total: money,
           trading_date: inputDate,
@@ -119,7 +114,7 @@ export const TransactionCreate = (props: any) => {
   const deleteTransaction = async () => {
     const res =
       (await directusInstance.request(
-        deleteItem('trasaction', transactionId),
+        deleteItem('trasaction', props.route?.params?.id),
       )) || [];
     if (res) {
       setData({text: 'Create transaction successful!'});
@@ -208,6 +203,14 @@ export const TransactionCreate = (props: any) => {
         onValueChange={setType}
         buttons={TransactionType}
       />
+      <View className="pt-8">
+        <TextInput
+          label={'Name'}
+          value={name}
+          onChangeText={e => setName(e)}
+          mode={'outlined'}
+        />
+      </View>
       <View className="">
         <DropDown
           label={'Category'}
@@ -235,7 +238,7 @@ export const TransactionCreate = (props: any) => {
       <View className="pt-8">
         <DatePickerInput
           locale="en"
-          label="Birthdate"
+          label="Trading date"
           mode={'outlined'}
           value={inputDate}
           onChange={(d: any) => setInputDate(d)}
@@ -253,7 +256,7 @@ export const TransactionCreate = (props: any) => {
         />
       </View>
       <View className="pt-4">
-        {transactionId ? (
+        {props.route?.params?.id ? (
           <>
             <Button
               mode="contained-tonal"

@@ -63,8 +63,7 @@ export const sendResetPasswordRequest = async (email: string) => {
 };
 
 export const signOut = async () => {
-  let data = await getProfile()
-  await removeProfile(data);
+  await removeProfile();
   console.log('User signed out!');
   return await auth().signOut()
 };

@@ -1,13 +1,12 @@
-import {createItem} from '@directus/sdk';
-import {directusInstance} from '../services/directus';
-import {register} from '../services/oauth';
+import { createItem } from '@directus/sdk';
+import { directusInstance } from '../services/directus';
+import { register } from '../services/oauth';
 
-export const createAccount = async (
+export const createAppUser= async (
   email: string,
   password: string,
   username: string,
 ) => {
-  
   await register(email, password);
   await directusInstance.request(
     createItem('app_user', {
