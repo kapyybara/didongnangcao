@@ -31,6 +31,7 @@ import CreateTransfer from './src/pages/Transfer/create'
 import Loading from './src/components/Loading'
 import AddPayment from './src/pages/Payment/add'
 import EditPayment from './src/pages/Payment/edit'
+import { Statistic } from './src/pages/Statistics'
 
 const Stack = createStackNavigator()
 
@@ -95,6 +96,7 @@ console.log(user)
                   <Stack.Screen name='SignUp' component={SignUpScreen} />
                   <Stack.Screen name='Login' component={Login} />
                   <Stack.Screen name='Home' component={MainApp} />
+                  <Stack.Screen name='Statistic' component={Statistic} />
                   <Stack.Screen
                     name='Transaction Info'
                     component={TransactionCreateOrUpdate}
