@@ -11,7 +11,7 @@ import {
 } from 'react-native-paper'
 import Header from '../../components/Header'
 import { GlobalContext } from '../../contexts/context'
-import TransactionCard from '../../components/transaction/TransactionCard'
+import TransactionCard from '../../components/TransactionCard'
 import { directusInstance } from '../../services/directus'
 import { readItems } from '@directus/sdk'
 

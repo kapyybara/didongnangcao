@@ -39,3 +39,10 @@ export const GenderList = [
     { label: "Female", value: "Female" },
     { label: "Other", value: "Other" },
 ]
+
+export const ReminderFrequencyList = [
+    { label: "Daily", value: 1 },
+    { label: "Monthly", value: 30 },
+    { label: "Quarterly", value: 90 },
+    { label: "Yearly", value: 365 },
+]
