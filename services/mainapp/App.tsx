@@ -29,6 +29,8 @@ import Support from './src/pages/Support'
 import TransferHistory from './src/pages/Transfer'
 import CreateTransfer from './src/pages/Transfer/create'
 import Loading from './src/components/Loading'
+import AddPayment from './src/pages/Payment/add'
+import EditPayment from './src/pages/Payment/edit'
 
 const Stack = createStackNavigator()
 
@@ -105,6 +107,8 @@ console.log(user)
                   <Stack.Screen name='Support' component={Support} />
                   <Stack.Screen name='Transfer History' component={TransferHistory} />
                   <Stack.Screen name='Transfer New' component={CreateTransfer} />
+                  <Stack.Screen name='Add Payment' component={AddPayment} />
+                  <Stack.Screen name='Edit Payment' component={EditPayment} />
                 </Stack.Navigator>
               </AuthHoc>
             </NavigationContainer>

@@ -6,73 +6,83 @@ import {
   Switch,
   Text,
 } from 'react-native-paper';
-import {ScrollView, View} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import { ScrollView, View } from 'react-native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useContext, useEffect, useState } from 'react';
+import { HeaderContext } from '../../contexts/header';
+import PaymentCard from '../../components/PaymentCard';
+import { readItems } from '@directus/sdk';
+import { directusInstance } from '../../services/directus';
+import { GlobalContext } from '../../contexts/context';
+import Loading from '../../components/Loading';
+import { getAccountByName, getAccountsByEmail } from '../../controllers/account.controller';
 
-const RegularPayments = () => {
+const RegularPayments = ({ props }: any) => {
+  const { subfix, setSubfix } = useContext(HeaderContext)
   const navigation = useNavigation();
+  const [loading,setLoading] = useState(false)
+  const {account,user} = useContext(GlobalContext)
   const gotoAddPayment = () => {
     navigation.navigate('Add Payment');
+    setSubfix(null)
   };
-  const gotoEditPayment = () => {
-    navigation.navigate('Edit Payment');
-  };
-  return (
-    <ScrollView>
-      <View className="flex w-full p-1">
-        <View className="flex flex-col w-full gap-4">
-          <Card className="w-full p-2" onPress={gotoEditPayment}>
-            <Card.Title
-              title="Rental Income"
-              subtitle="14 July 2021"
-              right={props => (
-                <View className="flex flex-row">
-                  <Text variant="bodyLarge" className="mr-4 text-green-700">
-                    +6.500.000VND
-                  </Text>
-                  <Switch value={true} color="green"></Switch>
-                </View>
-              )}
-            />
-          </Card>
-          <Card className="w-full p-2">
-            <Card.Title
-              title="Rental Income"
-              subtitle="14 July 2021"
-              right={props => (
-                <View className="flex flex-row">
-                  <Text variant="bodyLarge" className="mr-4 text-green-700">
-                    +6.500.000VND
-                  </Text>
-                  <Switch value={true} color="green"></Switch>
-                </View>
-              )}
-            />
-          </Card>
-          <Card className="w-full p-2">
-            <Card.Title
-              title="Rental Income"
-              subtitle="14 July 2021"
-              right={props => (
-                <View className="flex flex-row">
-                  <Text variant="bodyLarge" className="mr-4 text-green-700">
-                    +6.500.000VND
-                  </Text>
-                  <Switch value={true} color="green"></Switch>
-                </View>
-              )}
-            />
-          </Card>
+  const [payments,setPayments] = useState([])
+  const isFocused = useIsFocused()
+
+ 
+  useEffect(() => {
+    if (isFocused) {
+      setSubfix({
+        icon: 'plus',
+        onPress: gotoAddPayment
+      })
+    }
+  }, [props])
+
+  useEffect(()=>{
+    ; (async ()=>{
+      try {
+        const accounts = await getAccountsByEmail(user.email)
+        var filters = []
+        var res ;
+        if (account == "Total" ){
+           res = await directusInstance.request(
+            readItems('payment', {
+              filter: {
+                  account_id: {
+                    _in : accounts.map((acc:any) => acc.id)
+                  }
+              },
+            }),
+          )
+        }
+        else {
+          res = await directusInstance.request(
+            readItems('payment', {
+              filter: {
+                  account_id: {
+                    name : account
+                  }
+              },
+            }),
+          )
+        }
+        
+        setPayments(res)
+      } catch (error) {
+        // console.log(error)
+      }
+    })()
+
+  },[account,isFocused])
+
+  return  <ScrollView className='flex w-full p-3 '>
+        <View className="flex flex-col w-full ">
+        { payments.length >0 ? payments.map((payment: any) => <PaymentCard id={payment.id}  type={payment.type} name={payment.name} total={payment.total} add_automation={payment.add_automation} cycle_day={payment.cycle_day}/>)
+          : <Text className='w-full h-16 justify-around text-center self-center'>You don't have any regular payment yet!</Text>  
+        }
         </View>
-      </View>
-      <IconButton
-        icon="gamepad-down"
-        iconColor={'green'}
-        size={40}
-        onPress={() => gotoAddPayment()}
-      />
     </ScrollView>
-  );
 };
 
 export default RegularPayments;

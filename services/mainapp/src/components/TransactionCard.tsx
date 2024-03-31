@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { View } from 'react-native'
 import { Card, Icon, Text } from 'react-native-paper'
-import { CategoryIcon } from '../../contants'
+import { CategoryIcon } from '../contants'
 import { useNavigation } from '@react-navigation/native'
 
 export type TransactionCardType = {

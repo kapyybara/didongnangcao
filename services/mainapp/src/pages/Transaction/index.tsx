@@ -11,7 +11,7 @@ import {
 } from 'react-native-paper'
 import Header from '../../components/Header'
 import { GlobalContext } from '../../contexts/context'
-import TransactionCard from '../../components/transaction/TransactionCard'
+import TransactionCard from '../../components/TransactionCard'
 import { directusInstance } from '../../services/directus'
 import { readItems } from '@directus/sdk'
 
@@ -79,9 +79,6 @@ export const Transaction = () => {
     })()
   }, [user, isFocused])
 
-  function dayjs(trading_date: any) {
-    throw new Error('Function not implemented.')
-  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -108,7 +105,7 @@ export const Transaction = () => {
             <Text>See All</Text>
           </View>
           <View className='w-full flex flex-col gap-4'>
-          {expTransactions.map((tran:any) => <TransactionCard id={tran.id} name={tran.name} total={tran.total} trading_date={tran.trading_date} />)}
+          {expTransactions.map((tran:any) => <TransactionCard id={tran.id} name={tran.name} total={tran.total} trading_date={tran.trading_date} category={tran.category} type={tran.type} account_id={tran.account_id} />)}
           </View>
         </View>
         <View className='p-3 space-y-1 flex-1'>
