@@ -58,7 +58,7 @@ const AddPayment = () => {
               filter: {
                 user_id: {
                   email: {
-                    _eq: user.email,
+                    _eq: user?.email,
                   },
                 },
               },

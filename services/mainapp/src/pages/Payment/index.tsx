@@ -42,7 +42,7 @@ const RegularPayments = ({ props }: any) => {
   useEffect(()=>{
     ; (async ()=>{
       try {
-        const accounts = await getAccountsByEmail(user.email)
+        const accounts = await getAccountsByEmail(user?.email)
         var filters = []
         var res ;
         if (account == "Total" ){

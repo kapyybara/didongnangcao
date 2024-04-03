@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useMemo } from 'react'
-import { Touchable, TouchableOpacity, View } from 'react-native'
+import { RefreshControl, Touchable, TouchableOpacity, View } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 
 import { Button, Menu, Divider, Text, Icon, Card } from 'react-native-paper'
@@ -17,6 +17,7 @@ export default function Home() {
   const [accounts, setAccounts] = useState([])
   const { account, setAccount } = useContext(GlobalContext)
   const [total, setTotal] = useState(0)
+  const [refreshing, setRefreshing] = useState(false)
 
   const { user } = useContext(GlobalContext)
 
@@ -37,13 +38,13 @@ export default function Home() {
               account_id: account == "Total" ? {
                 user_id: {
                   email: {
-                    _eq: user.email,
+                    _eq: user?.email,
                   },
                 },
               } : {
                 user_id: {
                   email: {
-                    _eq: user.email,
+                    _eq: user?.email,
                   },
                 },
                 name: account
@@ -56,7 +57,7 @@ export default function Home() {
         // console.log(error)
       }
     })()
-  }, [user, isFocused,account])
+  }, [user, isFocused, account])
 
   useEffect(() => {
     if (account == "Total") setTotal(accounts.reduce((accumulator: any, account: any) => accumulator + account.total, 0))
@@ -72,21 +73,20 @@ export default function Home() {
         readItems('account', {
           filter: {
             user_id: {
-              email: {
-                _eq: user.email,
-              },
+              email: user?.email
             },
           },
         }),
       )
       setAccounts(res)
+      setRefreshing(false)
     })()
-  }, [])
+  }, [refreshing])
 
 
 
   return (
-    <ScrollView className='w-full h-full p-3 flex gap-y-3' >
+    <ScrollView className='w-full h-full p-3 flex gap-y-3' refreshControl={<RefreshControl refreshing={refreshing} onRefresh={()=>setRefreshing(true)} />} >
       <View className='w-full'>
         <Text variant='headlineMedium' className=' text-gray-900'>
           Welcome,
@@ -184,9 +184,9 @@ export default function Home() {
           {/* <Icon source='chevron-right' color={'black'} size={20} /> */}
         </View>
         <View className='w-full flex flex-col '>
-          { transactions.length >0 ? transactions.map((tran: any) => <TransactionCard id={tran.id} category={tran.category} type={tran.type} name={tran.name} total={tran.total} trading_date={tran.trading_date} account_id={tran.account_id} />)
-          : <Text className='w-full h-16 justify-around text-center self-center'>You don't have any transaction yet!</Text>  
-        }
+          {transactions.length > 0 ? transactions.map((tran: any) => <TransactionCard id={tran.id} category={tran.category} type={tran.type} name={tran.name} total={tran.total} trading_date={tran.trading_date} account_id={tran.account_id} />)
+            : <Text className='w-full h-16 justify-around text-center self-center'>You don't have any transaction yet!</Text>
+          }
         </View>
       </View>
     </ScrollView>

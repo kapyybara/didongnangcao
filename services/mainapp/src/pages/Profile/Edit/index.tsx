@@ -46,7 +46,7 @@ const EditProfile = () => {
             className="w-24 h-24 rounded-full"
           />
           <Text className="text-xl font-bold mt-4">{user.full_name}</Text>
-          <Text className="text-gray-500">{user.email}</Text>
+          <Text className="text-gray-500">{user?.email}</Text>
         </View>
         <TextInput
           className="h-14"

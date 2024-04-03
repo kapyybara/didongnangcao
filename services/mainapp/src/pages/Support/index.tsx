@@ -27,7 +27,7 @@ const Support = () => {
     const isValid = checkInput();
     if (isValid) {
       (async () => {
-        const res = await sendSupport(user.email, subject, message)
+        const res = await sendSupport(user?.email, subject, message)
         if (res?.id != null) {
           setData({ text: "Issues have been reported . Please wait for the admin to be check!" })
           setSubject("")

@@ -63,7 +63,7 @@ export const Transaction = () => {
               account_id: {
                 user_id: {
                   email: {
-                    _eq: user.email,
+                    _eq: user?.email,
                   },
                 },
               },

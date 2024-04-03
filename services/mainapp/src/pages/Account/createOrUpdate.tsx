@@ -28,7 +28,7 @@ export default function AccountNew({ route }) {
           name,
           include_in_balance,
           user_id: {
-            email: user.email,
+            email: user?.email,
           },
         }),
       )
@@ -43,7 +43,7 @@ export default function AccountNew({ route }) {
           name,
           include_in_balance,
           user_id: {
-            email: user.email,
+            email: user?.email,
           },
         }),
       )
