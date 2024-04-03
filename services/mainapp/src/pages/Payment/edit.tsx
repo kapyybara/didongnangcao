@@ -14,11 +14,13 @@ import DropDown from 'react-native-paper-dropdown';
 import { directusInstance } from '../../services/directus';
 import { readItems } from '@directus/sdk';
 import { GlobalContext } from '../../contexts/context';
-import { createPayment } from '../../controllers/payment.controller';
+import { createPayment, getPayment, updatePayment } from '../../controllers/payment.controller';
 import { SnackBarContext } from '../../hocs/SnackBar';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
+import Loading from '../../components/Loading';
 
-const EditPayment = () => {
+const EditPayment = (props:any) => {
+  const [loading, setLoading]  = useState(false)
   const [type, setType] = useState('expenses');
   const [total, setTotal] = useState('');
   const [name, setName] = useState('');
@@ -38,13 +40,18 @@ const EditPayment = () => {
   const navigation = useNavigation()
   const isFocused = useIsFocused()
 
+  const handleSwitchAddAutomation = (value)=>{
+      console.log({addAutomation,value})
+    setAddAutomation(!addAutomation)
+  }
+
   const handleEditPayment = ()=>{
     (async ()=>{
-      // const res = await updatePayment(type,name,Number(total),reminder,fromDate,toDate, category,description,addAutomation, account)
-      // if (res){
-      //   setData({text: 'Create regular payment successful!'});
-      //   navigation.goBack();
-      // }
+      const res = await updatePayment(props.route?.params.id, type,name,Number(total),reminder,fromDate,toDate, category,description,addAutomation, account)
+      if (res){
+        setData({text: 'Update regular payment successful!'});
+        navigation.goBack();
+      }
     })()
   }
 
@@ -74,10 +81,33 @@ const EditPayment = () => {
     }
   }, [account , isFocused]);
 
+  useEffect(()=>{
+    setLoading(true)
+
+    ;(async ()=>{
+      const payment = await getPayment(props.route?.params.id)
+      if (payment) {
+        setName(payment.name)
+        setTotal(payment.total.toString())
+        setCategory(payment.category)
+        setAccount(payment.account_id)
+        setReminder(payment.cycle_day)
+        setAddAutomation(payment.add_automation == 'true')
+        setType(payment.type)
+        setFromDate(new Date(payment.from))
+        setToDate(new Date(payment.to))
+        setDescription(payment.description)
+      }else{
+        setData({text: "Payment not exist!. Please try again"});
+        navigation.goBack()
+      }
+      setLoading(false)
+    })()
+  },[])
 
   
 
-  return (
+  return loading ? <Loading/> : (
     <ScrollView className="w-full h-full p-3">
       <View className="flex w-full h-full gap-2  ">
         <View className="flex-row items-center justify-center p-5">
@@ -164,14 +194,14 @@ const EditPayment = () => {
           numberOfLines={5}
         />
         <View className="flex flex-row items-center justify-between">
-          <Text variant="bodyMedium"> Add Automation</Text>
-          <Switch value={addAutomation} onValueChange={setAddAutomation}></Switch>
+          <Text variant="bodyMedium"> Add Automation {addAutomation}</Text>
+          
+          <Switch value={addAutomation} onValueChange={handleSwitchAddAutomation}></Switch>
         </View>
         <Button
-          icon="plus"
           mode="contained"
           onPress={handleEditPayment}>
-          Add
+          Edit
         </Button>
       </View>
     </ScrollView>

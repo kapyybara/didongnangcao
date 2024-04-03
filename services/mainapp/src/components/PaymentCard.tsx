@@ -3,8 +3,8 @@ import dayjs from 'dayjs'
 import { Switch, View } from 'react-native'
 import { Card, Icon, Text } from 'react-native-paper'
 import { CategoryIcon } from '../contants'
-import { useNavigation } from '@react-navigation/native'
-import { useState } from 'react'
+import { useIsFocused, useNavigation } from '@react-navigation/native'
+import { useEffect, useState } from 'react'
 
 export type PaymentCardType = {
   id: string,
@@ -12,18 +12,18 @@ export type PaymentCardType = {
   total: number,
   cycle_day: number,
   type: string,
-  add_automation : string
+  add_automation : boolean
 }
 
 export default function PaymentCard(data: PaymentCardType) {
   const navigation = useNavigation()
-  const [active , setActive] = useState(data.add_automation == "true")
-
+  const [active , setActive] = useState(data.add_automation == 'true')
+  console.log('data', active)
+  
   const handleSwitchAddAutomation = ()=>{
     setActive(!active)
   }
-
-  return (
+  return (  
     <Card className='w-full mb-4' key={data.id} onPress={()=>navigation.navigate("Edit Payment",data )}>
       <Card.Title
               title={data.name}
