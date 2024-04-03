@@ -11,5 +11,10 @@
   "license": "ISC",
   "dependencies": {
     "react-native-date-picker": "^4.4.2"
+  },
+  "devDependencies": {
+    "@react-navigation/native": "^6.1.17",
+    "@react-navigation/stack": "^6.3.29",
+    "@types/react-navigation": "^3.4.0"
   }
 }
