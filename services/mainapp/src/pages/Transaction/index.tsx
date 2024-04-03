@@ -1,161 +1,215 @@
-import { useNavigation, useIsFocused } from '@react-navigation/native'
-import { useContext, useEffect, useState } from 'react'
-import { SafeAreaView, StyleSheet, View } from 'react-native'
-import {
-  Button,
-  Card,
-  Icon,
-  IconButton,
-  SegmentedButtons,
-  Text,
-} from 'react-native-paper'
-import Header from '../../components/Header'
-import { GlobalContext } from '../../contexts/context'
-import TransactionCard from '../../components/TransactionCard'
-import { directusInstance } from '../../services/directus'
 import { readItems } from '@directus/sdk'
+import { useIsFocused, useNavigation } from '@react-navigation/native'
+import { useCallback, useContext, useEffect, useState } from 'react'
+import { SafeAreaView, View } from 'react-native'
+import {
+  ScrollView,
+  TouchableWithoutFeedback,
+} from 'react-native-gesture-handler'
+import { Button, Icon, Menu, SegmentedButtons, Text } from 'react-native-paper'
+import TransactionCard from '../../components/transaction/TransactionCard'
+import {
+  ACCOUNT_KEY,
+  TRANSACTION_KEY,
+} from '../../contants/schema-key.constant'
+import { allAccount } from '../../contants/transaction/empty-account.constant'
+import { filterItems } from '../../contants/transaction/filter-item'
+import { GlobalContext } from '../../contexts/context'
+import { directusInstance } from '../../services/directus'
+import { Account } from '../../types/account'
+import { Transaction as TTransaction } from '../../types/transaction'
+import { formatVND } from '../../utils/money'
 
-const filterItems = [
-  {
-    value: 'd',
-    label: 'Day',
-  },
-  {
-    value: 'w',
-    label: 'Week',
-  },
-  {
-    value: 'M',
-    label: 'Month',
-  },
-  {
-    value: 'y',
-    label: 'Year',
-  },
-  {
-    value: 'p',
-    label: 'Perior',
-  },
-]
-
-export const Transaction = () => {
+export default function Transaction() {
   const { user } = useContext(GlobalContext)
   const navigation = useNavigation()
+  const isFocused = useIsFocused()
 
-  const [selectedFilter, setSelectedFilter] = useState('d')
-  const [expTransactions, setExpTransactions] = useState([])
+  const [showAccountsDropdown, setShowAccountsDropdown] = useState(false)
 
-  const createTransation = () => {
-    navigation.navigate('Transaction Info' as never)
+  const [accounts, setAccounts] = useState<Account[]>([])
+  const [transactions, setTransactions] = useState<TTransaction[]>([])
+
+  const [account, setAccount] = useState('')
+  const [filter, setFilter] = useState(filterItems[0].value)
+
+  const fetchTransactions = async () => {
+    const response = (await directusInstance.request(
+      readItems(TRANSACTION_KEY, {
+        sort: ['-trading_date'],
+        filter: {
+          account_id: account,
+        },
+      }),
+    )) as any
+
+    setTransactions(response)
   }
 
-  const total = 13500000 // fake data
+  const fetchAllTransactions = async () => {
+    const response = (await directusInstance.request(
+      readItems(TRANSACTION_KEY, {
+        sort: ['-trading_date'],
+        filter: {
+          user_id: {
+            email: user.email,
+          },
+        },
+      }),
+    )) as any
 
-  const isFocused = useIsFocused()
+    setTransactions(response)
+  }
+
+  const fetchAccounts = useCallback(async () => {
+    const accounts = (await directusInstance.request(
+      readItems(ACCOUNT_KEY, {
+        filter: {
+          user_id: {
+            email: user.email,
+          },
+        },
+      }),
+    )) as any
+
+    setAccount(allAccount.id)
+    setAccounts([
+      allAccount,
+      ...accounts.sort((a: Account, b: Account) =>
+        a.name.localeCompare(b.name),
+      ),
+    ])
+  }, [])
+
+  let totalSpending = 0,
+    totalEarning = 0
+  transactions.forEach(item =>
+    item.type === 'expenses'
+      ? (totalSpending += item.total)
+      : (totalEarning += item.total),
+  )
+
   useEffect(() => {
-    ;(async () => {
-      try {
-        const res = await directusInstance.request(
-          readItems('trasaction', {
-            sort: ['-trading_date'],
-            limit: 3,
-            filter: {
-              account_id: {
-                user_id: {
-                  email: {
-                    _eq: user.email,
-                  },
-                },
-              },
-              type: { _eq: 'expenses' },
-            },
-          }),
-        )
-        console.log(res)
-        setExpTransactions(res)
-      } catch (error) {
-        console.log(error)
-      }
-    })()
-  }, [user, isFocused])
+    if (isFocused && user.email) {
+      fetchAccounts()
+    }
+  }, [isFocused])
 
+  useEffect(() => {
+    if (account) {
+      if (account === '-1') {
+        fetchAllTransactions()
+      } else {
+        fetchTransactions()
+      }
+    }
+  }, [account])
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Header title='Transactions' onBack={() => {}} />
-      <View className='flex-1 bg-[#fafafa] px-3 flex flex-col'>
-        <SegmentedButtons
-          value={selectedFilter}
-          onValueChange={setSelectedFilter}
-          buttons={filterItems}
-          density='small'
-          style={{ width: '100%' }}
-        />
-        <View className='mt-5'>
-          <Text className='font-bold mb-2.5 text-2xl text-center'>
-            {total}đ
-          </Text>
-          <Text className='text-xs text-[#7D8895] text-center'>
-            My Total Earnings
-          </Text>
-        </View>
-        <View className='p-3 space-y-1 flex-1'>
-          <View className='flex flex-row justify-between'>
-            <Text className='font-medium'>All My Expenses</Text>
-            <Text>See All</Text>
-          </View>
-          <View className='w-full flex flex-col gap-4'>
-          {expTransactions.map((tran:any) => <TransactionCard id={tran.id} name={tran.name} total={tran.total} trading_date={tran.trading_date} category={tran.category} type={tran.type} account_id={tran.account_id} />)}
-          </View>
-        </View>
-        <View className='p-3 space-y-1 flex-1'>
-          <View className='flex flex-row justify-between'>
-            <Text className='font-medium'>All My Income</Text>
-            <Text>See All</Text>
-          </View>
-          <View className='w-full flex flex-col gap-4'>
-            <Card className='w-full bg-white'>
-              <Card.Title
-                title='Rental Income'
-                subtitle='14 July 2021'
-                left={props => (
-                  <View className=' bg-zinc-200 flex items-center justify-center p-1 rounded-md'>
-                    <Icon size={32} source='home-outline' color='#a8bacd' />
-                  </View>
-                )}
-                right={props => (
-                  <Text variant='bodyLarge' className='mr-4 text-green-700'>
-                    +6.500.000VND
+    <SafeAreaView className='flex-1'>
+      <View className='pt-4 pb-2 flex-row items-end border-b border-[#ccc] mx-4 flex justify-between'>
+        <Text className='text-xl font-bold'>Transactions Manager</Text>
+        <Text className='text-right italic text-gray-500'>
+          Today: {new Date().toLocaleDateString()}
+        </Text>
+      </View>
+      <View className='flex-1 pt-2 pb-4 bg-[#fafafa] flex flex-col'>
+        <ScrollView className='px-4'>
+          <TouchableWithoutFeedback
+            onPress={() => setShowAccountsDropdown(true)}
+            className='mb-2'>
+            <View className='flex flex-row justify-start items-center'>
+              <View className='flex flex-row gap-2'>
+                <Text className='font-bold text-base'>
+                  {accounts.find(i => i.id === account)?.name}
+                </Text>
+              </View>
+              <Menu
+                visible={showAccountsDropdown}
+                onDismiss={() => setShowAccountsDropdown(false)}
+                anchor={
+                  <Button>
+                    <Icon source='menu-down' color={'black'} size={20} />
+                  </Button>
+                }>
+                {accounts.map((account, index) => (
+                  <Menu.Item
+                    key={index}
+                    onPress={() => {
+                      setAccount(account.id)
+                      setShowAccountsDropdown(false)
+                    }}
+                    title={account.name}
+                  />
+                ))}
+              </Menu>
+              <View className='flex-1 flex justify-end flex-row'>
+                <Text className=''>
+                  Total:{' '}
+                  <Text className='font-bold text-base'>
+                    {formatVND(
+                      account === '-1'
+                        ? accounts.reduce((acc, item) => acc + item.total, 0)
+                        : accounts.find(item => item.id === account)?.total ||
+                            0,
+                    )}
                   </Text>
-                )}
-              />
-            </Card>
-            <Card className='w-full bg-white'>
-              <Card.Title
-                title='Rental Income'
-                subtitle='14 July 2021'
-                left={props => (
-                  <View className=' bg-zinc-200 flex items-center justify-center p-1 rounded-md'>
-                    <Icon size={32} source='home-outline' color='#a8bacd' />
-                  </View>
-                )}
-                right={props => (
-                  <Text variant='bodyLarge' className='mr-4 text-green-700'>
-                    +6.500.000VND
-                  </Text>
-                )}
-              />
-            </Card>
+                </Text>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+          <SegmentedButtons
+            value={filter}
+            onValueChange={setFilter}
+            buttons={filterItems}
+            density='small'
+          />
+          <View className='mt-4 flex flex-row items-center gap-x-3'>
+            <Text className='text-xs text-[#7D8895] mt-1'>
+              My Total Earnings:
+            </Text>
+            <Text className='font-bold text-xl text-green-700'>
+              {formatVND(totalEarning)}
+            </Text>
           </View>
-        </View>
+          <View className='flex flex-row items-center gap-x-3'>
+            <Text className='text-xs text-[#s7D8895] mt-1'>
+              My Total Spending:
+            </Text>
+            <Text className='font-bold text-xl text-red-700'>
+              {formatVND(totalSpending)}
+            </Text>
+          </View>
+          <View className='mt-4'>
+            <View className='flex mb-2 flex-row items-center justify-between'>
+              <Text className='font-medium'>Recently transactions</Text>
+              <Button onPress={() => navigation.navigate('All Transactions')}>
+                See All {'>'}
+              </Button>
+            </View>
+            <View className='w-full mt-1 flex flex-col'>
+              {transactions.length > 0 ? (
+                transactions
+                  .slice(0, 3)
+                  .map((transaction, index) => (
+                    <TransactionCard key={index} {...transaction} />
+                  ))
+              ) : (
+                <Text className='text-center text-gray-400 mb-2'>
+                  The is no transaction here, create one now!
+                </Text>
+              )}
+            </View>
+          </View>
+          <View className='my-4'>
+            <Button
+              className='border shadow-sm bg-green-600 w-[200px] mx-auto h-10'
+              onPress={() => navigation.navigate('Transaction Info')}>
+              <Text className='text-white'>Add new</Text>
+            </Button>
+          </View>
+        </ScrollView>
       </View>
     </SafeAreaView>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-  },
-})
