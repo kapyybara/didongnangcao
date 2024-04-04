@@ -2,8 +2,8 @@ import * as React from 'react'
 import { BottomNavigation } from 'react-native-paper'
 import Home from './Home'
 import Profile from './Profile'
-import { Transaction } from './Transaction'
-import { TransactionCreateOrUpdate } from './Transaction/createOrUpdate'
+import Transaction from './Transaction'
+import TransactionCreateOrUpdate from './Transaction/createOrUpdate'
 import { Statistic } from './Statistics'
 
 const MainApp = ({ navigation }: any) => {

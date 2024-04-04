@@ -7,7 +7,7 @@ type Props = {
 
 export default function Header({ title, onBack }: Props) {
   return (
-    <Appbar.Header className='flex w-full'>
+    <Appbar.Header className='flex w-full border-b border-slate-200'>
       <Appbar.BackAction onPress={onBack} />
       <Appbar.Content
         title={title}

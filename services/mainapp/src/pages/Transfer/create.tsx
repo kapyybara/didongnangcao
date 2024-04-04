@@ -6,61 +6,134 @@ import {
   Text,
   TextInput,
 } from 'react-native-paper';
-import {ScrollView, View} from 'react-native';
-import {CategoryList, TransactionType} from '../../services/const';
-import {useState} from 'react';
-import {DatePickerInput} from 'react-native-paper-dates';
+import { ScrollView, View } from 'react-native';
+import { CategoryList, TransactionType } from '../../services/const';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { DatePickerInput } from 'react-native-paper-dates';
 import DropDown from 'react-native-paper-dropdown';
+import { directusInstance } from '../../services/directus';
+import { createItem, readItems, updateItem } from '@directus/sdk';
+import { GlobalContext } from '../../contexts/context';
+import { useNavigation } from '@react-navigation/native';
 
 const CreateTransfer = () => {
-  const [type, setType] = useState('expenses');
-  const [quantity, setQuantity] = useState('');
-  const [name, setName] = useState('');
-  const [reminder, setReminder] = useState('');
-  const [fromDate, setFromDate] = useState('');
-  const [toDate, setToDate] = useState('');
   const [inputDate, setInputDate] = useState(undefined);
-  const [account, setAccount] = useState('');
+  const [fromAccount, setFromAccount] = useState('');
+  const [toAccount, setToAccount] = useState('');
   const [showDropDown1, setShowDropDown1] = useState(false);
+  const [showDropDown2, setShowDropDown2] = useState(false);
   const [description, setDescription] = useState('');
+  const [money, setMoney] = useState('');
+
+  const [accounts, setAccounts] = useState([])
+  const { user } = useContext(GlobalContext)
+
+  useEffect(() => {
+    (async () => {
+      const accountsRes = await directusInstance.request(readItems('account', {
+        filter: {
+          user_id: {
+            id: user?.id
+          }
+        }
+      }))
+      setAccounts(accountsRes || [])
+    })()
+  }, [])
+
+  const navigation = useNavigation()
+
+  const fromAccounts = useMemo(() => {
+    return accounts.map(i => ({
+      value: i.id,
+      label: i.name
+    }))
+  }, [accounts])
+  const toAccounts = useMemo(() => {
+    return accounts.map(i => ({
+      value: i.id,
+      label: i.name
+    })).filter(i => i.value != fromAccount)
+  }, [accounts, fromAccount])
+
+  const addTransfer = async () => {
+    const data = {
+      amount: money,
+      from_acc: {
+        id: fromAccount
+      },
+      to_acc: {
+        id: toAccount
+      },
+      user_id: { id: user.id },
+      description,
+      date: inputDate
+    }
+
+    const fromAccountData = accounts.find(i => i.id == fromAccount)
+    const toAccountData = accounts.find(i => i.id == toAccount)
+
+    try {
+      await Promise.all([
+        directusInstance.request(createItem('transfer_history', data)),
+        directusInstance.request(createItem('trasaction', {
+          name: `Transfer from ${fromAccountData.name} to ${toAccountData.name}`,
+          total: money,
+          trading_date: inputDate,
+          account_id: {id: fromAccount},
+        description,
+        category: 'transfer',
+        })),
+        directusInstance.request(updateItem('account', fromAccount, {
+          total: (+fromAccountData.total) + (+money)
+        })),
+        directusInstance.request(updateItem('account', toAccount, {
+          total: (+toAccountData.total) - (+money)
+        }))
+      ])
+
+      navigation.goBack()
+    } catch (error) {
+      console.log(error)
+
+    }
+  }
 
   return (
     <ScrollView className="w-full h-full">
       <View className="flex w-full h-full gap-2 p-1 top-1">
+        <View className='flex flex-row justify-around items-center'>
+          <TextInput
+            label={'Money'}
+            value={money}
+            onChangeText={e => setMoney(e)}
+            mode={'outlined'}
+            className='flex-1 mr-4 font-bold '
+          />
+          <Text variant='bodyLarge'>VND</Text>
+        </View>
         <View>
           <DropDown
             label={'Transfer from account'}
             mode={'outlined'}
-            setValue={setAccount}
-            list={CategoryList}
+            setValue={setFromAccount}
+            list={fromAccounts}
             visible={showDropDown1}
             showDropDown={() => setShowDropDown1(true)}
             onDismiss={() => setShowDropDown1(false)}
-            value={account}
+            value={fromAccount}
           />
         </View>
         <View>
           <DropDown
             label={'Transfer to account'}
             mode={'outlined'}
-            setValue={setAccount}
-            list={CategoryList}
-            visible={showDropDown1}
-            showDropDown={() => setShowDropDown1(true)}
-            onDismiss={() => setShowDropDown1(false)}
-            value={account}
-          />
-        </View>
-        <View>
-          <DropDown
-            label={'Transfer amount'}
-            mode={'outlined'}
-            setValue={setAccount}
-            list={CategoryList}
-            visible={showDropDown1}
-            showDropDown={() => setShowDropDown1(true)}
-            onDismiss={() => setShowDropDown1(false)}
-            value={account}
+            setValue={setToAccount}
+            list={toAccounts}
+            visible={showDropDown2}
+            showDropDown={() => setShowDropDown2(true)}
+            onDismiss={() => setShowDropDown2(false)}
+            value={toAccount}
           />
         </View>
         <View>
@@ -73,7 +146,6 @@ const CreateTransfer = () => {
             inputMode="start"
           />
         </View>
-
         <TextInput
           label={'Comment'}
           value={description}
@@ -85,7 +157,8 @@ const CreateTransfer = () => {
         <Button
           icon="plus"
           mode="contained"
-          onPress={() => console.log('Added')}>
+          disabled={!(money && description && fromAccount !== '' && toAccount !== '')}
+          onPress={addTransfer}>
           Add
         </Button>
       </View>

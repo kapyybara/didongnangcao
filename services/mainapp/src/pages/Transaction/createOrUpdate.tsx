@@ -1,272 +1,289 @@
-import React, {
-  useState,
-  useEffect,
-  useContext,
-  useMemo,
-} from 'react';
-import { View} from 'react-native';
+import { useContext, useEffect, useMemo, useState } from 'react'
+import { View } from 'react-native'
 
-import {
-  TextInput,
-  SegmentedButtons,
-  Button,
-  IconButton,
-  MD3Colors,
-  Text,
-  Portal,
-  Dialog,
-} from 'react-native-paper';
-import {GlobalContext} from '../../contexts/context';
-import DropDown from 'react-native-paper-dropdown';
-import {CategoryList, TransactionType, UnitList} from '../../services/const';
-import {DatePickerInput} from 'react-native-paper-dates';
-import {directusInstance} from '../../services/directus';
 import {
   createItems,
   deleteItem,
   readItem,
   readItems,
   updateItem,
-} from '@directus/sdk';
-import {SnackBarContext} from '../../hocs/SnackBar';
-import {useNavigation} from '@react-navigation/native';
-import { getAccount } from '../../controllers/account.controller';
+} from '@directus/sdk'
+import { useNavigation } from '@react-navigation/native'
+import {
+  Button,
+  Dialog,
+  MD3Colors,
+  Portal,
+  SegmentedButtons,
+  Text,
+  TextInput,
+} from 'react-native-paper'
+import { DatePickerInput } from 'react-native-paper-dates'
+import DropDown from 'react-native-paper-dropdown'
+import { GlobalContext } from '../../contexts/context'
+import { SnackBarContext } from '../../hocs/SnackBar'
+import { CategoryList, TransactionType } from '../../services/const'
+import { directusInstance } from '../../services/directus'
+import {
+  ACCOUNT_KEY,
+  TRANSACTION_KEY,
+} from '../../contants/schema-key.constant'
+import { Account } from '../../types/account'
 
-export const TransactionCreateOrUpdate = (props: any) => {
-  const [category, setCategory] = useState('');
-  const [account, setAccount] = useState([]);
-  const [money, setMoney] = useState(100000);
-  const [type, setType] = useState('expenses');
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [inputDate, setInputDate] = React.useState(undefined);
-  const [showDropDown, setShowDropDown] = useState(false);
-  const [showAccountDropDown, setAccountShowDropDown] = useState(false);
-  const [unit, setUnit] = useState<'VND' | '$'>('VND');
-  const [visible, setVisible] = React.useState(false);
+export default function CreateTransaction(props: any) {
+  const transactionId = useMemo(() => props.route?.params?.id, [])
+  const mode = transactionId ? 'update' : 'create'
 
-  const showDialog = () => setVisible(true);
+  const navigation = useNavigation()
 
-  const hideDialog = () => setVisible(false);
+  const [accounts, setAccounts] = useState<Account[]>([])
+  const [accountsOptions, setAccountOptions] = useState([])
+  const { user } = useContext(GlobalContext)
+  const { setData } = useContext(SnackBarContext)
 
-  const [accounts, setAccounts] = useState([]);
+  const [oldData, setOldData] = useState({} as any)
 
-  const {user} = useContext(GlobalContext);
-  const {setData} = useContext(SnackBarContext);
+  // Form data
+  const [type, setType] = useState(TransactionType[0].value)
+  const [name, setName] = useState('')
+  const [money, setMoney] = useState(0)
+  const [category, setCategory] = useState('')
+  const [account, setAccount] = useState('')
+  const [inputDate, setInputDate] = useState(undefined)
+  const [description, setDescription] = useState('')
+
+  const [showCategories, setShowCategories] = useState(false)
+  const [showAccounts, setShowAccounts] = useState(false)
+  const [visible, setVisible] = useState(false)
 
   const formReady = useMemo(
-    () => money && category && inputDate,
+    () => name && money && category && account && inputDate,
     [money, category, inputDate],
-  );
-  // const transactionId = useMemo(() => props.route?.params?.id, []);
+  )
 
-  useEffect(() => {
-    if (props.route?.params?.id){
-      setType(props.route?.params.type);
-      setName(props.route?.params.name)
-      setCategory(props.route?.params.category);
-      setInputDate(new Date(props.route?.params?.trading_date));
-      setDescription(props.route?.params.description);
-      setMoney(props.route?.params.total);
-      setAccount(props.route?.params.account_id);
-    }
-  }, [props.route.params]);
+  const showDialog = () => setVisible(true)
+  const hideDialog = () => setVisible(false)
 
-  const navigation = useNavigation();
-
-  const addTransaction = async () => {
-    const res =
-      (await directusInstance.request(
-        createItems('trasaction', {
+  const createTransaction = async () => {
+    try {
+      await directusInstance.request(
+        createItems(TRANSACTION_KEY, {
+          name: name,
           type: type,
-          name : name , 
           total: money,
           trading_date: inputDate,
           description: description,
           category: category,
           account_id: account,
+        } as any),
+      )
+
+      await directusInstance.request(
+        updateItem(ACCOUNT_KEY, account, {
+          total:
+            (accounts.find(i => i.id === account) as any).total +
+            (type === 'income' ? money : -money),
         }),
-      )) || [];
-    if (res) {
-      setData({text: 'Create transaction successful!'});
-      navigation.goBack();
+      )
+
+      setData({ text: 'Create transaction successfully!' })
+      navigation.goBack()
+    } catch (e) {
+      console.log('error when creating a new transaction: ', e)
     }
-  };
+  }
 
   const updateTransaction = async () => {
-    const res =
-      (await directusInstance.request(
-        updateItem('trasaction', props.route?.params?.id, {
-          type: type,
-          total: money,
-          trading_date: inputDate,
-          description: description,
-          category: category,
-          account_id: account,
+    await directusInstance.request(
+      updateItem(TRANSACTION_KEY, props.route?.params?.id, {
+        type: type,
+        total: money,
+        trading_date: inputDate,
+        description: description,
+        category: category,
+        account_id: account,
+      }),
+    )
+
+    // update total of account
+    if (oldData.account_id !== account) {
+      await directusInstance.request(
+        updateItem(ACCOUNT_KEY, oldData.account_id, {
+          total:
+            (accounts.find(i => i.id === oldData.account_id) as any).total +
+            (oldData.type === 'income' ? -oldData.total : oldData.total),
         }),
-      )) || [];
-    if (res) {
-      setData({text: 'Create transaction successful!'});
-      navigation.goBack();
+      )
+
+      await directusInstance.request(
+        updateItem(ACCOUNT_KEY, account, {
+          total:
+            (accounts.find(i => i.id === account) as any).total +
+            (type === 'income' ? money : -money),
+        }),
+      )
+    } else {
+      await directusInstance.request(
+        updateItem(ACCOUNT_KEY, account, {
+          total:
+            (accounts.find(i => i.id === account) as any).total +
+            (type === 'income' ? money : -money) -
+            (oldData.type === 'income' ? oldData.total : -oldData.total),
+        }),
+      )
     }
-  };
+
+    setData({ text: 'Create transaction successful!' })
+    navigation.goBack()
+  }
 
   const deleteTransaction = async () => {
-    const res =
-      (await directusInstance.request(
-        deleteItem('trasaction', props.route?.params?.id),
-      )) || [];
-    if (res) {
-      setData({text: 'Create transaction successful!'});
-      navigation.goBack();
-    }
-  };
+    await directusInstance.request(
+      deleteItem(TRANSACTION_KEY, props.route?.params?.id),
+    )
 
-  useEffect(() => {
-    switch (unit) {
-      case '$':
-        setMoney(10);
-        break;
-      case 'VND':
-        setMoney(100000);
-        break;
-    }
-  }, [unit]);
+    await directusInstance.request(
+      updateItem(ACCOUNT_KEY, oldData.account_id, {
+        total:
+          (accounts.find(i => i.id === oldData.account_id) as any).total +
+          (oldData.type === 'income' ? -oldData.total : oldData.total),
+      }),
+    )
+
+    setData({ text: 'Create transaction successful!' })
+    navigation.goBack()
+  }
 
   useEffect(() => {
     if (user) {
-      (async () => {
-        const res =
-          (await directusInstance.request(
-            readItems('account', {
-              filter: {
-                user_id: {
-                  email: {
-                    _eq: user?.email,
-                  },
+      ;(async () => {
+        const res = await directusInstance.request(
+          readItems('account', {
+            filter: {
+              user_id: {
+                email: {
+                  _eq: user?.email,
                 },
               },
-            }),
-          )) || [];
-        setAccounts(
-          res.map(i => ({
+            },
+          }),
+        )
+        setAccountOptions(
+          (res as any).map((i: { name: any; id: any }) => ({
             label: i.name,
             value: i.id,
           })),
-        );
-      })();
+        )
+        setAccounts(res as any)
+      })()
     }
-  }, [user]);
+  }, [user])
 
-  const unitRange = useMemo(() => (unit == '$' ? 10 : 100000), [unit]);
+  useEffect(() => {
+    if (mode === 'update') {
+      ;(async () => {
+        const transactionData = await directusInstance.request(
+          readItem(TRANSACTION_KEY, transactionId),
+        )
 
-  const increaseMoney = () => {
-    setMoney(money + unitRange);
-  };
+        setName(transactionData.name)
+        setType(transactionData.type)
+        setCategory(transactionData.category)
+        const dateData = new Date(transactionData.trading_date)
+        setInputDate(dateData as any)
+        setDescription(transactionData.description)
+        setAccount(transactionData.account_id)
+        setMoney(transactionData.total)
 
-  const decreaseMoney = () => {
-    if (money - unitRange < 0) setMoney(0);
-    else setMoney(money - unitRange);
-  };
+        setOldData(transactionData)
+      })()
+    }
+  }, [transactionId])
 
   return (
-    <View className="flex flex-1 flex-col justify-start p-3 gap-2">
-      <View className="pt-2 flex flex-row justify-around items-center py-4">
-        <IconButton
-          mode="contained-tonal"
-          icon="minus"
-          iconColor={MD3Colors.tertiary50}
-          size={20}
-          onPress={decreaseMoney}
-        />
-        <TextInput
-          label="Money"
-          mode={'outlined'}
-          onChangeText={e => setMoney(+e)}
-          value={`${money}`}
-          keyboardType="numeric"
-          className="w-[50%]"
-        />
-        <IconButton
-          mode="contained-tonal"
-          icon="plus"
-          iconColor={MD3Colors.tertiary50}
-          size={20}
-          onPress={increaseMoney}
-        />
-        <View className="w-fit mr-2">
-          <Text variant="bodyLarge">VND</Text>
-        </View>
-      </View>
+    <View className='flex flex-1 flex-col justify-start p-3 gap-2'>
       <SegmentedButtons
         value={type}
         onValueChange={setType}
         buttons={TransactionType}
       />
-      <View className="pt-8">
+      <View>
         <TextInput
-          label={'Name'}
+          label='Name'
           value={name}
-          onChangeText={e => setName(e)}
-          mode={'outlined'}
+          onChangeText={value => setName(value)}
+          mode='outlined'
         />
       </View>
-      <View className="">
+      <View className='flex flex-row justify-around items-center'>
+        <TextInput
+          label='Money'
+          mode='outlined'
+          keyboardType='numeric'
+          className='flex-1 mr-4 font-bold text-xl'
+          value={money.toString()}
+          onChangeText={e => {
+            setMoney(+e)
+          }}
+        />
+        <Text variant='bodyLarge'>VND</Text>
+      </View>
+      <View className=''>
         <DropDown
           label={'Category'}
-          mode={'outlined'}
+          mode='outlined'
           setValue={setCategory}
           list={CategoryList}
-          visible={showDropDown}
-          showDropDown={() => setShowDropDown(true)}
-          onDismiss={() => setShowDropDown(false)}
+          visible={showCategories}
+          showDropDown={() => setShowCategories(true)}
+          onDismiss={() => setShowCategories(false)}
           value={category}
         />
       </View>
-      <View className="">
+      <View className=''>
         <DropDown
           label={'Account'}
-          mode={'outlined'}
+          mode='outlined'
           setValue={setAccount}
-          list={accounts}
-          visible={showAccountDropDown}
-          showDropDown={() => setAccountShowDropDown(true)}
-          onDismiss={() => setAccountShowDropDown(false)}
+          list={accountsOptions}
+          visible={showAccounts}
+          showDropDown={() => setShowAccounts(true)}
+          onDismiss={() => setShowAccounts(false)}
           value={account}
         />
       </View>
-      <View className="pt-8">
+      <View className='pt-8'>
         <DatePickerInput
-          locale="en"
-          label="Trading date"
-          mode={'outlined'}
+          locale='en'
+          label='Date'
+          mode='outlined'
           value={inputDate}
           onChange={(d: any) => setInputDate(d)}
-          inputMode="start"
+          inputMode='start'
         />
       </View>
-      <View className="pt-8">
+      <View className='pt-8'>
         <TextInput
           label={'Description'}
           value={description}
           onChangeText={e => setDescription(e)}
-          mode={'outlined'}
+          mode='outlined'
           multiline={true}
           numberOfLines={5}
         />
       </View>
-      <View className="pt-4">
-        {props.route?.params?.id ? (
+      <View className='pt-4'>
+        {transactionId ? (
           <>
             <Button
-              mode="contained-tonal"
+              mode='contained-tonal'
               onPress={updateTransaction}
               // disabled={!formReady}
-              className="mb-4">
+              className='mb-4'>
               Update
             </Button>
             <Button
-              mode="contained"
+              mode='contained'
               buttonColor={MD3Colors.error50}
               onPress={showDialog}>
               Delete
@@ -275,21 +292,21 @@ export const TransactionCreateOrUpdate = (props: any) => {
               <Dialog visible={visible} onDismiss={hideDialog}>
                 <Dialog.Title>Alert</Dialog.Title>
                 <Dialog.Content>
-                  <Text variant="bodyMedium">
+                  <Text variant='bodyMedium'>
                     Are you sure you want to delete this transaction ?
                   </Text>
                 </Dialog.Content>
                 <Dialog.Actions>
                   <Button
                     buttonColor={MD3Colors.error50}
-                    textColor="#fff"
-                    className="px-4"
+                    textColor='#fff'
+                    className='px-4'
                     onPress={deleteTransaction}>
                     Yes
                   </Button>
                   <Button
-                    mode="contained"
-                    className="px-4"
+                    mode='contained'
+                    className='px-4'
                     onPress={hideDialog}>
                     No
                   </Button>
@@ -299,13 +316,13 @@ export const TransactionCreateOrUpdate = (props: any) => {
           </>
         ) : (
           <Button
-            mode="contained"
-            onPress={addTransaction}
+            mode='contained'
+            onPress={createTransaction}
             disabled={!formReady}>
             Save
           </Button>
         )}
       </View>
     </View>
-  );
-};
+  )
+}
