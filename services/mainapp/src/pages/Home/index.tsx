@@ -53,9 +53,12 @@ export default function Home() {
 
   useEffect(() => {
     if (account == "Total") setTotal(accounts.reduce((accumulator: any, account: any) => accumulator + account.total, 0))
-    getAccountByName(account).then((result) => {
-      setTotal(result[0].total)
-    })
+    else{
+      getAccountByName(account).then((result) => {
+        setTotal(result[0].total)
+      })
+    }
+  
   }
     , [account, accounts])
 
