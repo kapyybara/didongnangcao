@@ -80,14 +80,6 @@ export default function CreateTransaction(props: any) {
         } as any),
       )
 
-      await directusInstance.request(
-        updateItem(ACCOUNT_KEY, account, {
-          total:
-            (accounts.find(i => i.id === account) as any).total +
-            (type === 'income' ? money : -money),
-        }),
-      )
-
       setData({ text: 'Create transaction successfully!' })
       navigation.goBack()
     } catch (e) {
@@ -106,34 +98,6 @@ export default function CreateTransaction(props: any) {
         account_id: account,
       }),
     )
-
-    // update total of account
-    if (oldData.account_id !== account) {
-      await directusInstance.request(
-        updateItem(ACCOUNT_KEY, oldData.account_id, {
-          total:
-            (accounts.find(i => i.id === oldData.account_id) as any).total +
-            (oldData.type === 'income' ? -oldData.total : oldData.total),
-        }),
-      )
-
-      await directusInstance.request(
-        updateItem(ACCOUNT_KEY, account, {
-          total:
-            (accounts.find(i => i.id === account) as any).total +
-            (type === 'income' ? money : -money),
-        }),
-      )
-    } else {
-      await directusInstance.request(
-        updateItem(ACCOUNT_KEY, account, {
-          total:
-            (accounts.find(i => i.id === account) as any).total +
-            (type === 'income' ? money : -money) -
-            (oldData.type === 'income' ? oldData.total : -oldData.total),
-        }),
-      )
-    }
 
     setData({ text: 'Create transaction successful!' })
     navigation.goBack()
