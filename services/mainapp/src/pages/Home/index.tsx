@@ -36,17 +36,9 @@ export default function Home() {
             limit: 4,
             filter: {
               account_id: account == "Total" ? {
-                user_id: {
-                  email: {
-                    _eq: user?.email,
-                  },
-                },
+                user_id: user.id
               } : {
-                user_id: {
-                  email: {
-                    _eq: user?.email,
-                  },
-                },
+                user_id: user.id , 
                 name: account
               },
             },

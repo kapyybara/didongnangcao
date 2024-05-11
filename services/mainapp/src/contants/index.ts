@@ -34,5 +34,7 @@ export const CategoryIcon = (category: string) =>{
             return 'card-account-details-star'
         case "Chi tiêu đặc biệt": 
             return 'chess-queen'
+        case "Chuyển tiền": 
+            return 'bank-transfer'
     }
 }

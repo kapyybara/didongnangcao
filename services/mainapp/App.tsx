@@ -32,6 +32,7 @@ import CreateTransfer from './src/pages/Transfer/create'
 import { initDirectusInstance } from './src/services/directus'
 import { DirectusUser } from './src/typings/models'
 import AllTransactions from './src/pages/Transaction/AllTransactions'
+import AccountNew from './src/pages/Account/createOrUpdate'
 
 const Stack = createStackNavigator()
 
@@ -116,7 +117,7 @@ export default function App() {
                     component={AllTransactions}
                   />
                   <Stack.Screen name='Account' component={AccountPage} />
-                  {/* <Stack.Screen name='Account Info' component={AccountNew} /> */}
+                  <Stack.Screen name='Account Info' component={AccountNew} />
                   <Stack.Screen
                     name='Regular Payments'
                     component={RegularPayments}

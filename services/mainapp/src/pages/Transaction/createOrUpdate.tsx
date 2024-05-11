@@ -29,6 +29,7 @@ import {
   TRANSACTION_KEY,
 } from '../../contants/schema-key.constant'
 import { Account } from '../../types/account'
+import Loading from '../../components/Loading'
 
 export default function CreateTransaction(props: any) {
   const transactionId = useMemo(() => props.route?.params?.id, [])
@@ -51,7 +52,8 @@ export default function CreateTransaction(props: any) {
   const [account, setAccount] = useState('')
   const [inputDate, setInputDate] = useState(undefined)
   const [description, setDescription] = useState('')
-
+  const [loading , setLoading] = useState(false);
+ 
   const [showCategories, setShowCategories] = useState(false)
   const [showAccounts, setShowAccounts] = useState(false)
   const [visible, setVisible] = useState(false)
@@ -181,7 +183,8 @@ export default function CreateTransaction(props: any) {
 
   useEffect(() => {
     if (mode === 'update') {
-      ;(async () => {
+      setLoading(true);
+      (async () => {
         const transactionData = await directusInstance.request(
           readItem(TRANSACTION_KEY, transactionId),
         )
@@ -196,12 +199,13 @@ export default function CreateTransaction(props: any) {
         setMoney(transactionData.total)
 
         setOldData(transactionData)
+        setLoading(false);
       })()
     }
   }, [transactionId])
 
   return (
-    <View className='flex flex-1 flex-col justify-start p-3 gap-2'>
+    loading ? <Loading/> : <View className='flex flex-1 flex-col justify-start p-3 gap-2'>
       <SegmentedButtons
         value={type}
         onValueChange={setType}

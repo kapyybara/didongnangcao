@@ -10,8 +10,8 @@ import { GlobalContext } from '../../contexts/context'
 export default function AccountPage(props: any) {
   const { subfix, setSubfix } = useContext(HeaderContext)
   const [accounts, setAccounts] = useState([])
-  const sum = useMemo(() => (accounts.reduce((accumulator, account:any ) => accumulator + account.total, 0))/1000000
-  , [accounts])
+  const sum = useMemo(() => (accounts.reduce((accumulator, account: any) => accumulator + account.total, 0)) / 1000000
+    , [accounts])
 
   const { user } = useContext(GlobalContext)
 
@@ -35,11 +35,7 @@ export default function AccountPage(props: any) {
       const res = await directusInstance.request(
         readItems('account', {
           filter: {
-            user_id: {
-              email: {
-                _eq: user?.email,
-              },
-            },
+            user_id: user.id
           },
         }),
       )
@@ -48,7 +44,7 @@ export default function AccountPage(props: any) {
   }, [user, isFocused])
 
   return (
-    <View className='w-full flex flex-col items-center gap-8  p-3 pt-6'>
+    <View className='w-full flex flex-col items-center  p-3 pt-6 gap-y-8'>
       <View className='w-full flex flex-col items-center gap-2'>
         <Text variant='titleMedium'>Totals</Text>
         <Text variant='headlineMedium'>vnđ {sum}M</Text>
@@ -76,7 +72,7 @@ export default function AccountPage(props: any) {
           </View>
         </TouchableOpacity>
       </View>
-      <View className='w-full flex flex-col gap-4'>
+      <View className='w-full flex flex-col gap-4 '>
         {accounts.map((acc: any, index: number) => (
           <Card id={index.toString()} onPress={() => {
             navigation.navigate('Account Info', { ...acc, label: "Update" })

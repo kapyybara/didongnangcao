@@ -17,7 +17,6 @@ import { GlobalContext } from '../../contexts/context';
 import { useNavigation } from '@react-navigation/native';
 
 const CreateTransfer = () => {
-  const [inputDate, setInputDate] = useState(undefined);
   const [fromAccount, setFromAccount] = useState('');
   const [toAccount, setToAccount] = useState('');
   const [showDropDown1, setShowDropDown1] = useState(false);
@@ -67,31 +66,14 @@ const CreateTransfer = () => {
       },
       user_id: { id: user.id },
       description,
-      date: inputDate
+      date: new Date()
     }
 
     const fromAccountData = accounts.find(i => i.id == fromAccount)
     const toAccountData = accounts.find(i => i.id == toAccount)
 
     try {
-      await Promise.all([
-        directusInstance.request(createItem('transfer_history', data)),
-        directusInstance.request(createItem('trasaction', {
-          name: `Transfer from ${fromAccountData.name} to ${toAccountData.name}`,
-          total: money,
-          trading_date: inputDate,
-          account_id: {id: fromAccount},
-        description,
-        category: 'transfer',
-        })),
-        directusInstance.request(updateItem('account', fromAccount, {
-          total: (+fromAccountData.total) + (+money)
-        })),
-        directusInstance.request(updateItem('account', toAccount, {
-          total: (+toAccountData.total) - (+money)
-        }))
-      ])
-
+      await directusInstance.request(createItem('transfer_history', data))
       navigation.goBack()
     } catch (error) {
       console.log(error)
@@ -134,16 +116,6 @@ const CreateTransfer = () => {
             showDropDown={() => setShowDropDown2(true)}
             onDismiss={() => setShowDropDown2(false)}
             value={toAccount}
-          />
-        </View>
-        <View>
-          <DatePickerInput
-            locale="en"
-            label="Date"
-            mode={'outlined'}
-            value={inputDate}
-            onChange={(d: any) => setInputDate(d)}
-            inputMode="start"
           />
         </View>
         <TextInput

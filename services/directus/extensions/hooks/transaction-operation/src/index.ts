@@ -64,4 +64,42 @@ export default defineHook(({ filter, action, schedule }, { getSchema, services, 
 		account.total = account.total - total
 		await accountService.updateOne(account.id, account);
 	});
+
+	action('transfer_history.items.create', async (handler, context) => {
+		const accountService = new ItemsService('account', {
+			schema: await getSchema(),
+			accountability: context.accountability
+		});
+		const trasactionService = new ItemsService('trasaction', {
+			schema: await getSchema(),
+			accountability: context.accountability
+		});
+
+		console.log({handler})
+
+		const fromAccount = await accountService.readOne(handler.payload.from_acc.id);
+		const toAccount = await accountService.readOne(handler.payload.to_acc.id);
+		await trasactionService.createOne({
+			name: `Send to ${toAccount.name}`,
+			total: handler.payload.amount,
+			trading_date: handler.payload.date,
+			account_id: handler.payload.from_acc.id,
+			type : 'expenses',
+			category: 'Chuyển tiền',
+			description : `Transfer from ${fromAccount.name} to ${toAccount.name} `,
+		});
+
+		await trasactionService.createOne({
+			name: `Receive from ${fromAccount.name} `,
+			total: handler.payload.amount,
+			trading_date: handler.payload.date,
+			category: 'transfer',
+			type : 'income',
+			account_id: handler.payload.to_acc.id,
+			description : `Transfer from ${fromAccount.name} to ${toAccount.name} `,
+		});
+
+	});
+
+
 });
