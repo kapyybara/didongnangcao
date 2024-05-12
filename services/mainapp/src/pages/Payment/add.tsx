@@ -56,11 +56,7 @@ const AddPayment = () => {
           (await directusInstance.request(
             readItems('account', {
               filter: {
-                user_id: {
-                  email: {
-                    _eq: user?.email,
-                  },
-                },
+                user_id: user?.id
               },
             }),
           )) || [];

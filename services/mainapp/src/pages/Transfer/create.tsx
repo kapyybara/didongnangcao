@@ -31,9 +31,7 @@ const CreateTransfer = () => {
     (async () => {
       const accountsRes = await directusInstance.request(readItems('account', {
         filter: {
-          user_id: {
-            id: user?.id
-          }
+          user_id: user?.id
         }
       }))
       setAccounts(accountsRes || [])
@@ -64,7 +62,7 @@ const CreateTransfer = () => {
       to_acc: {
         id: toAccount
       },
-      user_id: { id: user.id },
+      user_id: user?.id,
       description,
       date: new Date()
     }

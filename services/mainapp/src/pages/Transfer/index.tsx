@@ -24,10 +24,7 @@ const TransferHistory = () => {
     (async () => {
       const transfersData = await directusInstance.request(readItems('transfer_history', {
         filter: {
-
-        user_id: {
-          id: user.id
-        }
+          user_id: user?.id
         },
         fields: ['*', "from_acc.*", "to_acc.*"]
       }))
@@ -64,26 +61,26 @@ const TransferHistory = () => {
             <View className="w-full p-2">
               <Text className="py-2 text-base font-bold">{dayjs(key).format('MMMM YYYY')}</Text>
               <View className="flex gap-4">
-              {
-                transfers[key].map((i) => 
-                <Card>
-                  <Card.Title
-                    title={i.from_acc.name}
-                    subtitle={`Transfer to ${i.to_acc.name}`}
-                    left={props => (
-                      <View className="flex items-center justify-center p-1 rounded-md bg-zinc-200">
-                        <Icon size={32} source="home-outline" />
-                      </View>
-                    )}
-                    right={props => (
-                      <Text variant="bodyLarge" className="mr-4 text-green-700">
-                        {i.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}VND
-                      </Text>
-                    )}
-                  />
-                </Card>
-                )
-              }
+                {
+                  transfers[key].map((i) =>
+                    <Card>
+                      <Card.Title
+                        title={i.from_acc.name}
+                        subtitle={`Transfer to ${i.to_acc.name}`}
+                        left={props => (
+                          <View className="flex items-center justify-center p-1 rounded-md bg-zinc-200">
+                            <Icon size={32} source="home-outline" />
+                          </View>
+                        )}
+                        right={props => (
+                          <Text variant="bodyLarge" className="mr-4 text-green-700">
+                            {i.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}VND
+                          </Text>
+                        )}
+                      />
+                    </Card>
+                  )
+                }
               </View>
             </View>
           )}

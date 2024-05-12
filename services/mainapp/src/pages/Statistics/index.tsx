@@ -36,9 +36,7 @@ export const Statistic = () => {
       readItems(TRANSACTION_KEY, {
         sort: ['-trading_date'],
         filter: {
-          user_id: {
-            email: user.email,
-          },
+          user_id: user?.id
         },
       }),
     )) as any

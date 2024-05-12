@@ -46,9 +46,7 @@ export default function AllTransactions() {
     const accounts = (await directusInstance.request(
       readItems(ACCOUNT_KEY, {
         filter: {
-          user_id: {
-            email: user.email,
-          },
+          user_id: user?.id
         },
       }),
     )) as any
@@ -86,9 +84,7 @@ export default function AllTransactions() {
       readItems(TRANSACTION_KEY, {
         sort: ['-trading_date'],
         filter: {
-          user_id: {
-            email: user.email,
-          },
+          user_id: user?.id
         },
         limit: PAGE_SIZE, // Number of items to return
         offset: (page - 1) * PAGE_SIZE, // Number of items to skip

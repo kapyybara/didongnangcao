@@ -126,11 +126,7 @@ export default function CreateTransaction(props: any) {
         const res = await directusInstance.request(
           readItems('account', {
             filter: {
-              user_id: {
-                email: {
-                  _eq: user?.email,
-                },
-              },
+              user_id: user?.id
             },
           }),
         )

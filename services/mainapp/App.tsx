@@ -33,8 +33,12 @@ import { initDirectusInstance } from './src/services/directus'
 import { DirectusUser } from './src/typings/models'
 import AllTransactions from './src/pages/Transaction/AllTransactions'
 import AccountNew from './src/pages/Account/createOrUpdate'
+import Notification from './src/pages/Notification'
+import { LogBox } from "react-native"
 
 const Stack = createStackNavigator()
+LogBox.ignoreAllLogs(true)
+
 
 export default function App() {
   const [initializing, setInitializing] = useState(true)
@@ -138,6 +142,7 @@ export default function App() {
                   />
                   <Stack.Screen name='Add Payment' component={AddPayment} />
                   <Stack.Screen name='Edit Payment' component={EditPayment} />
+                  <Stack.Screen name='Notifications' component={Notification} />
                 </Stack.Navigator>
               </AuthHoc>
             </NavigationContainer>
