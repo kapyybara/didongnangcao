@@ -99,12 +99,4 @@ export default defineHook(({ filter, action, schedule }, { getSchema, services, 
 		});
 
 	});
-
-	schedule('* * 24 * * *', async () => {
-		await axios.post('http://0.0.0.0:8055/transaction-operation/payment_cronjob', {
-			headers: {
-				Authorization: 'Bearer 5P8aI2ZZN4xnF2i5weQeIk28tR33_DQD'  
-			}
-		});
-	})
 });

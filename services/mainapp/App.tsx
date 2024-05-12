@@ -35,6 +35,7 @@ import AllTransactions from './src/pages/Transaction/AllTransactions'
 import AccountNew from './src/pages/Account/createOrUpdate'
 import Notification from './src/pages/Notification'
 import { LogBox } from "react-native"
+import { allAccount } from './src/contants/transaction/empty-account.constant'
 
 const Stack = createStackNavigator()
 LogBox.ignoreAllLogs(true)
@@ -44,10 +45,10 @@ export default function App() {
   const [initializing, setInitializing] = useState(true)
   const [user, setUser] = useState<any>()
 
-  const [account, setAccount] = useState('Total')
+  const [account, setAccount] = useState(allAccount)
 
   function onAuthStateChanged(user: any) {
-    ;(async () => {
+    ; (async () => {
       if (user?.email) {
         const directusUser = (await getUserByEmail(user?.email))[0]
         setUser(

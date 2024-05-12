@@ -12,6 +12,7 @@ export default function Notification() {
     const [refreshing, setRefreshing] = useState(false)
 
     const { user } = useContext(GlobalContext)
+    
 
     useEffect(() => {
         ; (async () => {

@@ -17,14 +17,8 @@ export type PaymentCardType = {
 
 export default function PaymentCard(data: PaymentCardType) {
   const navigation = useNavigation()
-  const [active , setActive] = useState(data.add_automation == 'true')
-  console.log('data', active)
-  
-  const handleSwitchAddAutomation = ()=>{
-    setActive(!active)
-  }
   return (  
-    <Card className='w-full mb-4' key={data.id} onPress={()=>navigation.navigate("Edit Payment",data )}>
+    <Card className=' mb-4 px-2 mx-2' key={data.id} onPress={()=>navigation.navigate("Edit Payment",data )}>
       <Card.Title
               title={data.name}
               subtitle={"Every "+ data.cycle_day+" days"}
@@ -33,7 +27,7 @@ export default function PaymentCard(data: PaymentCardType) {
                   <Text variant="bodyLarge" className="mr-4 text-green-700">
                    {data.type == "Expenses"? "-":""}{data?.total?.toLocaleString()}VNĐ
                   </Text>
-                  <Switch value={active} onValueChange={handleSwitchAddAutomation}></Switch>
+                  <Switch disabled={true} value={data?.add_automation} ></Switch>
                 </View>
               )}
             />

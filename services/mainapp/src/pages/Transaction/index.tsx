@@ -6,7 +6,7 @@ import {
   ScrollView,
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler'
-import { Button, Icon, Menu, SegmentedButtons, Text } from 'react-native-paper'
+import { Button, Icon, IconButton, Menu, SegmentedButtons, Text } from 'react-native-paper'
 import TransactionCard from '../../components/transaction/TransactionCard'
 import {
   ACCOUNT_KEY,
@@ -16,29 +16,32 @@ import { allAccount } from '../../contants/transaction/empty-account.constant'
 import { filterItems } from '../../contants/transaction/filter-item'
 import { GlobalContext } from '../../contexts/context'
 import { directusInstance } from '../../services/directus'
-import { Account } from '../../types/account'
 import { Transaction as TTransaction } from '../../types/transaction'
 import { formatVND } from '../../utils/money'
+import { filterDates, getFirstDateFilter } from '../../utils/number'
 
 export default function Transaction() {
-  const { user } = useContext(GlobalContext)
+  const { user, account, setAccount } = useContext(GlobalContext)
   const navigation = useNavigation()
   const isFocused = useIsFocused()
 
   const [showAccountsDropdown, setShowAccountsDropdown] = useState(false)
 
-  const [accounts, setAccounts] = useState<Account[]>([])
+  const [accounts, setAccounts] = useState<any[]>([])
   const [transactions, setTransactions] = useState<TTransaction[]>([])
-
-  const [account, setAccount] = useState('')
   const [filter, setFilter] = useState(filterItems[0].value)
-
   const fetchTransactions = async () => {
     const response = (await directusInstance.request(
       readItems(TRANSACTION_KEY, {
         sort: ['-trading_date'],
         filter: {
-          account_id: account,
+          account_id: account.id == "-1" ? {
+            user_id: user?.id
+          } : account.id,
+          trading_date: {
+            _gte: getFirstDateFilter(filter),
+            _lte: new Date()
+          }
         },
       }),
     )) as any
@@ -46,18 +49,6 @@ export default function Transaction() {
     setTransactions(response)
   }
 
-  const fetchAllTransactions = async () => {
-    const response = (await directusInstance.request(
-      readItems(TRANSACTION_KEY, {
-        sort: ['-trading_date'],
-        filter: {
-          user_id: user?.id
-        },
-      }),
-    )) as any
-
-    setTransactions(response)
-  }
 
   const fetchAccounts = useCallback(async () => {
     const accounts = (await directusInstance.request(
@@ -68,12 +59,9 @@ export default function Transaction() {
       }),
     )) as any
 
-    setAccount(allAccount.id)
     setAccounts([
       allAccount,
-      ...accounts.sort((a: Account, b: Account) =>
-        a.name.localeCompare(b.name),
-      ),
+      ...accounts
     ])
   }, [])
 
@@ -93,21 +81,20 @@ export default function Transaction() {
 
   useEffect(() => {
     if (account) {
-      if (account === '-1') {
-        fetchAllTransactions()
-      } else {
-        fetchTransactions()
-      }
+      fetchTransactions()
     }
-  }, [account])
+  }, [account, filter])
 
   return (
     <SafeAreaView className='flex-1'>
-      <View className='pt-4 pb-2 flex-row items-end border-b border-[#ccc] mx-4 flex justify-between'>
-        <Text className='text-xl font-bold'>Transactions Manager</Text>
-        <Text className='text-right italic text-gray-500'>
-          Today: {new Date().toLocaleDateString()}
-        </Text>
+      <View className='pt-4 pb-2 flex-row items-center border-b border-[#ccc] mx-4 flex justify-between'>
+        <Text className='text-xl font-bold items-center align-middle'>Transactions Manager</Text>
+        <View className='items-center '>
+          <IconButton
+            icon="plus"
+            onPress={() => navigation.navigate('Transaction Info')}>
+          </IconButton>
+        </View>
       </View>
       <View className='flex-1 pt-2 pb-4 bg-[#fafafa] flex flex-col'>
         <ScrollView className='px-4'>
@@ -117,7 +104,7 @@ export default function Transaction() {
             <View className='flex flex-row justify-start items-center'>
               <View className='flex flex-row gap-2'>
                 <Text className='font-bold text-base'>
-                  {accounts.find(i => i.id === account)?.name}
+                  {accounts.find(i => i.id === account.id)?.name}
                 </Text>
               </View>
               <Menu
@@ -132,7 +119,7 @@ export default function Transaction() {
                   <Menu.Item
                     key={index}
                     onPress={() => {
-                      setAccount(account.id)
+                      setAccount(account)
                       setShowAccountsDropdown(false)
                     }}
                     title={account.name}
@@ -144,10 +131,10 @@ export default function Transaction() {
                   Total:{' '}
                   <Text className='font-bold text-base'>
                     {formatVND(
-                      account === '-1'
+                      account.id === '-1'
                         ? accounts.reduce((acc, item) => acc + item.total, 0)
-                        : accounts.find(item => item.id === account)?.total ||
-                            0,
+                        : accounts.find(item => item.id === account.id)?.total ||
+                        0,
                     )}
                   </Text>
                 </Text>
@@ -160,6 +147,12 @@ export default function Transaction() {
             buttons={filterItems}
             density='small'
           />
+          <View className='mt-4 items-center gap-x-3'>
+            <Text className=''>
+              {filterDates(filter)}
+            </Text>
+
+          </View>
           <View className='mt-4 flex flex-row items-center gap-x-3'>
             <Text className='text-xs text-[#7D8895] mt-1'>
               My Total Earnings:
@@ -178,32 +171,51 @@ export default function Transaction() {
           </View>
           <View className='mt-4'>
             <View className='flex mb-2 flex-row items-center justify-between'>
-              <Text className='font-medium'>Recently transactions</Text>
+              <Text className='font-medium'>Recently expenses</Text>
               <Button onPress={() => navigation.navigate('All Transactions')}>
                 See All {'>'}
               </Button>
             </View>
             <View className='w-full mt-1 flex flex-col'>
-              {transactions.length > 0 ? (
+              {transactions
+                .filter((transaction) => transaction.type == "expenses").length > 0 ? (
                 transactions
+                  .filter((transaction) => transaction.type == "expenses")
                   .slice(0, 3)
                   .map((transaction, index) => (
                     <TransactionCard key={index} {...transaction} />
                   ))
               ) : (
                 <Text className='text-center text-gray-400 mb-2'>
-                  The is no transaction here, create one now!
+                  The is no expenses here, create one now!
                 </Text>
               )}
             </View>
           </View>
-          <View className='my-4'>
-            <Button
-              className='border shadow-sm bg-green-600 w-[200px] mx-auto h-10'
-              onPress={() => navigation.navigate('Transaction Info')}>
-              <Text className='text-white'>Add new</Text>
-            </Button>
+          <View className='mt-4'>
+            <View className='flex mb-2 flex-row items-center justify-between'>
+              <Text className='font-medium'>Recently income</Text>
+              <Button onPress={() => navigation.navigate('All Transactions')}>
+                See All {'>'}
+              </Button>
+            </View>
+            <View className='w-full mt-1 flex flex-col'>
+              {transactions
+                .filter((transaction) => transaction.type == "income").length > 0 ? (
+                transactions
+                  .filter((transaction) => transaction.type == "income")
+                  .slice(0, 3)
+                  .map((transaction, index) => (
+                    <TransactionCard key={index} {...transaction} />
+                  ))
+              ) : (
+                <Text className='text-center text-gray-400 mb-2'>
+                  The is no income here, create one now!
+                </Text>
+              )}
+            </View>
           </View>
+
         </ScrollView>
       </View>
     </SafeAreaView>

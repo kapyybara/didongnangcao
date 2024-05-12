@@ -19,7 +19,7 @@ export default function Home() {
   const { account, setAccount } = useContext(GlobalContext)
   const [total, setTotal] = useState(0)
   const [refreshing, setRefreshing] = useState(false)
-  const [totalNoti, setTotalNoti] = useState(0); 
+  const [totalNoti, setTotalNoti] = useState(0);
 
   const { user } = useContext(GlobalContext)
 
@@ -37,11 +37,11 @@ export default function Home() {
             sort: ['-trading_date'],
             limit: 4,
             filter: {
-              account_id: account == "Total" ? {
+              account_id: account.name == "Total" ? {
                 user_id: user?.id
               } : {
                 user_id: user?.id,
-                name: account
+                name: account.name
               },
             },
           }),
@@ -54,9 +54,9 @@ export default function Home() {
   }, [user, isFocused, account])
 
   useEffect(() => {
-    if (account == "Total") setTotal(accounts.reduce((accumulator: any, account: any) => accumulator + account.total, 0))
+    if (account.name == "Total") setTotal(accounts.reduce((accumulator: any, a: any) => accumulator + a.total, 0))
     else {
-      getAccountByName(account).then((result) => {
+      getAccountByName(account.name).then((result) => {
         setTotal(result[0].total)
       })
     }
@@ -74,18 +74,18 @@ export default function Home() {
         }),
       )
       setAccounts(res)
-      setRefreshing(false)
 
       const notis = await directusInstance.request(
         readItems(NOTIFICATION_KEY, {
           sort: ['-date_created'],
           filter: {
-            user_id : user?.id,
-            is_read : "false" 
+            user_id: user?.id,
+            is_read: "false"
           },
         }),
       )
       setTotalNoti(notis.length)
+      setRefreshing(false)
     })()
   }, [refreshing])
 
@@ -103,12 +103,12 @@ export default function Home() {
           </Text>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
-        <View className="flex items-center content-center relatives">
-        {totalNoti > 0 && <Badge className="absolute">{totalNoti}</Badge> }
-          <IconButton icon="bell-ring-outline"  ></IconButton>
-        </View>
+          <View className="flex items-center content-center relatives">
+            {totalNoti > 0 && <Badge className="absolute">{totalNoti}</Badge>}
+            <IconButton icon="bell-ring-outline"  ></IconButton>
+          </View>
         </TouchableOpacity>
-        
+
 
       </View>
       <LinearGradient
@@ -117,7 +117,7 @@ export default function Home() {
         end={{ x: 1, y: 5 }}
         className='rounded-md w-full  py-4 flex flex-col items-center pb-12 shadow-sm shadow-slate-900'>
         <TouchableOpacity onPress={openMenu} className='flex w-full rounded-md flex-row items-center justify-center mb-2'>
-          <Text className=' text-white text-lg'>{account}</Text>
+          <Text className=' text-white text-lg'>{account.name}</Text>
           <View className=' w-4'>
             <Menu
               visible={visible}
@@ -127,9 +127,12 @@ export default function Home() {
                   <Icon source='menu-down' color={'black'} size={20} />
                 </Button>
               }>
-              <Menu.Item onPress={() => setAccount("Total")} title="Total" />
+              <Menu.Item onPress={() => setAccount({
+                id : -1 , 
+                name : "Total"
+              })} title="Total" />
               {accounts.map((acc: any) => {
-                return <Menu.Item onPress={() => setAccount(acc.name)} title={acc.name} />
+                return <Menu.Item onPress={() => setAccount(acc)} title={acc.name} />
               })}
             </Menu>
           </View>
