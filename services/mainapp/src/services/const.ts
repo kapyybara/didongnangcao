@@ -15,7 +15,8 @@ export const CategoryList = [
     { label: "Trả nợ", value: "Trả nợ" },
     { label: "Thanh toán thẻ", value: "Thanh toán thẻ" },
     { label: "Thu nhập phụ", value: "Thu nhập phụ" },
-    { label: "Chi tiêu đặc biệt", value: "Chi tiêu đặc biệt" }
+    { label: "Chi tiêu đặc biệt", value: "Chi tiêu đặc biệt" },
+    { label: "Chuyển tiền", value: "Chuyển tiền" }
 ]
 
 export const TransactionType = [

@@ -29,6 +29,7 @@ import {
   TRANSACTION_KEY,
 } from '../../contants/schema-key.constant'
 import { Account } from '../../types/account'
+import Loading from '../../components/Loading'
 
 export default function CreateTransaction(props: any) {
   const transactionId = useMemo(() => props.route?.params?.id, [])
@@ -51,7 +52,8 @@ export default function CreateTransaction(props: any) {
   const [account, setAccount] = useState('')
   const [inputDate, setInputDate] = useState(undefined)
   const [description, setDescription] = useState('')
-
+  const [loading , setLoading] = useState(false);
+ 
   const [showCategories, setShowCategories] = useState(false)
   const [showAccounts, setShowAccounts] = useState(false)
   const [visible, setVisible] = useState(false)
@@ -78,14 +80,6 @@ export default function CreateTransaction(props: any) {
         } as any),
       )
 
-      await directusInstance.request(
-        updateItem(ACCOUNT_KEY, account, {
-          total:
-            (accounts.find(i => i.id === account) as any).total +
-            (type === 'income' ? money : -money),
-        }),
-      )
-
       setData({ text: 'Create transaction successfully!' })
       navigation.goBack()
     } catch (e) {
@@ -104,34 +98,6 @@ export default function CreateTransaction(props: any) {
         account_id: account,
       }),
     )
-
-    // update total of account
-    if (oldData.account_id !== account) {
-      await directusInstance.request(
-        updateItem(ACCOUNT_KEY, oldData.account_id, {
-          total:
-            (accounts.find(i => i.id === oldData.account_id) as any).total +
-            (oldData.type === 'income' ? -oldData.total : oldData.total),
-        }),
-      )
-
-      await directusInstance.request(
-        updateItem(ACCOUNT_KEY, account, {
-          total:
-            (accounts.find(i => i.id === account) as any).total +
-            (type === 'income' ? money : -money),
-        }),
-      )
-    } else {
-      await directusInstance.request(
-        updateItem(ACCOUNT_KEY, account, {
-          total:
-            (accounts.find(i => i.id === account) as any).total +
-            (type === 'income' ? money : -money) -
-            (oldData.type === 'income' ? oldData.total : -oldData.total),
-        }),
-      )
-    }
 
     setData({ text: 'Create transaction successful!' })
     navigation.goBack()
@@ -160,11 +126,7 @@ export default function CreateTransaction(props: any) {
         const res = await directusInstance.request(
           readItems('account', {
             filter: {
-              user_id: {
-                email: {
-                  _eq: user.email,
-                },
-              },
+              user_id: user?.id
             },
           }),
         )
@@ -181,7 +143,8 @@ export default function CreateTransaction(props: any) {
 
   useEffect(() => {
     if (mode === 'update') {
-      ;(async () => {
+      setLoading(true);
+      (async () => {
         const transactionData = await directusInstance.request(
           readItem(TRANSACTION_KEY, transactionId),
         )
@@ -196,12 +159,13 @@ export default function CreateTransaction(props: any) {
         setMoney(transactionData.total)
 
         setOldData(transactionData)
+        setLoading(false);
       })()
     }
   }, [transactionId])
 
   return (
-    <View className='flex flex-1 flex-col justify-start p-3 gap-2'>
+    loading ? <Loading/> : <View className='flex flex-1 flex-col justify-start p-3 gap-2'>
       <SegmentedButtons
         value={type}
         onValueChange={setType}

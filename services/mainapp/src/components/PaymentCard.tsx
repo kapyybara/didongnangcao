@@ -3,8 +3,8 @@ import dayjs from 'dayjs'
 import { Switch, View } from 'react-native'
 import { Card, Icon, Text } from 'react-native-paper'
 import { CategoryIcon } from '../contants'
-import { useNavigation } from '@react-navigation/native'
-import { useState } from 'react'
+import { useIsFocused, useNavigation } from '@react-navigation/native'
+import { useEffect, useState } from 'react'
 
 export type PaymentCardType = {
   id: string,
@@ -12,19 +12,13 @@ export type PaymentCardType = {
   total: number,
   cycle_day: number,
   type: string,
-  add_automation : string
+  add_automation : boolean
 }
 
 export default function PaymentCard(data: PaymentCardType) {
   const navigation = useNavigation()
-  const [active , setActive] = useState(data.add_automation == "true")
-
-  const handleSwitchAddAutomation = ()=>{
-    setActive(!active)
-  }
-
-  return (
-    <Card className='w-full mb-4' key={data.id} onPress={()=>navigation.navigate("Edit Payment",data )}>
+  return (  
+    <Card className=' mb-4 px-2 mx-2' key={data.id} onPress={()=>navigation.navigate("Edit Payment",data )}>
       <Card.Title
               title={data.name}
               subtitle={"Every "+ data.cycle_day+" days"}
@@ -33,7 +27,7 @@ export default function PaymentCard(data: PaymentCardType) {
                   <Text variant="bodyLarge" className="mr-4 text-green-700">
                    {data.type == "Expenses"? "-":""}{data?.total?.toLocaleString()}VNĐ
                   </Text>
-                  <Switch value={active} onValueChange={handleSwitchAddAutomation}></Switch>
+                  <Switch disabled={true} value={data?.add_automation} ></Switch>
                 </View>
               )}
             />

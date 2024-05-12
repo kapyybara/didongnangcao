@@ -7,31 +7,110 @@ import {
   TextInput,
 } from 'react-native-paper';
 import {ScrollView, View} from 'react-native';
-import {CategoryList, TransactionType} from '../../services/const';
-import {useState} from 'react';
+import {CategoryList, ReminderFrequencyList, TransactionType} from '../../services/const';
+import {useContext, useEffect, useState} from 'react';
 import {DatePickerInput} from 'react-native-paper-dates';
 import DropDown from 'react-native-paper-dropdown';
+import { directusInstance } from '../../services/directus';
+import { readItems } from '@directus/sdk';
+import { GlobalContext } from '../../contexts/context';
+import { createPayment, getPayment, updatePayment } from '../../controllers/payment.controller';
+import { SnackBarContext } from '../../hocs/SnackBar';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import Loading from '../../components/Loading';
 
-const EditPayment = () => {
+const EditPayment = (props:any) => {
+  const [loading, setLoading]  = useState(false)
   const [type, setType] = useState('expenses');
-  const [quantity, setQuantity] = useState('');
+  const [total, setTotal] = useState('');
   const [name, setName] = useState('');
-  const [reminder, setReminder] = useState('');
-  const [fromDate, setFromDate] = useState('');
-  const [toDate, setToDate] = useState('');
-  const [inputDate, setInputDate] = useState(undefined);
+  const [reminder, setReminder] = useState(0);
+  const [fromDate, setFromDate] = useState(new Date());
+  const [toDate, setToDate] = useState(new Date());
+  const {setData} = useContext(SnackBarContext);
   const [account, setAccount] = useState('');
-  const [showDropDown1, setShowDropDown1] = useState(false);
+  const [accounts, setAccounts] = useState([])
+  const [addAutomation,setAddAutomation] =useState(false)
+  const [showReminderFrequencyDropDown, setShowReminderFrequencyDropDown] = useState(false);
+  const [showAccountDropDown, setShowAccountDropDown] = useState(false);
+  const [showCategoryDropDown, setShowCategoryDropDown] = useState(false);
   const [description, setDescription] = useState('');
+  const [category,setCategory] = useState("")
+  const {user} =useContext(GlobalContext)
+  const navigation = useNavigation()
+  const isFocused = useIsFocused()
 
-  return (
-    <ScrollView className="w-full h-full">
-      <View className="flex w-full h-full gap-2 p-1 top-1">
+  const handleSwitchAddAutomation = (value)=>{
+      console.log({addAutomation,value})
+    setAddAutomation(!addAutomation)
+  }
+
+  const handleEditPayment = ()=>{
+    (async ()=>{
+      const res = await updatePayment(props.route?.params.id, type,name,Number(total),reminder,fromDate,toDate, category,description,addAutomation, account)
+      if (res){
+        setData({text: 'Update regular payment successful!'});
+        navigation.goBack();
+      }
+    })()
+  }
+
+
+  useEffect(() => {
+    if (user) {
+      (async () => {
+        const res =
+          (await directusInstance.request(
+            readItems('account', {
+              filter: {
+                user_id: user?.id
+              },
+            }),
+          )) || [];
+        setAccounts(
+          res.map(i => ({
+            label: i.name,
+            value: i.id,
+          })),
+        );
+      })();
+    }
+  }, [account , isFocused]);
+
+  useEffect(()=>{
+    setLoading(true)
+
+    ;(async ()=>{
+      const payment = await getPayment(props.route?.params.id)
+      if (payment) {
+        setName(payment.name)
+        setTotal(payment.total.toString())
+        setCategory(payment.category)
+        setAccount(payment.account_id)
+        setReminder(payment.cycle_day)
+        setAddAutomation(payment.add_automation == 'true')
+        setType(payment.type)
+        setFromDate(new Date(payment.from))
+        setToDate(new Date(payment.to))
+        setDescription(payment.description)
+      }else{
+        setData({text: "Payment not exist!. Please try again"});
+        navigation.goBack()
+      }
+      setLoading(false)
+    })()
+  },[])
+
+  
+
+  return loading ? <Loading/> : (
+    <ScrollView className="w-full h-full p-3">
+      <View className="flex w-full h-full gap-2  ">
         <View className="flex-row items-center justify-center p-5">
           <TextInput
             mode="flat"
-            value={quantity}
-            onChangeText={e => setQuantity(e)}
+            value={total}
+            onChangeText={e => setTotal(e)}
             className="w-48 h-12 text-lg bg-transparent border-b"
           />
           <Text className="ml-2">VND</Text>
@@ -54,28 +133,28 @@ const EditPayment = () => {
           <DropDown
             label={'Reminder frequency'}
             mode={'outlined'}
-            setValue={setAccount}
-            list={CategoryList}
-            visible={showDropDown1}
-            showDropDown={() => setShowDropDown1(true)}
-            onDismiss={() => setShowDropDown1(false)}
-            value={account}
+            setValue={setReminder}
+            list={ReminderFrequencyList}
+            visible={showReminderFrequencyDropDown}
+            showDropDown={() => setShowReminderFrequencyDropDown(true)}
+            onDismiss={() => setShowReminderFrequencyDropDown(false)}
+            value={reminder}
           />
         </View>
         <DatePickerInput
           locale="en"
           label="From"
           mode={'outlined'}
-          value={inputDate}
-          onChange={(d: any) => setInputDate(d)}
+          value={fromDate}
+          onChange={(d: any) => setFromDate(d)}
           inputMode="start"
         />
         <DatePickerInput
           locale="en"
           label="To"
           mode={'outlined'}
-          value={inputDate}
-          onChange={(d: any) => setInputDate(d)}
+          value={toDate}
+          onChange={(d: any) => setToDate(d)}
           inputMode="start"
         />
         <View>
@@ -83,10 +162,10 @@ const EditPayment = () => {
             label={'Account'}
             mode={'outlined'}
             setValue={setAccount}
-            list={CategoryList}
-            visible={showDropDown1}
-            showDropDown={() => setShowDropDown1(true)}
-            onDismiss={() => setShowDropDown1(false)}
+            list={accounts}
+            visible={showAccountDropDown}
+            showDropDown={() => setShowAccountDropDown(true)}
+            onDismiss={() => setShowAccountDropDown(false)}
             value={account}
           />
         </View>
@@ -94,12 +173,12 @@ const EditPayment = () => {
           <DropDown
             label={'Category'}
             mode={'outlined'}
-            setValue={setAccount}
+            setValue={setCategory}
             list={CategoryList}
-            visible={showDropDown1}
-            showDropDown={() => setShowDropDown1(true)}
-            onDismiss={() => setShowDropDown1(false)}
-            value={account}
+            visible={showCategoryDropDown}
+            showDropDown={() => setShowCategoryDropDown(true)}
+            onDismiss={() => setShowCategoryDropDown(false)}
+            value={category}
           />
         </View>
         <TextInput
@@ -111,14 +190,14 @@ const EditPayment = () => {
           numberOfLines={5}
         />
         <View className="flex flex-row items-center justify-between">
-          <Text variant="bodyMedium"> Add Automation</Text>
-          <Switch></Switch>
+          <Text variant="bodyMedium"> Add Automation {addAutomation}</Text>
+          
+          <Switch value={addAutomation} onValueChange={handleSwitchAddAutomation}></Switch>
         </View>
         <Button
-          icon="plus"
           mode="contained"
-          onPress={() => console.log('Added')}>
-          Add
+          onPress={handleEditPayment}>
+          Edit
         </Button>
       </View>
     </ScrollView>

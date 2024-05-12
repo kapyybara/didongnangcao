@@ -11,7 +11,7 @@ export default function AccountNew({ route }) {
   const [money, setMoney] = useState(0)
   const [name, setName] = useState('')
   const [include_in_balance, setIncludeInBalnace] = useState(false)
-  const [buttonLabel , setButtonLabel] = useState("Add")
+  const [buttonLabel, setButtonLabel] = useState("Add")
 
   const { user } = useContext(GlobalContext)
   const { setData } = useContext(SnackBarContext)
@@ -27,9 +27,7 @@ export default function AccountNew({ route }) {
           total: money,
           name,
           include_in_balance,
-          user_id: {
-            email: user.email,
-          },
+          user_id: user.id
         }),
       )
       if (res) {
@@ -42,9 +40,7 @@ export default function AccountNew({ route }) {
           total: money,
           name,
           include_in_balance,
-          user_id: {
-            email: user.email,
-          },
+          user_id: user.id
         }),
       )
       if (res) {
@@ -87,7 +83,7 @@ export default function AccountNew({ route }) {
         <Text variant='bodyMedium'>Do not include in total balance {include_in_balance}</Text>
         <Switch
           value={include_in_balance}
-          onValueChange={e => {setIncludeInBalnace(!include_in_balance)}}
+          onValueChange={e => { setIncludeInBalnace(!include_in_balance) }}
         />
       </View>
       <Button

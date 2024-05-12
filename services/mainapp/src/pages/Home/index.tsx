@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext, useMemo } from 'react'
-import { Touchable, TouchableOpacity, View } from 'react-native'
+import { RefreshControl, Touchable, TouchableOpacity, View } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 
-import { Button, Menu, Divider, Text, Icon, Card } from 'react-native-paper'
+import { Button, Menu, Divider, Text, Icon, Card, IconButton, Badge } from 'react-native-paper'
 import { GlobalContext } from '../../contexts/context'
 import { useNavigation, useIsFocused } from '@react-navigation/native'
 import { directusInstance } from '../../services/directus'
@@ -10,6 +10,7 @@ import { readItems } from '@directus/sdk'
 import TransactionCard from '../../components/TransactionCard'
 import { ScrollView } from 'react-native-gesture-handler'
 import { getAccountByName } from '../../controllers/account.controller'
+import { ACCOUNT_KEY, NOTIFICATION_KEY, TRANSACTION_KEY } from '../../contants/schema-key.constant'
 
 export default function Home() {
   const [visible, setVisible] = useState(false)
@@ -17,6 +18,8 @@ export default function Home() {
   const [accounts, setAccounts] = useState([])
   const { account, setAccount } = useContext(GlobalContext)
   const [total, setTotal] = useState(0)
+  const [refreshing, setRefreshing] = useState(false)
+  const [totalNoti, setTotalNoti] = useState(0);
 
   const { user } = useContext(GlobalContext)
 
@@ -30,23 +33,15 @@ export default function Home() {
     ; (async () => {
       try {
         const res = await directusInstance.request(
-          readItems('trasaction', {
+          readItems(TRANSACTION_KEY, {
             sort: ['-trading_date'],
             limit: 4,
             filter: {
-              account_id: account == "Total" ? {
-                user_id: {
-                  email: {
-                    _eq: user.email,
-                  },
-                },
+              account_id: account.name == "Total" ? {
+                user_id: user?.id
               } : {
-                user_id: {
-                  email: {
-                    _eq: user.email,
-                  },
-                },
-                name: account
+                user_id: user?.id,
+                name: account.name
               },
             },
           }),
@@ -56,44 +51,65 @@ export default function Home() {
         // console.log(error)
       }
     })()
-  }, [user, isFocused,account])
+  }, [user, isFocused, account])
 
   useEffect(() => {
-    if (account == "Total") setTotal(accounts.reduce((accumulator: any, account: any) => accumulator + account.total, 0))
-    getAccountByName(account).then((result) => {
-      setTotal(result[0].total)
-    })
+    if (account.name == "Total") setTotal(accounts.reduce((accumulator: any, a: any) => accumulator + a.total, 0))
+    else {
+      getAccountByName(account.name).then((result) => {
+        setTotal(result[0].total)
+      })
+    }
+
   }
     , [account, accounts])
 
   useEffect(() => {
     ; (async () => {
       const res = await directusInstance.request(
-        readItems('account', {
+        readItems(ACCOUNT_KEY, {
           filter: {
-            user_id: {
-              email: {
-                _eq: user.email,
-              },
-            },
+            user_id: user?.id
           },
         }),
       )
       setAccounts(res)
+
+      const notis = await directusInstance.request(
+        readItems(NOTIFICATION_KEY, {
+          sort: ['-date_created'],
+          filter: {
+            user_id: user?.id,
+            is_read: "false"
+          },
+        }),
+      )
+      setTotalNoti(notis.length)
+      setRefreshing(false)
     })()
-  }, [])
+  }, [refreshing])
 
 
 
   return (
-    <ScrollView className='w-full h-full p-3 flex gap-y-3' >
-      <View className='w-full'>
-        <Text variant='headlineMedium' className=' text-gray-900'>
-          Welcome,
-        </Text>
-        <Text variant='bodyLarge' className=' text-gray-900'>
-          {user?.email}
-        </Text>
+    <ScrollView className='w-full h-full p-3 flex gap-y-3' refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => setRefreshing(true)} />} >
+      <View className='w-full flex flex-row justify-between'>
+        <View>
+          <Text variant='headlineMedium' className=' text-gray-900'>
+            Welcome,
+          </Text>
+          <Text variant='bodyLarge' className=' text-gray-900'>
+            {user?.email}
+          </Text>
+        </View>
+        <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
+          <View className="flex items-center content-center relatives">
+            {totalNoti > 0 && <Badge className="absolute">{totalNoti}</Badge>}
+            <IconButton icon="bell-ring-outline"  ></IconButton>
+          </View>
+        </TouchableOpacity>
+
+
       </View>
       <LinearGradient
         colors={['#8E5FD9', '#DDCDF6', '#BB9AF1']}
@@ -101,7 +117,7 @@ export default function Home() {
         end={{ x: 1, y: 5 }}
         className='rounded-md w-full  py-4 flex flex-col items-center pb-12 shadow-sm shadow-slate-900'>
         <TouchableOpacity onPress={openMenu} className='flex w-full rounded-md flex-row items-center justify-center mb-2'>
-          <Text className=' text-white text-lg'>{account}</Text>
+          <Text className=' text-white text-lg'>{account.name}</Text>
           <View className=' w-4'>
             <Menu
               visible={visible}
@@ -111,9 +127,12 @@ export default function Home() {
                   <Icon source='menu-down' color={'black'} size={20} />
                 </Button>
               }>
-              <Menu.Item onPress={() => setAccount("Total")} title="Total" />
+              <Menu.Item onPress={() => setAccount({
+                id : -1 , 
+                name : "Total"
+              })} title="Total" />
               {accounts.map((acc: any) => {
-                return <Menu.Item onPress={() => setAccount(acc.name)} title={acc.name} />
+                return <Menu.Item onPress={() => setAccount(acc)} title={acc.name} />
               })}
             </Menu>
           </View>
@@ -131,7 +150,7 @@ export default function Home() {
           <Icon source='dots-vertical' color={'black'} size={20} />
         </View>
         <View className='w-full flex flex-row justify-around'>
-          <TouchableOpacity onPress={() => navigation.navigate('Account')}>
+          <TouchableOpacity key={"account_operation"} onPress={() => navigation.navigate('Account')}>
             <View className='w-fit flex flex-col items-center gap-1'>
               <Card>
                 <Card.Content>
@@ -141,7 +160,7 @@ export default function Home() {
               <Text variant='bodyMedium'>Account</Text>
             </View>
           </TouchableOpacity>
-          <View className='w-fit flex flex-col items-center gap-1'>
+          <View key={"expenses_operation"} className='w-fit flex flex-col items-center gap-1'>
             <TouchableOpacity onPress={() => navigation.navigate('Transaction Info', { type: "expenses" })}>
               <Card>
                 <Card.Content>
@@ -151,9 +170,8 @@ export default function Home() {
               <Text variant='bodyMedium'  >Expenses</Text>
             </TouchableOpacity>
           </View>
-          <View className='w-fit flex flex-col items-center gap-1'>
+          <View key={"income_operation"} className='w-fit flex flex-col items-center gap-1'>
             <TouchableOpacity onPress={() => navigation.navigate('Transaction Info', { type: "income" })}>
-
               <Card>
                 <Card.Content>
                   <Icon source='arrow-down' size={24} />
@@ -163,7 +181,7 @@ export default function Home() {
             </TouchableOpacity>
 
           </View>
-          <View className='w-fit flex flex-col items-center gap-1'>
+          <View key={"payment_operation"} className='w-fit flex flex-col items-center gap-1'>
             <TouchableOpacity onPress={() => navigation.navigate('Regular Payments')}>
               <Card>
                 <Card.Content>
@@ -184,9 +202,9 @@ export default function Home() {
           {/* <Icon source='chevron-right' color={'black'} size={20} /> */}
         </View>
         <View className='w-full flex flex-col '>
-          { transactions.length >0 ? transactions.map((tran: any) => <TransactionCard id={tran.id} category={tran.category} type={tran.type} name={tran.name} total={tran.total} trading_date={tran.trading_date} account_id={tran.account_id} />)
-          : <Text className='w-full h-16 justify-around text-center self-center'>You don't have any transaction yet!</Text>  
-        }
+          {transactions.length > 0 ? transactions.map((tran: any) => <TransactionCard key={tran.id} id={tran.id} category={tran.category} type={tran.type} name={tran.name} total={tran.total} trading_date={tran.trading_date} account_id={tran.account_id} />)
+            : <Text className='w-full h-16 justify-around text-center self-center'>You don't have any transaction yet!</Text>
+          }
         </View>
       </View>
     </ScrollView>

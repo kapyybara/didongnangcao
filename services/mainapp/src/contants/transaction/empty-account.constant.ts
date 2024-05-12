@@ -2,7 +2,7 @@ import { Account } from '../../types/account'
 
 export const allAccount: Account = {
   id: '-1',
-  name: 'All',
+  name: 'Total',
   user_id: '',
   total: 0,
   date_created: '',

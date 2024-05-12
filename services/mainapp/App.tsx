@@ -32,17 +32,23 @@ import CreateTransfer from './src/pages/Transfer/create'
 import { initDirectusInstance } from './src/services/directus'
 import { DirectusUser } from './src/typings/models'
 import AllTransactions from './src/pages/Transaction/AllTransactions'
+import AccountNew from './src/pages/Account/createOrUpdate'
+import Notification from './src/pages/Notification'
+import { LogBox } from "react-native"
+import { allAccount } from './src/contants/transaction/empty-account.constant'
 
 const Stack = createStackNavigator()
+LogBox.ignoreAllLogs(true)
+
 
 export default function App() {
   const [initializing, setInitializing] = useState(true)
   const [user, setUser] = useState<any>()
 
-  const [account, setAccount] = useState('Total')
+  const [account, setAccount] = useState(allAccount)
 
   function onAuthStateChanged(user: any) {
-    ;(async () => {
+    ; (async () => {
       if (user?.email) {
         const directusUser = (await getUserByEmail(user?.email))[0]
         setUser(
@@ -68,6 +74,7 @@ export default function App() {
   useEffect(() => {
     console.log(user)
   }, [user])
+  console.log(process.env.DIRECTUS_TOKEN)
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -76,7 +83,7 @@ export default function App() {
     })
     initDirectusInstance(
       'http://10.0.2.2:8055',
-      process.env.DIRECTUS_TOKEN || '1FXqbYQRKL9m-BjUDFzk73Q4p0zbujOY',
+      '5P8aI2ZZN4xnF2i5weQeIk28tR33_DQD'
     )
   }, [])
   if (initializing) {
@@ -115,7 +122,7 @@ export default function App() {
                     component={AllTransactions}
                   />
                   <Stack.Screen name='Account' component={AccountPage} />
-                  {/* <Stack.Screen name='Account Info' component={AccountNew} /> */}
+                  <Stack.Screen name='Account Info' component={AccountNew} />
                   <Stack.Screen
                     name='Regular Payments'
                     component={RegularPayments}
@@ -136,6 +143,7 @@ export default function App() {
                   />
                   <Stack.Screen name='Add Payment' component={AddPayment} />
                   <Stack.Screen name='Edit Payment' component={EditPayment} />
+                  <Stack.Screen name='Notifications' component={Notification} />
                 </Stack.Navigator>
               </AuthHoc>
             </NavigationContainer>

@@ -5,16 +5,69 @@ import { BarChart } from 'react-native-gifted-charts'
 import { ScrollView } from 'react-native-gesture-handler'
 import { Card, Icon, MD3Colors, ProgressBar, Text } from 'react-native-paper'
 import dayjs from 'dayjs'
+import { useContext, useEffect, useState } from 'react'
+import { GlobalContext } from '../../contexts/context'
+import { Account } from '../../types/account'
+import {Transaction as TTransaction } from '../../types/transaction'
+import { readItems } from '@directus/sdk'
+import { TRANSACTION_KEY } from '../../contants/schema-key.constant'
+import { directusInstance } from '../../services/directus'
+import { formatVND } from '../../utils/money'
+import { useIsFocused } from '@react-navigation/native'
 
 export const Statistic = () => {
   const currentDate = dayjs()
   const formattedDate = currentDate.format('MMM YYYY')
+
+  const {user} = useContext(GlobalContext)
+  const isFocused = useIsFocused()
+  const [accounts, setAccounts] = useState<Account[]>([])
+  const [transactions, setTransactions] = useState<TTransaction[]>([])
+
+  let totalSpending = 0,
+    totalEarning = 0
+  transactions.forEach(item =>
+    item.type === 'expenses'
+      ? (totalSpending += item.total)
+      : (totalEarning += item.total),
+  )
+  const fetchAllTransactions = async () => {
+    const response = (await directusInstance.request(
+      readItems(TRANSACTION_KEY, {
+        sort: ['-trading_date'],
+        filter: {
+          user_id: user?.id
+        },
+      }),
+    )) as any
+    console.log(response)
+    setTransactions(response)
+  }
+
+  useEffect(()=>{
+    user.email && fetchAllTransactions()
+  },[isFocused, user])
 
   const pieData = [
     { value: 54, color: '#177AD5', text: '54%' },
     { value: 40, color: '#79D2DE', text: '30%' },
     { value: 20, color: '#ED6665', text: '26%' },
   ]
+
+  const expenseLine = transactions.filter(item => item.type === 'expenses').map(item => {
+    return {
+      value: item.total,
+      dataPointText: item.total.toString()
+    }
+  })
+
+  const incomeLine = transactions.filter(item => item.type === 'income').map(item => {
+    return {
+      value: item.total,
+      dataPointText: item.total.toString()
+    }
+  })
+  
   const lineData = [
     { value: 3000000, dataPointText: '30k' },
     { value: 400000, dataPointText: '100000' },
@@ -136,15 +189,15 @@ export const Statistic = () => {
       </View>
       <View className='flex flex-row items-center justify-between mx-10 my-2'>
         <View>
-          <Text className='mb-1 text-xl font-medium text-center'>1000000</Text>
+          <Text className='mb-1 text-xl font-medium text-center'>{formatVND(totalSpending)}</Text>
           <Text className='mb-1 text-base font-medium text-center text-neutral-600'>
-            Income
+            Expense
           </Text>
         </View>
         <View>
-          <Text className='mb-1 text-xl font-medium text-center'>1000000</Text>
+          <Text className='mb-1 text-xl font-medium text-center'>{formatVND(totalEarning)}</Text>
           <Text className='mb-1 text-base font-medium text-center text-neutral-600'>
-            Expense
+          Income
           </Text>
         </View>
       </View>
@@ -170,8 +223,8 @@ export const Statistic = () => {
               yAxisLabelWidth={0}
               isAnimated={true}
               dashWidth={0}
-              data={lineData}
-              data2={lineData2}
+              data={lineData2}
+              data2={lineData}
               height={250}
               showVerticalLines
               spacing={44}
@@ -183,8 +236,8 @@ export const Statistic = () => {
               dataPointsWidth={6}
               dataPointsColor1='blue'
               dataPointsColor2='red'
-              textShiftY={-2}
-              textShiftX={-5}
+              textShiftY={0}
+              textShiftX={0}
               xAxisType='none'
               yAxisThickness={0}
             />
