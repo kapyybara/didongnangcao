@@ -14,7 +14,8 @@ import DropDown from 'react-native-paper-dropdown';
 import { directusInstance } from '../../services/directus';
 import { createItem, readItems, updateItem } from '@directus/sdk';
 import { GlobalContext } from '../../contexts/context';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { HeaderContext } from '../../contexts/header';
 
 const CreateTransfer = () => {
   const [fromAccount, setFromAccount] = useState('');
@@ -26,6 +27,8 @@ const CreateTransfer = () => {
 
   const [accounts, setAccounts] = useState([])
   const { user } = useContext(GlobalContext)
+  const isFocused = useIsFocused()
+  const { subfix, setSubfix } = useContext(HeaderContext)
 
   useEffect(() => {
     (async () => {
@@ -78,6 +81,10 @@ const CreateTransfer = () => {
 
     }
   }
+
+  useEffect(()=>{
+    setSubfix(null)
+  },[])
 
   return (
     <ScrollView className="w-full h-full">

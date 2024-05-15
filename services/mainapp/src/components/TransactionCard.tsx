@@ -21,7 +21,7 @@ export default function TransactionCard(data: TransactionCardType) {
     <Card className='w-full mb-4' key={data.id} onPress={()=>navigation.navigate("Transaction Information",data )}>
       <Card.Title
         title={data.name}
-        subtitle={dayjs(data.trading_date).format('d MMM YYYY')}
+        subtitle={dayjs(data.trading_date).format('MMM DD, YYYY')}
         left={props => (
           <View className=' bg-zinc-200 flex items-center justify-center p-1 rounded-md'>
             <Icon size={32} source={CategoryIcon(data.category)} />

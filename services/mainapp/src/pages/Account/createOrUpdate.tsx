@@ -27,7 +27,7 @@ export default function AccountNew({ route }) {
           total: money,
           name,
           include_in_balance,
-          user_id: user.id
+          user_id: user?.id
         }),
       )
       if (res) {
@@ -40,7 +40,7 @@ export default function AccountNew({ route }) {
           total: money,
           name,
           include_in_balance,
-          user_id: user.id
+          user_id: user?.id
         }),
       )
       if (res) {

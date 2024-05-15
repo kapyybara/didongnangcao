@@ -1,7 +1,7 @@
 import { readItems } from '@directus/sdk'
 import { useIsFocused, useNavigation } from '@react-navigation/native'
 import { useCallback, useContext, useEffect, useState } from 'react'
-import { SafeAreaView, View } from 'react-native'
+import { RefreshControl, SafeAreaView, View } from 'react-native'
 import {
   ScrollView,
   TouchableWithoutFeedback,
@@ -24,6 +24,7 @@ export default function Transaction() {
   const { user, account, setAccount } = useContext(GlobalContext)
   const navigation = useNavigation()
   const isFocused = useIsFocused()
+  const [refreshing,setRefreshing] = useState(false)
 
   const [showAccountsDropdown, setShowAccountsDropdown] = useState(false)
 
@@ -47,6 +48,7 @@ export default function Transaction() {
     )) as any
 
     setTransactions(response)
+    setRefreshing(false)
   }
 
 
@@ -74,7 +76,7 @@ export default function Transaction() {
   )
 
   useEffect(() => {
-    if (isFocused && user.email) {
+    if (isFocused && user?.email) {
       fetchAccounts()
     }
   }, [isFocused])
@@ -83,7 +85,7 @@ export default function Transaction() {
     if (account) {
       fetchTransactions()
     }
-  }, [account, filter])
+  }, [account, filter, refreshing])
 
   return (
     <SafeAreaView className='flex-1'>
@@ -97,7 +99,7 @@ export default function Transaction() {
         </View>
       </View>
       <View className='flex-1 pt-2 pb-4 bg-[#fafafa] flex flex-col'>
-        <ScrollView className='px-4'>
+        <ScrollView className='px-4' refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => setRefreshing(true)} />}>
           <TouchableWithoutFeedback
             onPress={() => setShowAccountsDropdown(true)}
             className='mb-2'>

@@ -18,7 +18,7 @@ export default function CustomNavigationBar({
   if (
     route.name == 'Login' ||
     route.name == 'SignUp' ||
-    route.name == 'ForgetPassword' ||
+    route.name == 'Forget Password' ||
     route.name == 'Home'
   )
     return <></>

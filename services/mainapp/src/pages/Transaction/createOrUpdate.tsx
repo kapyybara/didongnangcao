@@ -11,6 +11,7 @@ import {
 import { useIsFocused, useNavigation } from '@react-navigation/native'
 import {
   Button,
+  Chip,
   Dialog,
   MD3Colors,
   Portal,
@@ -45,7 +46,7 @@ export default function CreateTransaction(props: any) {
   const { setData } = useContext(SnackBarContext)
 
   const [oldData, setOldData] = useState({} as any)
-  const isFocused = useIsFocused(); 
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     if (isFocused) {
@@ -59,10 +60,10 @@ export default function CreateTransaction(props: any) {
   const [money, setMoney] = useState(0)
   const [category, setCategory] = useState('')
   const [account, setAccount] = useState('')
-  const [inputDate, setInputDate] = useState(undefined)
+  const [inputDate, setInputDate] = useState<any>(undefined)
   const [description, setDescription] = useState('')
-  const [loading , setLoading] = useState(false);
- 
+  const [loading, setLoading] = useState(false);
+
   const [showCategories, setShowCategories] = useState(false)
   const [showAccounts, setShowAccounts] = useState(false)
   const [visible, setVisible] = useState(false)
@@ -96,7 +97,7 @@ export default function CreateTransaction(props: any) {
     }
   }
 
- 
+
 
   const updateTransaction = async () => {
     await directusInstance.request(
@@ -125,7 +126,7 @@ export default function CreateTransaction(props: any) {
 
   useEffect(() => {
     if (user) {
-      ;(async () => {
+      ; (async () => {
         const res = await directusInstance.request(
           readItems('account', {
             filter: {
@@ -170,7 +171,7 @@ export default function CreateTransaction(props: any) {
 
 
   return (
-    loading ? <Loading/> : <View className='flex flex-1 flex-col justify-start p-3 gap-2'>
+    loading ? <Loading /> : <View className='flex flex-1 flex-col justify-start p-3 gap-2'>
       <SegmentedButtons
         value={type}
         onValueChange={setType}
@@ -230,6 +231,17 @@ export default function CreateTransaction(props: any) {
           onChange={(d: any) => setInputDate(d)}
           inputMode='start'
         />
+      </View>
+      <View className='pt-8 flex flex-row gap-x-1'>
+        <Button mode="contained" onPress={() => setInputDate(new Date())}>
+          Today
+        </Button>
+        <Button mode="contained" onPress={() => setInputDate(new Date(new Date().getTime()+(1*24*60*60*1000)))}>
+          Yesterday
+        </Button>
+        <Button mode="contained" onPress={() => setInputDate(new Date(new Date().getTime()+(2*24*60*60*1000)))}>
+          Laster 2 days
+        </Button>
       </View>
       <View className='pt-8'>
         <TextInput

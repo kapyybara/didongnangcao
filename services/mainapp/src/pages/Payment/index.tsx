@@ -78,7 +78,7 @@ const RegularPayments = ({ props }: any) => {
   }, [account,props, isFocused])
 
   useEffect(() => {
-    user.email && fetchAccounts()
+    user?.email && fetchAccounts()
   }, [])
 
   return (
