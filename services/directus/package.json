@@ -18,10 +18,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@img/sharp-win32-x64": "^0.33.3",
     "axios": "^1.6.8",
     "directus": "^10.9.3",
     "pg": "^8.11.3",
     "sharp": "^0.33.3",
-    "yaml": "^2.4.1"
+    "yaml": "^2.4.1",
+    "yarn": "^1.22.22"
   }
 }

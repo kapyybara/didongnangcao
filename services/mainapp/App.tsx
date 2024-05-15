@@ -34,12 +34,11 @@ import { DirectusUser } from './src/typings/models'
 import AllTransactions from './src/pages/Transaction/AllTransactions'
 import AccountNew from './src/pages/Account/createOrUpdate'
 import Notification from './src/pages/Notification'
-import { LogBox } from "react-native"
+import { LogBox } from 'react-native'
 import { allAccount } from './src/contants/transaction/empty-account.constant'
 
 const Stack = createStackNavigator()
 LogBox.ignoreAllLogs(true)
-
 
 export default function App() {
   const [initializing, setInitializing] = useState(true)
@@ -48,7 +47,7 @@ export default function App() {
   const [account, setAccount] = useState(allAccount)
 
   function onAuthStateChanged(user: any) {
-    ; (async () => {
+    ;(async () => {
       if (user?.email) {
         const directusUser = (await getUserByEmail(user?.email))[0]
         setUser(
@@ -83,7 +82,7 @@ export default function App() {
     })
     initDirectusInstance(
       'http://10.0.2.2:8055',
-      '5P8aI2ZZN4xnF2i5weQeIk28tR33_DQD'
+      '5P8aI2ZZN4xnF2i5weQeIk28tR33_DQD',
     )
   }, [])
   if (initializing) {
