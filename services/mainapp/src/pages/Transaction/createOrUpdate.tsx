@@ -108,14 +108,6 @@ export default function CreateTransaction(props: any) {
       deleteItem(TRANSACTION_KEY, props.route?.params?.id),
     )
 
-    await directusInstance.request(
-      updateItem(ACCOUNT_KEY, oldData.account_id, {
-        total:
-          (accounts.find(i => i.id === oldData.account_id) as any).total +
-          (oldData.type === 'income' ? -oldData.total : oldData.total),
-      }),
-    )
-
     setData({ text: 'Create transaction successful!' })
     navigation.goBack()
   }
