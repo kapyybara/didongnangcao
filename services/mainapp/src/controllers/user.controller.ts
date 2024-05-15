@@ -16,10 +16,10 @@ export async function getUserByEmail(email : string) {
 
 export async function updateAppUser(user : DirectusUser){
   return await directusInstance.request(
-    updateItem('app_user', user.id, {
-      full_name : user.full_name,
-      phone_number : user.phone_number, 
-      gender : user.gender
+    updateItem('app_user', user?.id, {
+      full_name : user?.full_name,
+      phone_number : user?.phone_number, 
+      gender : user?.gender
     }),
   )
 }

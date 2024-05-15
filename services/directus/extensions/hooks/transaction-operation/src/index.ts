@@ -75,9 +75,16 @@ export default defineHook(({ filter, action, schedule }, { getSchema, services, 
 			accountability: context.accountability
 		});
 
+		const notiService = new ItemsService('notification', {
+			schema: await getSchema(),
+			accountability: context.accountability
+		});
+
+
 
 		const fromAccount = await accountService.readOne(handler.payload.from_acc.id);
 		const toAccount = await accountService.readOne(handler.payload.to_acc.id);
+		
 		await trasactionService.createOne({
 			name: `[Transfer] Send to ${toAccount.name}`,
 			total: handler.payload.amount,
@@ -98,5 +105,10 @@ export default defineHook(({ filter, action, schedule }, { getSchema, services, 
 			description: `Transfer from ${fromAccount.name} to ${toAccount.name} `,
 		});
 
+		await notiService.createOne({
+			title: `New transfer from your account`,
+			message : `Transfer ${handler.payload.amount} VND from account ${fromAccount.name} to account ${toAccount.name}`,
+			user_id : fromAccount.user_id
+		});
 	});
 });

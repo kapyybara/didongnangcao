@@ -41,7 +41,7 @@ export default function AccountPage(props: any) {
       const res = await directusInstance.request(
         readItems('account', {
           filter: {
-            user_id: user.id
+            user_id: user?.id
           },
         }),
       )

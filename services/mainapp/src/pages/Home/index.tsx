@@ -29,29 +29,6 @@ export default function Home() {
   const navigation = useNavigation()
   const isFocused = useIsFocused()
 
-  useEffect(() => {
-    ; (async () => {
-      try {
-        const res = await directusInstance.request(
-          readItems(TRANSACTION_KEY, {
-            sort: ['-trading_date'],
-            limit: 4,
-            filter: {
-              account_id: account.name == "Total" ? {
-                user_id: user?.id
-              } : {
-                user_id: user?.id,
-                name: account.name
-              },
-            },
-          }),
-        )
-        setTransactions(res)
-      } catch (error) {
-        // console.log(error)
-      }
-    })()
-  }, [user, isFocused, account])
 
   useEffect(() => {
     if (account.name == "Total") setTotal(accounts.reduce((accumulator: any, a: any) => {
@@ -91,8 +68,24 @@ export default function Home() {
       )
       setTotalNoti(notis.length)
       setRefreshing(false)
+
+      const transactions = await directusInstance.request(
+        readItems(TRANSACTION_KEY, {
+          sort: ['-trading_date'],
+          limit: 4,
+          filter: {
+            account_id: account.name == "Total" ? {
+              user_id: user?.id
+            } : {
+              user_id: user?.id,
+              name: account.name
+            },
+          },
+        }),
+      )
+      setTransactions(transactions)
     })()
-  }, [refreshing])
+  }, [refreshing,user, isFocused, account])
 
 
 

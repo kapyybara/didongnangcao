@@ -111,7 +111,7 @@ export default function AllTransactions(props: any) {
 
  
   useEffect(() => {
-    user.email && fetchAccounts() 
+    user?.email && fetchAccounts() 
   }, [])
 
   useEffect(() => {

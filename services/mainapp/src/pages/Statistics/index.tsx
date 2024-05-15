@@ -45,7 +45,7 @@ export const Statistic = () => {
   }
 
   useEffect(()=>{
-    user.email && fetchAllTransactions()
+    user?.email && fetchAllTransactions()
   },[isFocused, user])
 
   const pieData = [
