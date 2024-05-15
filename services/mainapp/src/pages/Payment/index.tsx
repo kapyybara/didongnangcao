@@ -66,8 +66,6 @@ const RegularPayments = ({ props }: any) => {
             },
           }),
         )
-        console.log('do')
-        console.log(JSON.stringify(res, null, 2))
         setPayments(res)
       } catch (error) {
         console.log(error)

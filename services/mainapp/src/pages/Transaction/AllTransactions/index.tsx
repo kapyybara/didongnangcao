@@ -27,14 +27,14 @@ import TransactionCard from '../../../components/transaction/TransactionCard'
 
 const PAGE_SIZE = 10
 
-export default function AllTransactions() {
+export default function AllTransactions(props: any) {
   const { user, account, setAccount } = useContext(GlobalContext)
   const navigation = useNavigation()
 
   const [isLoading, setLoading] = useState(false)
 
   const [accounts, setAccounts] = useState<Account[]>([])
-  const [type, setType] = useState('all')
+  const [type, setType] = useState(props.route?.params?.type || 'all')
   const [transactions, setTransactions] = useState<Transaction[]>([])
 
   const [showAccountsDropdown, setShowAccountsDropdown] = useState(false)

@@ -172,7 +172,7 @@ export default function Transaction() {
           <View className='mt-4'>
             <View className='flex mb-2 flex-row items-center justify-between'>
               <Text className='font-medium'>Recently expenses</Text>
-              <Button onPress={() => navigation.navigate('All Transactions')}>
+              <Button onPress={() => navigation.navigate('All Transactions',{type: "expenses"})}>
                 See All {'>'}
               </Button>
             </View>
@@ -195,7 +195,7 @@ export default function Transaction() {
           <View className='mt-4'>
             <View className='flex mb-2 flex-row items-center justify-between'>
               <Text className='font-medium'>Recently income</Text>
-              <Button onPress={() => navigation.navigate('All Transactions')}>
+              <Button onPress={() => navigation.navigate('All Transactions',{type: "income"})}>
                 See All {'>'}
               </Button>
             </View>

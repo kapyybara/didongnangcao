@@ -45,7 +45,7 @@ export default function CreateTransaction(props: any) {
   const [oldData, setOldData] = useState({} as any)
 
   // Form data
-  const [type, setType] = useState(TransactionType[0].value)
+  const [type, setType] = useState(props.route?.params?.type || TransactionType[0].value)
   const [name, setName] = useState('')
   const [money, setMoney] = useState(0)
   const [category, setCategory] = useState('')
@@ -86,6 +86,8 @@ export default function CreateTransaction(props: any) {
       console.log('error when creating a new transaction: ', e)
     }
   }
+
+ 
 
   const updateTransaction = async () => {
     await directusInstance.request(
@@ -155,6 +157,8 @@ export default function CreateTransaction(props: any) {
       })()
     }
   }, [transactionId])
+
+
 
   return (
     loading ? <Loading/> : <View className='flex flex-1 flex-col justify-start p-3 gap-2'>
