@@ -8,7 +8,7 @@ import {
   readItems,
   updateItem,
 } from '@directus/sdk'
-import { useNavigation } from '@react-navigation/native'
+import { useIsFocused, useNavigation } from '@react-navigation/native'
 import {
   Button,
   Dialog,
@@ -30,10 +30,12 @@ import {
 } from '../../contants/schema-key.constant'
 import { Account } from '../../types/account'
 import Loading from '../../components/Loading'
+import { HeaderContext } from '../../contexts/header'
 
 export default function CreateTransaction(props: any) {
   const transactionId = useMemo(() => props.route?.params?.id, [])
   const mode = transactionId ? 'update' : 'create'
+  const { subfix, setSubfix } = useContext(HeaderContext)
 
   const navigation = useNavigation()
 
@@ -43,9 +45,16 @@ export default function CreateTransaction(props: any) {
   const { setData } = useContext(SnackBarContext)
 
   const [oldData, setOldData] = useState({} as any)
+  const isFocused = useIsFocused(); 
+
+  useEffect(() => {
+    if (isFocused) {
+      setSubfix(null)
+    }
+  }, [props, isFocused])
 
   // Form data
-  const [type, setType] = useState(TransactionType[0].value)
+  const [type, setType] = useState(props.route?.params?.type || TransactionType[0].value)
   const [name, setName] = useState('')
   const [money, setMoney] = useState(0)
   const [category, setCategory] = useState('')
@@ -87,6 +96,8 @@ export default function CreateTransaction(props: any) {
     }
   }
 
+ 
+
   const updateTransaction = async () => {
     await directusInstance.request(
       updateItem(TRANSACTION_KEY, props.route?.params?.id, {
@@ -106,14 +117,6 @@ export default function CreateTransaction(props: any) {
   const deleteTransaction = async () => {
     await directusInstance.request(
       deleteItem(TRANSACTION_KEY, props.route?.params?.id),
-    )
-
-    await directusInstance.request(
-      updateItem(ACCOUNT_KEY, oldData.account_id, {
-        total:
-          (accounts.find(i => i.id === oldData.account_id) as any).total +
-          (oldData.type === 'income' ? -oldData.total : oldData.total),
-      }),
     )
 
     setData({ text: 'Create transaction successful!' })
@@ -163,6 +166,8 @@ export default function CreateTransaction(props: any) {
       })()
     }
   }, [transactionId])
+
+
 
   return (
     loading ? <Loading/> : <View className='flex flex-1 flex-col justify-start p-3 gap-2'>

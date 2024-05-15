@@ -6,14 +6,22 @@ import { GlobalContext } from '../../contexts/context'
 import { directusInstance } from '../../services/directus'
 import { calculateTimeAgo } from '../../utils/number'
 import { NOTIFICATION_KEY } from '../../contants/schema-key.constant'
+import { useIsFocused } from '@react-navigation/native'
+import { HeaderContext } from '../../contexts/header'
 
 export default function Notification() {
     const [notifications, setNotifications] = useState([])
-    const [refreshing, setRefreshing] = useState(false)
+  const { subfix, setSubfix } = useContext(HeaderContext)
+  const [refreshing, setRefreshing] = useState(false)
 
-    const { user } = useContext(GlobalContext)
+  const isFocused = useIsFocused(); 
+  const { user } = useContext(GlobalContext)
     
-
+    useEffect(() => {
+        if (isFocused) {
+          setSubfix(null)
+        }
+      }, [ isFocused])
     useEffect(() => {
         ; (async () => {
             try {

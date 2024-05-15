@@ -54,7 +54,12 @@ export default function Home() {
   }, [user, isFocused, account])
 
   useEffect(() => {
-    if (account.name == "Total") setTotal(accounts.reduce((accumulator: any, a: any) => accumulator + a.total, 0))
+    if (account.name == "Total") setTotal(accounts.reduce((accumulator: any, a: any) => {
+      if (a.include_in_balance == "true") {
+        return accumulator + a.total
+      }
+      return accumulator;
+    }, 0))
     else {
       getAccountByName(account.name).then((result) => {
         setTotal(result[0].total)
@@ -128,8 +133,8 @@ export default function Home() {
                 </Button>
               }>
               <Menu.Item onPress={() => setAccount({
-                id : -1 , 
-                name : "Total"
+                id: '-1',
+                name: "Total"
               })} title="Total" />
               {accounts.map((acc: any) => {
                 return <Menu.Item onPress={() => setAccount(acc)} title={acc.name} />
@@ -161,7 +166,7 @@ export default function Home() {
             </View>
           </TouchableOpacity>
           <View key={"expenses_operation"} className='w-fit flex flex-col items-center gap-1'>
-            <TouchableOpacity onPress={() => navigation.navigate('Transaction Info', { type: "expenses" })}>
+            <TouchableOpacity onPress={() => navigation.navigate('Transaction Information', { type: "expenses" })}>
               <Card>
                 <Card.Content>
                   <Icon source='arrow-up' size={24} />
@@ -171,7 +176,7 @@ export default function Home() {
             </TouchableOpacity>
           </View>
           <View key={"income_operation"} className='w-fit flex flex-col items-center gap-1'>
-            <TouchableOpacity onPress={() => navigation.navigate('Transaction Info', { type: "income" })}>
+            <TouchableOpacity onPress={() => navigation.navigate('Transaction Information', { type: "income" })}>
               <Card>
                 <Card.Content>
                   <Icon source='arrow-down' size={24} />

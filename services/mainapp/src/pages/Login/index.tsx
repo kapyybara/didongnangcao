@@ -19,16 +19,14 @@ const Login = ({navigation}: any) => {
     });
   };
   const goToForgetPass = () => {
-    navigation.navigate('ForgetPassword');
+    navigation.navigate('Forget Password');
   };
 
   const goToSignUp = () => {
     navigation.navigate('SignUp');
   };
 
-  const handleSignInWithGooglePress = () => {
-    signInWithGoogle();
-  };
+
 
   useEffect(() => {
     getProfile().then(result => {
@@ -41,28 +39,6 @@ const Login = ({navigation}: any) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign In</Text>
-      <Button
-        mode='contained'
-        contentStyle={styles.loginWithGoogle}
-        style={styles.loginWithGoogleWrap}
-        onPress={handleSignInWithGooglePress}
-        icon={() => (
-          <Avatar.Image
-            style={styles.loginWithLeft}
-            size={48}
-            source={require('../../assets/google.png')}
-          />
-        )}
-        textColor='#000'>
-        <Text variant='titleSmall' style={styles.loginWithGoogleText}>
-          Login with Google
-        </Text>
-      </Button>
-      <View style={styles.or}>
-        <View style={styles.orline} />
-        <Text style={styles.orText}>OR</Text>
-        <View style={styles.orline} />
-      </View>
       <TextInput
         mode='outlined'
         label='Email'

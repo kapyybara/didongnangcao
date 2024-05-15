@@ -9,7 +9,7 @@ import { Button, Icon, Menu, Text } from 'react-native-paper'
 import { Account } from '../../../types/account'
 import { Transaction } from '../../../types/transaction'
 import { GlobalContext } from '../../../contexts/context'
-import { useNavigation } from '@react-navigation/native'
+import { useIsFocused, useNavigation } from '@react-navigation/native'
 import { directusInstance } from '../../../services/directus'
 import { readItems } from '@directus/sdk'
 import {
@@ -24,17 +24,20 @@ import {
 } from 'react-native-gesture-handler'
 import { formatVND } from '../../../utils/money'
 import TransactionCard from '../../../components/transaction/TransactionCard'
+import { HeaderContext } from '../../../contexts/header'
 
 const PAGE_SIZE = 10
 
-export default function AllTransactions() {
+export default function AllTransactions(props: any) {
   const { user, account, setAccount } = useContext(GlobalContext)
   const navigation = useNavigation()
+  const { subfix, setSubfix } = useContext(HeaderContext)
+  const isFocused = useIsFocused(); 
 
   const [isLoading, setLoading] = useState(false)
 
   const [accounts, setAccounts] = useState<Account[]>([])
-  const [type, setType] = useState('all')
+  const [type, setType] = useState(props.route?.params?.type || 'all')
   const [transactions, setTransactions] = useState<Transaction[]>([])
 
   const [showAccountsDropdown, setShowAccountsDropdown] = useState(false)
@@ -55,6 +58,17 @@ export default function AllTransactions() {
 
     setAccounts([allAccount, ...accounts])
   }
+  useEffect(() => {
+    if (isFocused) {
+      setSubfix({
+        icon: 'plus',
+        onPress: () => {
+          navigation.navigate('Transaction Information')
+          setSubfix(null)
+        }
+      })
+    }
+  }, [props, isFocused])
 
   const fetchTransactions = async () => {
     setLoading(true)
