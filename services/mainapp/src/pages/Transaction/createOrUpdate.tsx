@@ -8,7 +8,7 @@ import {
   readItems,
   updateItem,
 } from '@directus/sdk'
-import { useNavigation } from '@react-navigation/native'
+import { useIsFocused, useNavigation } from '@react-navigation/native'
 import {
   Button,
   Dialog,
@@ -30,10 +30,12 @@ import {
 } from '../../contants/schema-key.constant'
 import { Account } from '../../types/account'
 import Loading from '../../components/Loading'
+import { HeaderContext } from '../../contexts/header'
 
 export default function CreateTransaction(props: any) {
   const transactionId = useMemo(() => props.route?.params?.id, [])
   const mode = transactionId ? 'update' : 'create'
+  const { subfix, setSubfix } = useContext(HeaderContext)
 
   const navigation = useNavigation()
 
@@ -43,6 +45,13 @@ export default function CreateTransaction(props: any) {
   const { setData } = useContext(SnackBarContext)
 
   const [oldData, setOldData] = useState({} as any)
+  const isFocused = useIsFocused(); 
+
+  useEffect(() => {
+    if (isFocused) {
+      setSubfix(null)
+    }
+  }, [props, isFocused])
 
   // Form data
   const [type, setType] = useState(props.route?.params?.type || TransactionType[0].value)

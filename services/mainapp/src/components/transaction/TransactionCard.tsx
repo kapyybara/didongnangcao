@@ -11,7 +11,7 @@ export default function TransactionCard({ ...transaction }: Props) {
   const navigation = useNavigation()
 
   const handlePress = () => {
-    navigation.navigate('Transaction Info', transaction)
+    navigation.navigate('Transaction Information', transaction)
   }
 
   return (

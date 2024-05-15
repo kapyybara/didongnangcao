@@ -18,7 +18,7 @@ export default function TransactionCard(data: TransactionCardType) {
   const navigation = useNavigation()
 
   return (
-    <Card className='w-full mb-4' key={data.id} onPress={()=>navigation.navigate("Transaction Info",data )}>
+    <Card className='w-full mb-4' key={data.id} onPress={()=>navigation.navigate("Transaction Information",data )}>
       <Card.Title
         title={data.name}
         subtitle={dayjs(data.trading_date).format('d MMM YYYY')}

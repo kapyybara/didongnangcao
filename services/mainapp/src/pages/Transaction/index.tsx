@@ -92,7 +92,7 @@ export default function Transaction() {
         <View className='items-center '>
           <IconButton
             icon="plus"
-            onPress={() => navigation.navigate('Transaction Info')}>
+            onPress={() => navigation.navigate('Transaction Information')}>
           </IconButton>
         </View>
       </View>
@@ -126,13 +126,19 @@ export default function Transaction() {
                   />
                 ))}
               </Menu>
+
               <View className='flex-1 flex justify-end flex-row'>
                 <Text className=''>
                   Total:{' '}
                   <Text className='font-bold text-base'>
                     {formatVND(
                       account.id === '-1'
-                        ? accounts.reduce((acc, item) => acc + item.total, 0)
+                        ? accounts.reduce((acc, item) => {
+                          if (item.include_in_balance=="true"){
+                            return acc + item.total 
+                          }
+                          return acc
+                        }, 0)
                         : accounts.find(item => item.id === account.id)?.total ||
                         0,
                     )}
