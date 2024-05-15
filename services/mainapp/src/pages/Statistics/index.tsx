@@ -8,7 +8,7 @@ import dayjs from 'dayjs'
 import { useContext, useEffect, useState } from 'react'
 import { GlobalContext } from '../../contexts/context'
 import { Account } from '../../types/account'
-import {Transaction as TTransaction } from '../../types/transaction'
+import { Transaction as TTransaction } from '../../types/transaction'
 import { readItems } from '@directus/sdk'
 import { TRANSACTION_KEY } from '../../contants/schema-key.constant'
 import { directusInstance } from '../../services/directus'
@@ -19,7 +19,7 @@ export const Statistic = () => {
   const currentDate = dayjs()
   const formattedDate = currentDate.format('MMM YYYY')
 
-  const {user} = useContext(GlobalContext)
+  const { user } = useContext(GlobalContext)
   const isFocused = useIsFocused()
   const [accounts, setAccounts] = useState<Account[]>([])
   const [transactions, setTransactions] = useState<TTransaction[]>([])
@@ -35,12 +35,9 @@ export const Statistic = () => {
     const response = (await directusInstance.request(
       readItems(TRANSACTION_KEY, {
         sort: ['-trading_date'],
-        filter: {
-          user_id: user?.id
-        },
       }),
     )) as any
-    console.log(response)
+
     setTransactions(response)
   }
 
@@ -54,131 +51,117 @@ export const Statistic = () => {
     { value: 20, color: '#ED6665', text: '26%' },
   ]
 
-  const expenseLine = transactions.filter(item => item.type === 'expenses').map(item => {
-    return {
-      value: item.total,
-      dataPointText: item.total.toString()
+  const expensePieData = transactions.filter(item => item.type === 'expenses')
+  const result = expensePieData.reduce((acc: any, item) => {
+    if (acc[item.category]) {
+      acc[item.category] += item.total
+    } else {
+      acc[item.category] = item.total
     }
-  })
+    return acc
+  }, {})
 
-  const incomeLine = transactions.filter(item => item.type === 'income').map(item => {
-    return {
-      value: item.total,
-      dataPointText: item.total.toString()
-    }
-  })
-  
-  const lineData = [
-    { value: 3000000, dataPointText: '30k' },
-    { value: 400000, dataPointText: '100000' },
-    { value: 300000, dataPointText: '300000' },
-    { value: 900000, dataPointText: '200000' },
-    { value: 500000, dataPointText: '500k' },
-    { value: 600000, dataPointText: '600000' },
-    { value: 700000, dataPointText: '700000' },
-    { value: 800000, dataPointText: '800000' },
-    { value: 700000, dataPointText: '700000' },
-    { value: 800000, dataPointText: '800000' },
-    { value: 3000000, dataPointText: '200000' },
-    { value: 400000, dataPointText: '100000' },
-    { value: 300000, dataPointText: '300000' },
-    { value: 900000, dataPointText: '200000' },
-    { value: 500000, dataPointText: '500000' },
-    { value: 600000, dataPointText: '600000' },
-    { value: 700000, dataPointText: '700000' },
-    { value: 800000, dataPointText: '800000' },
-    { value: 700000, dataPointText: '700000' },
-    { value: 800000, dataPointText: '800000' },
-    { value: 3000000, dataPointText: '200000' },
-    { value: 400000, dataPointText: '100000' },
-    { value: 300000, dataPointText: '300000' },
-    { value: 900000, dataPointText: '200000' },
-    { value: 500000, dataPointText: '500000' },
-    { value: 600000, dataPointText: '600000' },
-    { value: 700000, dataPointText: '700000' },
-    { value: 800000, dataPointText: '800000' },
-    { value: 700000, dataPointText: '700000' },
-    { value: 800000, dataPointText: '800000' },
-  ]
+  const formattedResult = Object.entries(result).map(([category, total]) => ({
+    category,
+    total,
+  }))
 
-  const lineData2 = [
-    { value: 1000000, dataPointText: '200000' },
-    { value: 200000, dataPointText: '100000' },
-    { value: 100000, dataPointText: '300000' },
-    { value: 100000, dataPointText: '200000' },
-    { value: 100000, dataPointText: '500000' },
-    { value: 100000, dataPointText: '600000' },
-    { value: 100000, dataPointText: '700000' },
-    { value: 100000, dataPointText: '800000' },
-    { value: 100000, dataPointText: '700000' },
-    { value: 100000, dataPointText: '800000' },
-    { value: 1000000, dataPointText: '200000' },
-    { value: 100000, dataPointText: '100000' },
-    { value: 100000, dataPointText: '300000' },
-    { value: 100000, dataPointText: '200000' },
-    { value: 100000, dataPointText: '500000' },
-    { value: 100000, dataPointText: '600000' },
-    { value: 100000, dataPointText: '700000' },
-    { value: 100000, dataPointText: '800000' },
-    { value: 100000, dataPointText: '700000' },
-    { value: 100000, dataPointText: '800000' },
-    { value: 1000000, dataPointText: '200000' },
-    { value: 100000, dataPointText: '100000' },
-    { value: 100000, dataPointText: '300000' },
-    { value: 100000, dataPointText: '200000' },
-    { value: 100000, dataPointText: '500000' },
-    { value: 100000, dataPointText: '600000' },
-    { value: 100000, dataPointText: '700000' },
-    { value: 100000, dataPointText: '800000' },
-    { value: 100000, dataPointText: '700000' },
-    { value: 100000, dataPointText: '800000' },
-  ]
+  const colors = ['#177AD5', '#79D2DE', '#ED6665', '#FFCE56', '#4BC0C0']
+
+  const pieExpenseData = formattedResult.map((item: any, index) => ({
+    category: item.category,
+    total: item.total,
+    value: (item.total / totalSpending) * 100,
+    color: colors[index % colors.length],
+    text: `${((item.total / totalSpending) * 100).toFixed(2)}%`,
+  }))
+
+  const expenseLine = transactions.filter(
+    item => item.type === 'expenses' && item.trading_date.includes('2024-05'),
+  )
+
+  const incomeLine = transactions.filter(item => item.type === 'income')
+
+  const getDaysInMonth = (year: number, month: number): number => {
+    return new Date(year, month + 1, 0).getDate()
+  }
+
+  // Function to convert data into lineData format
+  const convertToLineData = (data: any, year: number, month: number): any => {
+    const daysInMonth = getDaysInMonth(year, month)
+    const lineData: any = Array.from({ length: daysInMonth }, (_, i) => ({
+      value: 0,
+      dataPointText: '0',
+    }))
+
+    data.forEach((item: any) => {
+      const date = new Date(item.trading_date)
+      if (date.getFullYear() === year && date.getMonth() === month) {
+        const day = date.getDate() - 1 // getDate() returns 1-31, array index should be 0-30
+        lineData[day].value += item.total
+        lineData[day].dataPointText = `${lineData[day].value}`
+      }
+    })
+
+    return lineData
+  }
+
+  const lineData = convertToLineData(
+    expenseLine,
+    currentDate.year(),
+    currentDate.month(),
+  )
+  const lineData2 = convertToLineData(
+    incomeLine,
+    currentDate.year(),
+    currentDate.month(),
+  )
 
   const data = [
     {
-      value: 2500,
+      value: 0,
       frontColor: '#006DFF',
       gradientColor: '#009FFF',
       spacing: 6,
       label: 'Jan',
     },
-    { value: 2400, frontColor: '#3BE9DE', gradientColor: '#93FCF8' },
+    { value: 0, frontColor: '#3BE9DE', gradientColor: '#93FCF8' },
 
     {
-      value: 3500,
+      value: 0,
       frontColor: '#006DFF',
       gradientColor: '#009FFF',
       spacing: 6,
       label: 'Feb',
     },
-    { value: 3000, frontColor: '#3BE9DE', gradientColor: '#93FCF8' },
+    { value: 0, frontColor: '#3BE9DE', gradientColor: '#93FCF8' },
 
     {
-      value: 4500,
+      value: 0,
       frontColor: '#006DFF',
       gradientColor: '#009FFF',
       spacing: 6,
       label: 'Mar',
     },
-    { value: 4000, frontColor: '#3BE9DE', gradientColor: '#93FCF8' },
+    { value: 0, frontColor: '#3BE9DE', gradientColor: '#93FCF8' },
 
     {
-      value: 5200,
+      value: 0,
       frontColor: '#006DFF',
       gradientColor: '#009FFF',
       spacing: 6,
       label: 'Apr',
     },
-    { value: 4900, frontColor: '#3BE9DE', gradientColor: '#93FCF8' },
+    { value: 0, frontColor: '#3BE9DE', gradientColor: '#93FCF8' },
 
     {
-      value: 3000,
+      value: totalEarning,
       frontColor: '#006DFF',
       gradientColor: '#009FFF',
       spacing: 6,
       label: 'May',
     },
-    { value: 2800, frontColor: '#3BE9DE', gradientColor: '#93FCF8' },
+    { value: totalSpending, frontColor: '#3BE9DE', gradientColor: '#93FCF8' },
   ]
   return (
     <ScrollView>
@@ -189,15 +172,19 @@ export const Statistic = () => {
       </View>
       <View className='flex flex-row items-center justify-between mx-10 my-2'>
         <View>
-          <Text className='mb-1 text-xl font-medium text-center'>{formatVND(totalSpending)}</Text>
+          <Text className='mb-1 text-xl font-medium text-center'>
+            {formatVND(totalSpending)}
+          </Text>
           <Text className='mb-1 text-base font-medium text-center text-neutral-600'>
             Expense
           </Text>
         </View>
         <View>
-          <Text className='mb-1 text-xl font-medium text-center'>{formatVND(totalEarning)}</Text>
+          <Text className='mb-1 text-xl font-medium text-center'>
+            {formatVND(totalEarning)}
+          </Text>
           <Text className='mb-1 text-base font-medium text-center text-neutral-600'>
-          Income
+            Income
           </Text>
         </View>
       </View>
@@ -207,11 +194,13 @@ export const Statistic = () => {
             Income rate
           </Text>
           <ProgressBar
-            progress={0.5}
+            progress={totalEarning / 10000000}
             color={MD3Colors.primary70}
             className='h-6 rounded-xl'
           />
-          <Text className='text-base font-medium text-center '>50M</Text>
+          <Text className='text-base font-medium text-center '>
+            {formatVND(totalEarning)}
+          </Text>
           <Text className='text-base font-medium text-right'>Goal: 100M</Text>
         </View>
         <View className='m-5 rounded-xl bg-slate-100'>
@@ -250,7 +239,7 @@ export const Statistic = () => {
             </View>
             <View>
               <Text className='mb-1 text-base font-medium text-center text-neutral-600'>
-                650000
+                {formatVND(totalEarning)}
               </Text>
             </View>
           </View>
@@ -263,7 +252,7 @@ export const Statistic = () => {
             </View>
             <View>
               <Text className='mb-1 text-base font-medium text-center text-neutral-600'>
-                650000
+                {formatVND(totalSpending)}
               </Text>
             </View>
           </View>
@@ -276,7 +265,7 @@ export const Statistic = () => {
             </View>
             <View>
               <Text className='mb-1 text-base font-medium text-center text-sky-500'>
-                650000
+                {formatVND(totalEarning - totalSpending)}
               </Text>
             </View>
           </View>
@@ -291,33 +280,26 @@ export const Statistic = () => {
               textColor='black'
               textSize={18}
               showTextBackground
-              data={pieData}
+              data={pieExpenseData}
               innerRadius={90}
             />
           </View>
-          <View className='flex flex-row w-[90%] gap-2 m-2 '>
-            <View className='w-1/2 p-3 bg-white rounded-lg shadow-lg'>
-              <View className='flex flex-row items-center gap-1'>
-                <View
-                  className='w-4 h-4 rounded-full '
-                  style={{ backgroundColor: '#3498db' }}></View>
-                <Text className='text-base font-semibold '>Shopping</Text>
+          <View className='grid grid-cols-2 gap-4 w-[95%] m-2'>
+            {pieExpenseData.map((item: any) => (
+              <View className='p-3 bg-white rounded-lg shadow-lg '>
+                <View className='flex flex-row items-center gap-1'>
+                  <View
+                    className='w-4 h-4 rounded-full '
+                    style={{ backgroundColor: `${item.color}` }}></View>
+                  <Text className='text-base font-semibold '>
+                    {item.category}
+                  </Text>
+                </View>
+                <Text className='block text-lg text-gray-700 truncate'>
+                  {formatVND(item.total)}
+                </Text>
               </View>
-              <Text className='block text-lg text-gray-700 truncate'>đ 3M</Text>
-              <Text className='block text-gray-700 truncate'>
-                Chi tiêu hàng ngày
-              </Text>
-            </View>
-            <View className='w-1/2 p-3 bg-white rounded-lg shadow-lg'>
-              <View className='flex flex-row items-center gap-1'>
-                <View
-                  className='w-4 h-4 rounded-full '
-                  style={{ backgroundColor: '#ED6665' }}></View>
-                <Text className='text-base font-semibold '>Rentals</Text>
-              </View>
-              <Text className='block text-lg text-gray-700 truncate'>đ 3M</Text>
-              <Text className='block text-gray-700 truncate'>Thuê nhà</Text>
-            </View>
+            ))}
           </View>
         </View>
 
@@ -335,8 +317,8 @@ export const Statistic = () => {
               xAxisType={'dashed'}
               xAxisColor={'darkgray'}
               yAxisTextStyle={{ color: 'darkgray' }}
-              stepValue={1000}
-              maxValue={6000}
+              stepValue={100000}
+              maxValue={1000000}
               noOfSections={6}
               labelWidth={40}
               xAxisLabelTextStyle={{ color: 'darkgray', textAlign: 'center' }}
@@ -350,42 +332,6 @@ export const Statistic = () => {
                 initialSpacing: -30,
               }}
             />
-          </View>
-        </View>
-        <View className='mx-5 my-1'>
-          <View className='flex gap-4 '>
-            <Card>
-              <Card.Title
-                title='Tp Bank'
-                subtitle='Tiền chuyển trọ'
-                left={props => (
-                  <View className='flex items-center justify-center p-1 rounded-md bg-zinc-200'>
-                    <Icon size={32} source='home-outline' />
-                  </View>
-                )}
-                right={props => (
-                  <Text variant='bodyLarge' className='mr-4 text-green-700'>
-                    +6.500.000VND
-                  </Text>
-                )}
-              />
-            </Card>
-            <Card>
-              <Card.Title
-                title='Momo'
-                subtitle='Chuyển'
-                left={props => (
-                  <View className='flex items-center justify-center p-1 rounded-md bg-zinc-200'>
-                    <Icon size={32} source='home-outline' />
-                  </View>
-                )}
-                right={props => (
-                  <Text variant='bodyLarge' className='mr-4 text-green-700'>
-                    +6.500.000VND
-                  </Text>
-                )}
-              />
-            </Card>
           </View>
         </View>
       </View>
