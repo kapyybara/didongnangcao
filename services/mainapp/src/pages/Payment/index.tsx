@@ -16,11 +16,6 @@ import PaymentCard from '../../components/PaymentCard'
 import { readItems } from '@directus/sdk'
 import { directusInstance } from '../../services/directus'
 import { GlobalContext } from '../../contexts/context'
-import Loading from '../../components/Loading'
-import {
-  getAccountByName,
-  getAccountsByEmail,
-} from '../../controllers/account.controller'
 import { Account } from '../../types/account'
 import { ACCOUNT_KEY, PAYMENT_KEY } from '../../contants/schema-key.constant'
 import { allAccount } from '../../contants/transaction/empty-account.constant'
@@ -30,13 +25,22 @@ const RegularPayments = ({ props }: any) => {
   const navigation = useNavigation()
   const { account, setAccount, user } = useContext(GlobalContext)
   const [accounts, setAccounts] = useState<Account[]>([])
-  const gotoAddPayment = () => {
-    navigation.navigate('Add Payment')
-    setSubfix(null)
-  }
+ 
   const [showAccountsDropdown, setShowAccountsDropdown] = useState(false)
   const [payments, setPayments] = useState([])
   const isFocused = useIsFocused()
+
+  useEffect(() => {
+    if (isFocused) {
+      setSubfix({
+        icon: 'plus',
+        onPress: () => {
+          navigation.navigate('New Payment')
+          setSubfix(null)
+        }
+      })
+    }
+  }, [props, isFocused])
 
   const fetchAccounts = async () => {
     const accounts = (await directusInstance.request(
@@ -66,8 +70,6 @@ const RegularPayments = ({ props }: any) => {
             },
           }),
         )
-        console.log('do')
-        console.log(JSON.stringify(res, null, 2))
         setPayments(res)
       } catch (error) {
         console.log(error)
@@ -76,7 +78,7 @@ const RegularPayments = ({ props }: any) => {
   }, [account,props, isFocused])
 
   useEffect(() => {
-    user.email && fetchAccounts()
+    user?.email && fetchAccounts()
   }, [])
 
   return (

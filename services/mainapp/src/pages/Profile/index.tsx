@@ -38,10 +38,14 @@ const Profile = () => {
   const goToSupport = ()=>{
     navigation.navigate('Support');
   }
+  const goToContactUs = ()=>{
+    navigation.navigate('Contact Us');
+  }
 
   return (
     <ScrollView className="flex-1 bg-white py-6">
       <View className="items-center justify-center flex-1">
+        <Text variant='headlineLarge' className="m-4 font-bold">PROFILE</Text>
         <Image
           source={require('../../assets/avatar.png')}
           className="w-24 h-24 rounded-full"
@@ -49,9 +53,9 @@ const Profile = () => {
         <Text className="mt-4 text-xl font-bold">{user?.full_name}</Text>
         <Text className="text-gray-500">{user?.email}</Text>
 
-        <Card className="w-11/12 px-4 my-3">
+        <Card className="w-11/12 px-4 my-3 bg-white">
           <Card.Content>
-            <View className="flex items-start justify-start gap-4 mt-4">
+            <View className="flex items-start justify-start gap-4">
               <View className="flex-row items-center gap-2">
                 <Icon size={24} source="account-edit" />
                 <Text
@@ -76,23 +80,22 @@ const Profile = () => {
                   Regular Payments
                 </Text>
               </View>
-              <View className="flex-row items-center gap-2">
-                <Icon size={24} source="account-settings" />
-                <Text className="text-base text-black-500">Settings</Text>
-              </View>
+            
             </View>
           </Card.Content>
         </Card>
-        <Card className="w-11/12 px-4 my-5">
+        <Card className="w-11/12 px-4 my-5 bg-white">
           <Card.Content>
-            <View className="flex items-start justify-start gap-4 mt-4">
+            <View className="flex items-start justify-start gap-4">
               <View className="flex-row items-center gap-2">
                 <Icon size={24} source="help" />
                 <Text className="text-base text-black-500" onPress={goToSupport}>Help & Support</Text>
               </View>
               <View className="flex-row items-center gap-2">
                 <Icon size={24} source="contacts" />
-                <Text className="text-base text-black-500">Contact us</Text>
+                <Text className="text-base text-black-500"
+                  onPress={goToContactUs}
+                >Contact us</Text>
               </View>
               <View className="flex-row items-center gap-2">
                 <Icon size={24} source="account-settings" />

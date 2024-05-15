@@ -36,6 +36,8 @@ import AccountNew from './src/pages/Account/createOrUpdate'
 import Notification from './src/pages/Notification'
 import { LogBox } from "react-native"
 import { allAccount } from './src/contants/transaction/empty-account.constant'
+import ContactUser from './src/pages/Profile/Contact'
+import ForgetPassword from './src/pages/ForgetPassword'
 
 const Stack = createStackNavigator()
 LogBox.ignoreAllLogs(true)
@@ -111,10 +113,11 @@ export default function App() {
                   }}>
                   <Stack.Screen name='SignUp' component={SignUpScreen} />
                   <Stack.Screen name='Login' component={Login} />
+                  <Stack.Screen name='Forget Password' component={ForgetPassword} />
                   <Stack.Screen name='Home' component={MainApp} />
                   <Stack.Screen name='Statistic' component={Statistic} />
                   <Stack.Screen
-                    name='Transaction Info'
+                    name='Transaction Information'
                     component={TransactionCreateOrUpdate}
                   />
                   <Stack.Screen
@@ -132,6 +135,11 @@ export default function App() {
                     name='Privacy Policy'
                     component={PrivacyPolicy}
                   />
+                  <Stack.Screen
+                    name='Contact Us'
+                    component={ContactUser}
+                  />
+
                   <Stack.Screen name='Support' component={Support} />
                   <Stack.Screen
                     name='Transfer History'
@@ -141,7 +149,7 @@ export default function App() {
                     name='Transfer New'
                     component={CreateTransfer}
                   />
-                  <Stack.Screen name='Add Payment' component={AddPayment} />
+                  <Stack.Screen name='New Payment' component={AddPayment} />
                   <Stack.Screen name='Edit Payment' component={EditPayment} />
                   <Stack.Screen name='Notifications' component={Notification} />
                 </Stack.Navigator>

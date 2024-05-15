@@ -19,9 +19,9 @@ const EditProfile = () => {
   const isFocused = useIsFocused()
 
   useEffect(() => {
-    setFullName(user.full_name)
-    setPhone(user.phone_number)
-    setGender(user.gender)
+    setFullName(user?.full_name)
+    setPhone(user?.phone_number)
+    setGender(user?.gender)
   }, [isFocused])
 
   const handleUpdateProfile = () => {
@@ -48,7 +48,7 @@ const EditProfile = () => {
             source={require('../../../assets/avatar.png')}
             className="w-24 h-24 rounded-full"
           />
-          <Text className="text-xl font-bold mt-4">{user.full_name}</Text>
+          <Text className="text-xl font-bold mt-4">{user?.full_name}</Text>
           <Text className="text-gray-500">{user?.email}</Text>
         </View>
         <TextInput

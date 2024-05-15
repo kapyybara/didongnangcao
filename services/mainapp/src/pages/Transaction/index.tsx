@@ -1,7 +1,7 @@
 import { readItems } from '@directus/sdk'
 import { useIsFocused, useNavigation } from '@react-navigation/native'
 import { useCallback, useContext, useEffect, useState } from 'react'
-import { SafeAreaView, View } from 'react-native'
+import { RefreshControl, SafeAreaView, View } from 'react-native'
 import {
   ScrollView,
   TouchableWithoutFeedback,
@@ -24,6 +24,7 @@ export default function Transaction() {
   const { user, account, setAccount } = useContext(GlobalContext)
   const navigation = useNavigation()
   const isFocused = useIsFocused()
+  const [refreshing,setRefreshing] = useState(false)
 
   const [showAccountsDropdown, setShowAccountsDropdown] = useState(false)
 
@@ -47,6 +48,7 @@ export default function Transaction() {
     )) as any
 
     setTransactions(response)
+    setRefreshing(false)
   }
 
 
@@ -74,7 +76,7 @@ export default function Transaction() {
   )
 
   useEffect(() => {
-    if (isFocused && user.email) {
+    if (isFocused && user?.email) {
       fetchAccounts()
     }
   }, [isFocused])
@@ -83,7 +85,7 @@ export default function Transaction() {
     if (account) {
       fetchTransactions()
     }
-  }, [account, filter])
+  }, [account, filter, refreshing])
 
   return (
     <SafeAreaView className='flex-1'>
@@ -92,12 +94,12 @@ export default function Transaction() {
         <View className='items-center '>
           <IconButton
             icon="plus"
-            onPress={() => navigation.navigate('Transaction Info')}>
+            onPress={() => navigation.navigate('Transaction Information')}>
           </IconButton>
         </View>
       </View>
       <View className='flex-1 pt-2 pb-4 bg-[#fafafa] flex flex-col'>
-        <ScrollView className='px-4'>
+        <ScrollView className='px-4' refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => setRefreshing(true)} />}>
           <TouchableWithoutFeedback
             onPress={() => setShowAccountsDropdown(true)}
             className='mb-2'>
@@ -126,13 +128,19 @@ export default function Transaction() {
                   />
                 ))}
               </Menu>
+
               <View className='flex-1 flex justify-end flex-row'>
                 <Text className=''>
                   Total:{' '}
                   <Text className='font-bold text-base'>
                     {formatVND(
                       account.id === '-1'
-                        ? accounts.reduce((acc, item) => acc + item.total, 0)
+                        ? accounts.reduce((acc, item) => {
+                          if (item.include_in_balance=="true"){
+                            return acc + item.total 
+                          }
+                          return acc
+                        }, 0)
                         : accounts.find(item => item.id === account.id)?.total ||
                         0,
                     )}
@@ -172,7 +180,7 @@ export default function Transaction() {
           <View className='mt-4'>
             <View className='flex mb-2 flex-row items-center justify-between'>
               <Text className='font-medium'>Recently expenses</Text>
-              <Button onPress={() => navigation.navigate('All Transactions')}>
+              <Button onPress={() => navigation.navigate('All Transactions',{type: "expenses"})}>
                 See All {'>'}
               </Button>
             </View>
@@ -195,7 +203,7 @@ export default function Transaction() {
           <View className='mt-4'>
             <View className='flex mb-2 flex-row items-center justify-between'>
               <Text className='font-medium'>Recently income</Text>
-              <Button onPress={() => navigation.navigate('All Transactions')}>
+              <Button onPress={() => navigation.navigate('All Transactions',{type: "income"})}>
                 See All {'>'}
               </Button>
             </View>

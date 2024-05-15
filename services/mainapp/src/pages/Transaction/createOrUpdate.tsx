@@ -8,9 +8,10 @@ import {
   readItems,
   updateItem,
 } from '@directus/sdk'
-import { useNavigation } from '@react-navigation/native'
+import { useIsFocused, useNavigation } from '@react-navigation/native'
 import {
   Button,
+  Chip,
   Dialog,
   MD3Colors,
   Portal,
@@ -30,10 +31,12 @@ import {
 } from '../../contants/schema-key.constant'
 import { Account } from '../../types/account'
 import Loading from '../../components/Loading'
+import { HeaderContext } from '../../contexts/header'
 
 export default function CreateTransaction(props: any) {
   const transactionId = useMemo(() => props.route?.params?.id, [])
   const mode = transactionId ? 'update' : 'create'
+  const { subfix, setSubfix } = useContext(HeaderContext)
 
   const navigation = useNavigation()
 
@@ -43,17 +46,24 @@ export default function CreateTransaction(props: any) {
   const { setData } = useContext(SnackBarContext)
 
   const [oldData, setOldData] = useState({} as any)
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      setSubfix(null)
+    }
+  }, [props, isFocused])
 
   // Form data
-  const [type, setType] = useState(TransactionType[0].value)
+  const [type, setType] = useState(props.route?.params?.type || TransactionType[0].value)
   const [name, setName] = useState('')
   const [money, setMoney] = useState(0)
   const [category, setCategory] = useState('')
   const [account, setAccount] = useState('')
-  const [inputDate, setInputDate] = useState(undefined)
+  const [inputDate, setInputDate] = useState<any>(undefined)
   const [description, setDescription] = useState('')
-  const [loading , setLoading] = useState(false);
- 
+  const [loading, setLoading] = useState(false);
+
   const [showCategories, setShowCategories] = useState(false)
   const [showAccounts, setShowAccounts] = useState(false)
   const [visible, setVisible] = useState(false)
@@ -87,6 +97,8 @@ export default function CreateTransaction(props: any) {
     }
   }
 
+
+
   const updateTransaction = async () => {
     await directusInstance.request(
       updateItem(TRANSACTION_KEY, props.route?.params?.id, {
@@ -108,21 +120,13 @@ export default function CreateTransaction(props: any) {
       deleteItem(TRANSACTION_KEY, props.route?.params?.id),
     )
 
-    await directusInstance.request(
-      updateItem(ACCOUNT_KEY, oldData.account_id, {
-        total:
-          (accounts.find(i => i.id === oldData.account_id) as any).total +
-          (oldData.type === 'income' ? -oldData.total : oldData.total),
-      }),
-    )
-
     setData({ text: 'Create transaction successful!' })
     navigation.goBack()
   }
 
   useEffect(() => {
     if (user) {
-      ;(async () => {
+      ; (async () => {
         const res = await directusInstance.request(
           readItems('account', {
             filter: {
@@ -164,8 +168,10 @@ export default function CreateTransaction(props: any) {
     }
   }, [transactionId])
 
+
+
   return (
-    loading ? <Loading/> : <View className='flex flex-1 flex-col justify-start p-3 gap-2'>
+    loading ? <Loading /> : <View className='flex flex-1 flex-col justify-start p-3 gap-2'>
       <SegmentedButtons
         value={type}
         onValueChange={setType}
@@ -225,6 +231,17 @@ export default function CreateTransaction(props: any) {
           onChange={(d: any) => setInputDate(d)}
           inputMode='start'
         />
+      </View>
+      <View className='pt-8 flex flex-row gap-x-1'>
+        <Button mode="contained" onPress={() => setInputDate(new Date())}>
+          Today
+        </Button>
+        <Button mode="contained" onPress={() => setInputDate(new Date(new Date().getTime()+(1*24*60*60*1000)))}>
+          Yesterday
+        </Button>
+        <Button mode="contained" onPress={() => setInputDate(new Date(new Date().getTime()+(2*24*60*60*1000)))}>
+          Laster 2 days
+        </Button>
       </View>
       <View className='pt-8'>
         <TextInput

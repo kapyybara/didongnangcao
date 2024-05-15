@@ -10,7 +10,13 @@ import { GlobalContext } from '../../contexts/context'
 export default function AccountPage(props: any) {
   const { subfix, setSubfix } = useContext(HeaderContext)
   const [accounts, setAccounts] = useState([])
-  const sum = useMemo(() => (accounts.reduce((accumulator, account: any) => accumulator + account.total, 0)) / 1000000
+
+  const sum = useMemo(() => (accounts.reduce((accumulator, account: any) =>  {
+    if (account.include_in_balance == "true") {
+      return accumulator + account.total
+    }
+    return accumulator;
+  }, 0)) / 1000000
     , [accounts])
 
   const { user } = useContext(GlobalContext)
@@ -35,7 +41,7 @@ export default function AccountPage(props: any) {
       const res = await directusInstance.request(
         readItems('account', {
           filter: {
-            user_id: user.id
+            user_id: user?.id
           },
         }),
       )
