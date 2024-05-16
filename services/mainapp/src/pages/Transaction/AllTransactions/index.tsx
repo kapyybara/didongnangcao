@@ -76,22 +76,24 @@ export default function AllTransactions(props: any) {
 
     if (type == 'all') {
       filter = {
-        account_id:
-          account.id == '-1'
-            ? {
-                user_id: user?.id,
-              }
-            : account.id,
+        account_id: account.id == "-1" ? {
+          user_id: user?.id , 
+          include_in_balance : "true"
+        } : {
+          include_in_balance : "true",
+          id : account.id
+        },
       }
     } else {
       filter = {
         type: type,
-        account_id:
-          account.id == '-1'
-            ? {
-                user_id: user?.id,
-              }
-            : account.id,
+        account_id: account.id == "-1" ? {
+          user_id: user?.id , 
+          include_in_balance : "true"
+        } : {
+          include_in_balance : "true",
+          id : account.id
+        },
       }
     }
 

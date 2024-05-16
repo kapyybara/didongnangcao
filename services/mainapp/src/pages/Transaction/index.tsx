@@ -18,7 +18,7 @@ import { GlobalContext } from '../../contexts/context'
 import { directusInstance } from '../../services/directus'
 import { Transaction as TTransaction } from '../../types/transaction'
 import { formatVND } from '../../utils/money'
-import { filterDates, getFirstDateFilter } from '../../utils/number'
+import { filterDates, getFirstDateFilter, getLastTime } from '../../utils/number'
 
 export default function Transaction() {
   const { user, account, setAccount } = useContext(GlobalContext)
@@ -37,11 +37,15 @@ export default function Transaction() {
         sort: ['-trading_date'],
         filter: {
           account_id: account.id == "-1" ? {
-            user_id: user?.id
-          } : account.id,
+            user_id: user?.id , 
+            include_in_balance : "true"
+          } : {
+            include_in_balance : "true",
+            id : account.id
+          },
           trading_date: {
             _gte: getFirstDateFilter(filter),
-            _lte: new Date()
+            _lte: getLastTime()
           }
         },
       }),

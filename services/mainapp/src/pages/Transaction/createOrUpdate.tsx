@@ -236,11 +236,11 @@ export default function CreateTransaction(props: any) {
         <Button mode="contained" onPress={() => setInputDate(new Date())}>
           Today
         </Button>
-        <Button mode="contained" onPress={() => setInputDate(new Date(new Date().getTime()+(1*24*60*60*1000)))}>
+        <Button mode="contained" onPress={() => setInputDate(new Date(new Date().getTime()-(1*24*60*60*1000)))}>
           Yesterday
         </Button>
-        <Button mode="contained" onPress={() => setInputDate(new Date(new Date().getTime()+(2*24*60*60*1000)))}>
-          Laster 2 days
+        <Button mode="contained" onPress={() => setInputDate(new Date(new Date().getTime()-(2*24*60*60*1000)))}>
+          Last 2 days
         </Button>
       </View>
       <View className='pt-8'>
