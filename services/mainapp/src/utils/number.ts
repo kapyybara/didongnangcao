@@ -68,3 +68,9 @@ export function getFirstDateFilter(value: string): String {
   }
   return `${result.getFullYear()}-${result.getMonth()+1}-${result.getDate()}T00:00:00`
 }
+
+export function getLastTime(){
+  const day = new Date();
+  return `${day.getFullYear()}-${day.getMonth()+1}-${day.getDate()}T23:59:59`
+
+}

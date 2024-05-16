@@ -74,11 +74,12 @@ export default function Home() {
           sort: ['-trading_date'],
           limit: 4,
           filter: {
-            account_id: account.name == "Total" ? {
-              user_id: user?.id
+            account_id: account.id == "-1" ? {
+              user_id: user?.id , 
+              include_in_balance : "true"
             } : {
-              user_id: user?.id,
-              name: account.name
+              include_in_balance : "true",
+              id : account.id
             },
           },
         }),

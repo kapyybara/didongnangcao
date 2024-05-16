@@ -18,6 +18,7 @@ import { useIsFocused } from '@react-navigation/native'
 export const Statistic = () => {
   const currentDate = dayjs()
   const formattedDate = currentDate.format('MMM YYYY')
+  const { account, setAccount } = useContext(GlobalContext)
 
   const { user } = useContext(GlobalContext)
   const isFocused = useIsFocused()
@@ -35,6 +36,15 @@ export const Statistic = () => {
     const response = (await directusInstance.request(
       readItems(TRANSACTION_KEY, {
         sort: ['-trading_date'],
+        filter: {
+          account_id: account.id == "-1" ? {
+            user_id: user?.id , 
+            include_in_balance : "true"
+          } : {
+            include_in_balance : "true",
+            id : account.id
+          },
+        }
       }),
     )) as any
 
@@ -45,11 +55,6 @@ export const Statistic = () => {
     user?.email && fetchAllTransactions()
   },[isFocused, user])
 
-  const pieData = [
-    { value: 54, color: '#177AD5', text: '54%' },
-    { value: 40, color: '#79D2DE', text: '30%' },
-    { value: 20, color: '#ED6665', text: '26%' },
-  ]
 
   const expensePieData = transactions.filter(item => item.type === 'expenses')
   const result = expensePieData.reduce((acc: any, item) => {
@@ -76,11 +81,24 @@ export const Statistic = () => {
     text: `${((item.total / totalSpending) * 100).toFixed(2)}%`,
   }))
 
+  function compareMonth(date1: string, date2: string ) {
+    const [dateFormated1, dateFormated2] = [new Date(date1), new Date(date2)]
+
+    const [mount1, mount2, year1, year2] = [
+      dateFormated1.getMonth(),
+      dateFormated2.getMonth(),
+      dateFormated1.getFullYear(),
+      dateFormated2.getFullYear(),
+    ]
+
+    return mount1 == mount2 && year1 == year2
+  }
+
   const expenseLine = transactions.filter(
-    item => item.type === 'expenses' && item.trading_date.includes('2024-05'),
+    item => item.type === 'expenses' && compareMonth(item.trading_date , (new Date().toDateString())),
   )
 
-  const incomeLine = transactions.filter(item => item.type === 'income')
+  const incomeLine = transactions.filter(item => item.type === 'income' && compareMonth(item.trading_date , (new Date().toDateString())))
 
   const getDaysInMonth = (year: number, month: number): number => {
     return new Date(year, month + 1, 0).getDate()
@@ -99,7 +117,7 @@ export const Statistic = () => {
       if (date.getFullYear() === year && date.getMonth() === month) {
         const day = date.getDate() - 1 // getDate() returns 1-31, array index should be 0-30
         lineData[day].value += item.total
-        lineData[day].dataPointText = `${lineData[day].value}`
+        lineData[day].dataPointText = `${lineData.at(day)?.value}`
       }
     })
 
@@ -203,7 +221,7 @@ export const Statistic = () => {
           </Text>
           <Text className='text-base font-medium text-right'>Goal: 100M</Text>
         </View>
-        <View className='m-5 rounded-xl bg-slate-100'>
+        <View className='m-5 rounded-l bg-slate-100'>
           <Text className='font-medium my-2.5 text-xl text-center'>
             Total Success this Month
           </Text>
